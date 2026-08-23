@@ -638,6 +638,23 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Jend. Sudirman / Pusat Kota Palopo.";
       }
 
+// 1. SAPAAN, SALAM, & KESANTUNAN
+      if (text.includes("assalamualaikum") || text.includes("salam")) {
+        return "Wa'alaikumsalam Warahmatullahi Wabarakatuh! 🌿\n\n" +
+               "Selamat datang di Layanan **Palopota AI**. Saya siap membantu Anda seputar pengurusan dokumen, izin UMKM, atau informasi layanan publik Kota Palopo. Ada yang bisa saya bantu hari ini?";
+      } else if (text.includes("halo") || text.includes("hai") || text.includes("hello") || text.includes("pagi") || text.includes("siang") || text.includes("sore") || text.includes("malam")) {
+        return "Halo! 👋 Selamat datang di **Palopota AI**.\n\n" +
+               "Saya asisten digital resmi Kota Palopo. Silakan tanyakan syarat pembuatan KTP, KK, Akta Kelahiran, NIB UMKM, Beasiswa, Bansos, atau layanan OPD lainnya!";
+      } else if (text.includes("tabe") || text.includes("salama") || text.includes("indoku") || text.includes("amangku")) {
+        return "Salama’ki tapada salama! Tabe', aga kaperluangta ri layanan **Palopota AI** hari ini?\n\n" +
+               "Saya siap membantu pengurusan berkas kependudukan, perizinan, dan informasi layanan publik di Kota Palopo.";
+      } else if (text.includes("terima kasih") || text.includes("makasih") || text.includes("thanks") || text.includes("makkasora")) {
+        return "Sama-sama! 😊 Senang sekali bisa membantu Anda.\n\n" +
+               "Jika masih ada dokumen atau layanan publik Kota Palopo yang ingin ditanyakan, jangan ragu untuk menyapa saya kembali. Palopota AI selalu siap 24/7 untuk Anda!";
+      } else if (text.includes("siapa kamu") || text.includes("perkenalan") || text.includes("tentang aplikasi")) {
+        return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\n" +
+               "Saya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
+
 
       } else {
         return `Terima kasih atas pertanyaan Anda mengenai **"${escapeHtml(prompt)}"**.\n\n` +
