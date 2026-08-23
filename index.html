@@ -655,6 +655,23 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       } else if (text.includes("siapa kamu") || text.includes("perkenalan") || text.includes("tentang aplikasi")) {
         return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\n" +
                "Saya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
+} else if (text.includes("wali kota") || text.includes("walikota") || text.includes("pemerintahan")) {
+    return "🏛️ **Pemerintahan Kota Palopo** berpusat di Balai Kota Palopo (Jl. Andi Djemma).\n\n" +
+           "Wali Kota Palopo saat ini Ibu NAILI, Informasi resmi terkait jajaran pimpinan dan struktur organisasi dapat diakses melalui portal resmi Pemerintah Kota Palopo (palopokota.go.id).";
+
+} else if (text.includes("hari jadi") || text.includes("ulang tahun palopo") || text.includes("hut palopo")) {
+    return "🎉 **Hari Jadi Kota Palopo** diperingati setiap tanggal **2 Juli**.\n\n" +
+           "Kota Palopo resmi terbentuk sebagai daerah otonom berdasarkan Undang-Undang Nomor 11 Tahun 2002.";
+
+} else if (text.includes("wisata") || text.includes("destinasi") || text.includes("liburan") || text.includes("jalan-jalan")) {
+    return "🌴 **Destinasi Wisata Unggulan Kota Palopo:**\n\n" +
+           "• **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo\n" +
+           "• **Wisata Alam & Rekreasi:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Pantai Labombo, Gua Kancing\n" +
+           "• **Kuliner:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco)";
+
+} else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("kota palopo")) {
+    return "🌆 **Profil Singkat Kota Palopo:**\n\n" +
+           "Palopo adalah kota otonom di Sulawesi Selatan yang dikenal sebagai pusat sejarah Kedatuan Luwu serta berkembang sebagai kota jasa, perdagangan, dan pendidikan di kawasan Luwu Raya.";
 
 
       } else {
