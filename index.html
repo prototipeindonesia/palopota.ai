@@ -485,6 +485,160 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
         return "**Beasiswa Palopo Pintar (Dinas Pendidikan):**\n\n" +
                "* **Persyaratan:** KTP/KK Palopo, Surat Keterangan Aktif Sekolah/Kuliah, dan SKTM dari Kelurahan atau Sertifikat Prestasi.\n\n" +
                "📍 **Lokasi:** Dinas Pendidikan Kota Palopo, Jl. Ahmad Yani No. 25.";
+
+      // ==========================================
+      // BADAN & INSPEKTORAT
+      // ==========================================
+      } else if (text.includes("bakesbangpol") || text.includes("kesbangpol") || text.includes("ormas") || text.includes("politik")) {
+        return "**Layanan Badan Kesatuan Bangsa dan Politik (BAKESBANGPOL):**\n\n" +
+               "* **Layanan Utama:** Pendaftaran & Pendataan Organisasi Kemasyarakatan (Ormas/LSM), Surat Keterangan Penelitian/Izin Riset, dan Pembinaan Wawasan Kebangsaan.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
+
+      } else if (text.includes("bkpsdm") || text.includes("bkd") || text.includes("asn") || text.includes("pns") || text.includes("cpns") || text.includes("pppk")) {
+        return "**Layanan BKPSDM (Badan Kepegawaian & Pengembangan SDM):**\n\n" +
+               "* **Layanan Utama:** Administrasi Kepegawaian ASN/P3K, Pengusulan Kenaikan Pangkat, Cuti, Mutasi, Informasi Seleksi CASN/PPPK, serta Pelatihan & Pengembangan Kompetensi.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
+
+      } else if (text.includes("bpbd") || text.includes("bencana") || text.includes("banjir") || text.includes("longsor") || text.includes("damkar")) {
+        return "**Layanan BPBD (Badan Penanggulangan Bencana Daerah):**\n\n" +
+               "* **Layanan Utama:** Penanganan Darurat Bencana Alam (Banjir, Longsor, Angin Kencang), Bantuan Logistik Bencana, dan Edukasi Mitigasi Bencana.\n" +
+               "* **Call Center Darurat:** Siap 24 Jam | 📍 **Lokasi:** Jl. Anggrek / Perkantoran Pemkot Palopo.";
+
+      } else if (text.includes("bapperida") || text.includes("bappeda") || text.includes("riset") || text.includes("inovasi") || text.includes("sagu")) {
+        return "**Layanan BAPPERIDA (Badan Perencanaan Pembangunan, Riset & Inovasi Daerah):**\n\n" +
+               "* **Layanan Utama:** Perencanaan Pembangunan Daerah (RPLPD/RPJMD/RKPD), Koordinasi Riset & Inovasi Daerah, Fasilitasi Pemanfaatan IPTEK (seperti Riset Unggulan Sagu), dan Pemetaan Dokumen Perencanaan.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
+
+      } else if (text.includes("bpkad") || text.includes("aset") || text.includes("keuangan daerah")) {
+        return "**Layanan BPKAD (Badan Pengelola Keuangan & Aset Daerah):**\n\n" +
+               "* **Layanan Utama:** Pengelolaan Keuangan Daerah, Pencairan SP2D, Inventarisasi & Legalitas Aset Barang Milik Daerah (BMD).\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
+
+      } else if (text.includes("bapenda") || text.includes("pajak") || text.includes("pbb") || text.includes("retribusi") || text.includes("dispenda")) {
+        return "**Layanan BAPENDA (Badan Pendapatan Daerah):**\n\n" +
+               "* **Layanan Utama:** Pembayaran & Pendataan PBB-P2, Pajak Restoran, Hotel, Reklame, Air Tanah, BPHTB, dan Konsultasi Piutang Pajak Daerah.\n" +
+               "* **Biaya:** Sesuai Tarif Ketetapan Pajak/Retribusi | 📍 **Lokasi:** Jl. Sanusi / Kompleks Pemkot Palopo.";
+
+      } else if (text.includes("inspektorat") || text.includes("pengawasan") || text.includes("siber") || text.includes("siber pungli")) {
+        return "**Layanan Inspektorat Kota Palopo:**\n\n" +
+               "* **Layanan Utama:** Pengawasan Internal Pemerintah, Konsultasi Pengawasan Keuangan Desa/Kelurahan, Layanan Whistleblowing System (WBS), dan Pengaduan Pungli.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
+
+      // ==========================================
+      // SECRETARIAT
+      // ==========================================
+      } else if (text.includes("setda") || text.includes("sekretariat daerah") || text.includes("bagian hukum") || text.includes("humas")) {
+        return "**Layanan SETDA (Sekretariat Daerah Kota Palopo):**\n\n" +
+               "* **Layanan Utama:** Administrasi Pemerintahan, Pelayanan JDIH (Produk Hukum/Perwali), Bagian Kerjasama, Tata Pemerintahan, dan Protokol Pimpinan.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kantor Wali Kota Palopo, Jl. Andi Djemma.";
+
+      } else if (text.includes("setwan") || text.includes("sekretariat dprd") || text.includes("dprd")) {
+        return "**Layanan SETWAN (Sekretariat DPRD Kota Palopo):**\n\n" +
+               "* **Layanan Utama:** Fasilitasi Kegiatan Legislasi DPRD, Hubungan Masyarakat & Aspirasi Warga, serta Publikasi Risalah Rapat Paripurna.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Gedung DPRD Kota Palopo.";
+
+      // ==========================================
+      // DINAS-DINAS TEKNIS
+      // ==========================================
+      } else if (text.includes("dispuprperkim") || text.includes("pupr") || text.includes("perkim") || text.includes("perumahan") || text.includes("jalan")) {
+        return "**Layanan DISPUPRPERKIM (PUPR & Perumahan Rakyat/Kawasan Permukiman):**\n\n" +
+               "* **Layanan Utama:** Rekomendasi Teknis PBG/IMB, Keterangan Rencana Kota (KRK), Bantuan Bedah Rumah/RTLH, Penataan Jalan, Drainase, dan Air Bersih.\n" +
+               "* **Biaya:** Sesuai Perda Retribusi / Gratis untuk Bantuan RTLH | 📍 **Lokasi:** Jl. Pulau Jawa No. 8.";
+
+      } else if (text.includes("dispertan") || text.includes("pertanian") || text.includes("pangan") || text.includes("perikanan") || text.includes("nelayan") || text.includes("pupuk")) {
+        return "**Layanan Dinas Pertanian, Pangan dan Perikanan:**\n\n" +
+               "* **Layanan Utama:** Alokasi Pupuk Bersubsidi, Bantuan Beli Bibit/Benih Unggul, Bantuan Alat Tangkap Nelayan/Batu Es, Vaksinasi Hewan Ternak, dan Konsultasi Ketahanan Pangan.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Anggrek / Kompleks Pemkot.";
+
+      } else if (text.includes("diskopdagrin") || text.includes("koperasi") || text.includes("perdagangan") || text.includes("industri") || text.includes("pasar")) {
+        return "**Layanan DISKOPDAGRIN (Koperasi, Perdagangan, dan Perindustrian):**\n\n" +
+               "* **Layanan Utama:** Legalitas Koperasi, Pembinaan Industri Kecil Menengah (IKM), Tera Ulang Timbangan Pasar, Pemantauan Harga Sembako, dan Pelatihan Wirausaha.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Durian No. 7 / Jl. Andi Djemma.";
+
+      } else if (text.includes("disparbud") || text.includes("pariwisata") || text.includes("kebudayaan") || text.includes("museum")) {
+        return "**Layanan DISPARBUD (Dinas Pariwisata & Kebudayaan):**\n\n" +
+               "* **Layanan Utama:** Rekomendasi Usaha Pariwisata (Hotel/Resto/Kafe), Promosi Wisata Daerah (Latuppa, Kambo, dll.), Pengelolaan Cagar Budaya & Museum Batara Guru.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Andi Djemma No. 30.";
+
+      } else if (text.includes("dinsosnakertrans") || text.includes("tenaga kerja") || text.includes("naker") || text.includes("transmigrasi") || text.includes("kartu kuning") || text.includes("ak1")) {
+        return "**Layanan DINSOSNAKERTRANS (Sosial, Tenaga Kerja & Transmigrasi):**\n\n" +
+               "* **Layanan Utama:** Pembuatan Kartu Kuning (AK-1 Perusahaan/Melamar Kerja), Penanganan Perselisihan Hubungan Industrial/Bipartit, Rekomendasi Bansos/DTKS, dan Pelatihan BLK.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Andi Djemma No. 10.";
+
+      } else if (text.includes("diskominfo sp") || text.includes("kominfo") || text.includes("statistik") || text.includes("persandian") || text.includes("lapor")) {
+        return "**Layanan DISKOMINFO SP (Komunikasi, Informatika, Statistik & Persandian):**\n\n" +
+               "* **Layanan Utama:** Layanan Pengaduan SP4N-LAPOR!, Informasi Publik (PPID), Data Statistik Sektoral Daerah, Keamanan Informasi/Persandian, dan Fasilitas Wifi Publik.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Landak No. 3.";
+
+      } else if (text.includes("dp3appkb") || text.includes("p3a") || text.includes("perlindungan anak") || text.includes("posyandu") || text.includes("stunting")) {
+        return "**Layanan DP3APPKB (Pemberdayaan Perempuan, Perlindungan Anak, Pengendalian Penduduk & KB):**\n\n" +
+               "* **Layanan Utama:** Pendampingan Korban Kekerasan Perempuan/Anak (UPTD PPA), Pelayanan KB Gratis, Program Pencegahan Stunting, dan Ketahanan Keluarga.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Pahlawan No. 15.";
+
+      } else if (text.includes("rsud sawerigading") || text.includes("rsud") || text.includes("sawerigading")) {
+        return "**Layanan RSUD Sawerigading Kota Palopo:**\n\n" +
+               "* **Layanan Utama:** IGD 24 Jam, Rawat Jalan Spesialis, Rawat Inap, ICU, Laboratorium, Radiologi, serta Fasilitas Rujukan Pasien BPJS/JKN & Umum.\n" +
+               "* **Call Center:** (0471) 12345 | 📍 **Lokasi:** Jl. Rampoang, Kec. Bara, Kota Palopo.";
+
+      // ==========================================
+      // KANTOR KECAMATAN SE-KOTA PALOPO
+      // ==========================================
+      } else if (text.includes("wara barat") || text.includes("kecamatan wara barat")) {
+        return "**Kantor Kecamatan Wara Barat:**\n\n" +
+               "* **Layanan:** Pelayanan Surat Pengantar Kependudukan, Legalisasi Surat Keterangan Kelurahan, Pengurusan SKTM, dan Koordinasi Wilayah.\n" +
+               "* **Wilayah Kelurahan:** Lebang, Battang, Battang Barat, Tomarundun, dll.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Poros Palopo - Toraja.";
+
+      } else if (text.includes("wara timur") || text.includes("kecamatan wara timur")) {
+        return "**Kantor Kecamatan Wara Timur:**\n\n" +
+               "* **Layanan:** Pelayanan PATEN (Paten Kecamatan), Rekomendasi Izin Usaha Skala Mikro, Pengantar Administrasi Warga.\n" +
+               "* **Wilayah Kelurahan:** Surutanga, Pontap, Malatunrung, Benteng, Salekoe, dll.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Luwu / Wara Timur.";
+
+      } else if (text.includes("wara selatan") || text.includes("kecamatan wara selatan")) {
+        return "**Kantor Kecamatan Wara Selatan:**\n\n" +
+               "* **Layanan:** Pelayanan Administrasi Wilayah, Surat Pengantar Nikah/Pindah, Legalisir Dokumen, Pengaduan Trantibum.\n" +
+               "* **Wilayah Kelurahan:** Binturu, Sampoddo, Tabe'danto, Songka, dll.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Poros Palopo - Makassar (Sampoddo).";
+
+      } else if (text.includes("wara utara") || text.includes("kecamatan wara utara")) {
+        return "**Kantor Kecamatan Wara Utara:**\n\n" +
+               "* **Layanan:** Pelayanan Administrasi Terpadu Kecamatan (PATEN), Pengantar Kependudukan, Ketentraman & Ketertiban Umum.\n" +
+               "* **Wilayah Kelurahan:** Luminda, Salobulo, Batupasi, Penggoli, Bone-Bone, dll.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Cendana / Wara Utara.";
+
+      } else if (text.includes("bara") || text.includes("kecamatan bara")) {
+        return "**Kantor Kecamatan Bara:**\n\n" +
+               "* **Layanan:** Administrasi Surat Keterangan Tanah/Bangunan (Skt/Rekomendasi), Pengantar KK/KTP, Fasilitasi Program Sosial.\n" +
+               "* **Wilayah Kelurahan:** Rampoang, To'Bulung, Buntu Datu, Temalebba, Balandai, dll.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. To'Bulung / Bara.";
+
+      } else if (text.includes("sendana") || text.includes("kecamatan sendana")) {
+        return "**Kantor Kecamatan Sendana:**\n\n" +
+               "* **Layanan:** Layanan Administrasi Kependudukan, Pengantar Izin Usaha Mikro, Koordinasi Pertanian & Pembangunan Wilayah.\n" +
+               "* **Wilayah Kelurahan:** Sendana, Mampu, Purangi, Mungkajang/Tudame.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kec. Sendana, Palopo.";
+
+      } else if (text.includes("mungkajang") || text.includes("kecamatan mungkajang")) {
+        return "**Kantor Kecamatan Mungkajang:**\n\n" +
+               "* **Layanan:** Pelayanan PATEN Kecamatan, Pengantar Kependudukan, Bantuan Sosial, & Koordinasi Wisata Alam Latuppa.\n" +
+               "* **Wilayah Kelurahan:** Latuppa, Murante, Mungkajang, Kambo.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Poros Latuppa.";
+
+      } else if (text.includes("telluwanua") || text.includes("kecamatan telluwanua") || text.includes("tellu wanua")) {
+        return "**Kantor Kecamatan Telluwanua:**\n\n" +
+               "* **Layanan:** Administrasi Wilayah Utara, Pengantar Surat Kependudukan, Pelayanan Ketertiban & Fasilitasi Pertanian/Perikanan.\n" +
+               "* **Wilayah Kelurahan:** Maroangin, Jaya, Sumarambu, Pentojangan, Mancani, Salubattang.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Poros Palopo - Walenrang.";
+
+      } else if (text.includes("wara") || text.includes("kecamatan wara")) {
+        return "**Kantor Kecamatan Wara (Pusat Kota):**\n\n" +
+               "* **Layanan:** Pelayanan Administrasi Kependudukan Pusat Kota, Rekomendasi Izin Usaha, Legalisir Surat Keterangan.\n" +
+               "* **Wilayah Kelurahan:** Tompotikka, Pajalesang, Dangerakko, Boting, Amassangan, Lagaligo.\n" +
+               "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Jend. Sudirman / Pusat Kota Palopo.";
+      }
+
+
       } else {
         return `Terima kasih atas pertanyaan Anda mengenai **"${escapeHtml(prompt)}"**.\n\n` +
                `Sebagai Asisten AI Kota Palopo, saya dapat membimbing Anda mengenai:\n` +
