@@ -865,26 +865,80 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       modal.classList.remove('hidden');
 
       if (type === 'LIFE_EVENT') {
-        title.innerText = "Life Event Mode (Layanan Terpadu)";
-        body.innerHTML = `
-          <div class="space-y-2.5">
-            <div class="p-3 border rounded-2xl bg-rose-50/70 border-rose-200">
-              <div class="font-bold text-rose-900 text-xs mb-1">👶 Melahirkan & Kelahiran Bayi</div>
-              <p class="text-[11px] text-slate-600 mb-2">Integrasi Akta Kelahiran Disdukcapil + Posyandu Dinkes + BPJS.</p>
-              <button onclick="askAI('Syarat akta kelahiran bayi')" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
-            </div>
-            <div class="p-3 border rounded-2xl bg-emerald-50/70 border-emerald-200">
-              <div class="font-bold text-emerald-900 text-xs mb-1">🏪 Membuka Usaha / UMKM</div>
-              <p class="text-[11px] text-slate-600 mb-2">Integrasi NIB DPMPTSP + Sertifikat Halal + PIRT Kesehatan.</p>
-              <button onclick="askAI('Bagaimana syarat buat NIB UMKM?')" class="text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
-            </div>
-            <div class="p-3 border rounded-2xl bg-sky-50/70 border-sky-200">
-              <div class="font-bold text-sky-900 text-xs mb-1">🏡 Pindah Domisili ke Palopo</div>
-              <p class="text-[11px] text-slate-600 mb-2">Integrasi Surat Pindah Disdukcapil + Pembaruan KK.</p>
-              <button onclick="askAI('Surat pindah domisili')" class="text-[10px] bg-sky-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
-            </div>
-          </div>
-        `;
+  title.innerText = "Life Event Mode (Layanan Terpadu)";
+  body.innerHTML = `
+    <div class="space-y-2.5">
+      <!-- 1. Melahirkan & Kelahiran Bayi -->
+      <div class="p-3 border rounded-2xl bg-rose-50/70 border-rose-200">
+        <div class="font-bold text-rose-900 text-xs mb-1">👶 Melahirkan & Kelahiran Bayi</div>
+        <p class="text-[11px] text-slate-600 mb-2">Integrasi Akta Kelahiran Disdukcapil + Posyandu Dinkes + BPJS Kesehatan.</p>
+        <button onclick="askAI('Syarat pengurusan akta kelahiran dan BPJS bayi baru lahir')" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 2. Membuka Usaha / UMKM -->
+      <div class="p-3 border rounded-2xl bg-emerald-50/70 border-emerald-200">
+        <div class="font-bold text-emerald-900 text-xs mb-1">🏪 Membuka Usaha / UMKM Baru</div>
+        <p class="text-[11px] text-slate-600 mb-2">Integrasi NIB DPMPTSP + Sertifikat Halal + PIRT Kesehatan + Bantuan Modal Diskopdagrin.</p>
+        <button onclick="askAI('Bagaimana cara buat NIB UMKM dan Sertifikat Halal?')" class="text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 3. Pernikahan & Rumah Tangga Baru -->
+      <div class="p-3 border rounded-2xl bg-pink-50/70 border-pink-200">
+        <div class="font-bold text-pink-900 text-xs mb-1">💍 Pernikahan & Pembentukan KK Baru</div>
+        <p class="text-[11px] text-slate-600 mb-2">Pemisahan Kartu Keluarga (KK) Disdukcapil + Update Status KTP Pasutri.</p>
+        <button onclick="askAI('Syarat buat KK baru setelah menikah dan update KTP')" class="text-[10px] bg-pink-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 4. Pindah Domisili -->
+      <div class="p-3 border rounded-2xl bg-sky-50/70 border-sky-200">
+        <div class="font-bold text-sky-900 text-xs mb-1">🏡 Pindah Domisili ke Palopo</div>
+        <p class="text-[11px] text-slate-600 mb-2">SKPWNI Disdukcapil + Pembaruan KK/KTP + Mutasi BPJS Kesehatan Faskes.</p>
+        <button onclick="askAI('Prosedur dan syarat pindah domisili masuk ke Kota Palopo')" class="text-[10px] bg-sky-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 5. Pendidikan & Beasiswa Sekolah -->
+      <div class="p-3 border rounded-2xl bg-amber-50/70 border-amber-200">
+        <div class="font-bold text-amber-900 text-xs mb-1">🎓 Masuk Sekolah & Beasiswa</div>
+        <p class="text-[11px] text-slate-600 mb-2">Pendaftaran PPDB Dinas Pendidikan + Pengurusan Beasiswa Palopo Pintar & SKTM Kelurahan.</p>
+        <button onclick="askAI('Syarat daftar Beasiswa Palopo Pintar dan SKTM')" class="text-[10px] bg-amber-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 6. Pencarian Kerja & Karir -->
+      <div class="p-3 border rounded-2xl bg-indigo-50/70 border-indigo-200">
+        <div class="font-bold text-indigo-900 text-xs mb-1">💼 Mencari Kerja & Pelatihan Kerja</div>
+        <p class="text-[11px] text-slate-600 mb-2">Pembuatan Kartu Kuning (AK-1) Dinsosnakertrans + Pendaftaran Pelatihan Kerja BLK.</p>
+        <button onclick="askAI('Syarat membuat Kartu Kuning AK1 melamar kerja')" class="text-[10px] bg-indigo-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 7. Penanganan Kemiskinan & Bantuan Sosial -->
+      <div class="p-3 border rounded-2xl bg-teal-50/70 border-teal-200">
+        <div class="font-bold text-teal-900 text-xs mb-1">🤲 Pengusulan Bantuan Sosial (Bansos)</div>
+        <p class="text-[11px] text-slate-600 mb-2">Pengusulan Masuk DTKS Dinas Sosial + Pendaftaran PKH/BPNT + PBI BPJS Gratis.</p>
+        <button onclick="askAI('Cara daftar DTKS dan Bansos PKH di Palopo')" class="text-[10px] bg-teal-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 8. Pembangunan & Renovasi Rumah -->
+      <div class="p-3 border rounded-2xl bg-orange-50/70 border-orange-200">
+        <div class="font-bold text-orange-900 text-xs mb-1">🏗️ Pembangunan & Perizinan Rumah</div>
+        <p class="text-[11px] text-slate-600 mb-2">Penerbitan Persetujuan Bangunan Gedung (PBG/IMB) PUPR/DPMPTSP + Kesesuaian Tata Ruang (KKPR).</p>
+        <button onclick="askAI('Syarat mengurus PBG atau IMB bangunan rumah')" class="text-[10px] bg-orange-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 9. Kehilangan Dokumen / Musibah -->
+      <div class="p-3 border rounded-2xl bg-purple-50/70 border-purple-200">
+        <div class="font-bold text-purple-900 text-xs mb-1">📄 Pengurusan Dokumen Hilang / Rusak</div>
+        <p class="text-[11px] text-slate-600 mb-2">Cetak ulang KTP/KK/Akta Hilang (Surat Kehilangan Kepolisian + Disdukcapil).</p>
+        <button onclick="askAI('Syarat cetak ulang KTP dan KK yang hilang atau rusak')" class="text-[10px] bg-purple-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+
+      <!-- 10. Pengurusan Duka & Kematian -->
+      <div class="p-3 border rounded-2xl bg-slate-100 border-slate-300">
+        <div class="font-bold text-slate-800 text-xs mb-1">🕊️ Kematian & Ahli Waris</div>
+        <p class="text-[11px] text-slate-600 mb-2">Penerbitan Akta Kematian Disdukcapil + Perubahan Status KK + Santunan Duka / Ahli Waris.</p>
+        <button onclick="askAI('Syarat pengurusan Akta Kematian dan KK baru')" class="text-[10px] bg-slate-700 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+      </div>
+    </div>
+  `;
       } else if (type === 'OPD') {
         title.innerText = "Direktori OPD Kota Palopo";
         let html = '<div class="space-y-2">';
