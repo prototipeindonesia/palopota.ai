@@ -252,6 +252,9 @@
               <button onclick="sendQuickPrompt('Bagaimana syarat cetak KTP rusak?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🆔 KTP Rusak</button>
               <button onclick="sendQuickPrompt('Bagaimana cara daftar NIB UMKM online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🏪 NIB UMKM</button>
               <button onclick="sendQuickPrompt('Syarat pendaftaran Bansos PKH dan DTKS')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🤲 Bansos PKH</button>
+              <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🌾 Harga Pangan</button>
+              <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">📢 Lapor Pengaduan</button>
+              <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">💳 Bayar Pajak (AKSARA)</button>
             </div>
           </div>
         </div>
@@ -326,12 +329,69 @@
       { name: "DLH", services: ["Izin Lingkungan", "Pengaduan Sampah", "Kebersihan Kota", "Penghijauan"], address: "Jl. Sulawesi No. 6 Palopo" }
     ];
 
-    const faskesData = [
-      { name: "RSUD Sawerigading", type: "Rumah Sakit Umum Daerah", address: "Jl. Rampoang, Palopo", phone: "(0471) 12345" },
-      { name: "Puskesmas Wara", type: "Puskesmas", address: "Jl. Wara, Palopo", phone: "(0471) 34567" },
-      { name: "Puskesmas Wara Utara", type: "Puskesmas", address: "Jl. Battara, Palopo", phone: "(0471) 23456" },
-      { name: "Puskesmas Pontap", type: "Puskesmas", address: "Jl. Salekoe, Palopo", phone: "(0471) 45678" }
-    ];
+// Data GIS Lengkap (Fasilitas Umum, OPD, Kecamatan, Faskes)
+const gisData = [
+  // FASILITAS UMUM
+  { name: "Kantor Wali Kota", category: "Fasum", address: "Jl. Andi Djemma, Palopo", mapsUrl: "https://maps.google.com/?q=Kantor+Wali+Kota+Palopo" },
+  { name: "Lapangan Pancasila", category: "Fasum", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Lapangan+Pancasila+Palopo" },
+  { name: "Lapangan Gaspa", category: "Fasum", address: "Jl. S. Parman, Palopo", mapsUrl: "https://maps.google.com/?q=Lapangan+Gaspa+Palopo" },
+  { name: "Masjid Agung Palopo", category: "Fasum", address: "Jl. Sultan Hasanuddin, Palopo", mapsUrl: "https://maps.google.com/?q=Masjid+Agung+Palopo" },
+  { name: "Masjid Islamic Center", category: "Fasum", address: "Jl. Soekarno-Hatta, Palopo", mapsUrl: "https://maps.google.com/?q=Islamic+Center+Palopo" },
+  { name: "Pelabuhan Tanjung Ringgit", category: "Fasum", address: "Jl. Pelabuhan, Palopo", mapsUrl: "https://maps.google.com/?q=Pelabuhan+Tanjung+Ringgit+Palopo" },
+  { name: "Pasar Sentral Palopo", category: "Fasum", address: "Jl. Kelapa, Palopo", mapsUrl: "https://maps.google.com/?q=Pasar+Sentral+Palopo" },
+  { name: "Pasar Andi Tadda", category: "Fasum", address: "Jl. Andi Tadda, Palopo", mapsUrl: "https://maps.google.com/?q=Pasar+Andi+Tadda+Palopo" },
+
+  // OPD
+  { name: "BAKESBANGPOL", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Bakesbangpol+Palopo" },
+  { name: "BKPSDM", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=BKPSDM+Palopo" },
+  { name: "BPBD", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=BPBD+Palopo" },
+  { name: "BAPPERIDA", category: "OPD", address: "Jl. Andi Baso Rahim No. 2, Palopo", mapsUrl: "https://maps.google.com/?q=Bapperida+Palopo" },
+  { name: "BAPENDA", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Bapenda+Palopo" },
+  { name: "BPKAD", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=BPKAD+Palopo" },
+  { name: "Disdukcapil", category: "OPD", address: "Jl. Landak No. 1, Palopo", mapsUrl: "https://maps.google.com/?q=Disdukcapil+Palopo" },
+  { name: "Diskominfo SP", category: "OPD", address: "Jl. Landak No. 3, Palopo", mapsUrl: "https://maps.google.com/?q=Diskominfo+Palopo" },
+  { name: "Disparbud", category: "OPD", address: "Jl. Andi Djemma No. 30, Palopo", mapsUrl: "https://maps.google.com/?q=Disparbud+Palopo" },
+  { name: "Dinkes", category: "OPD", address: "Jl. Landak No. 15, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Kesehatan+Palopo" },
+  { name: "Disdikpora", category: "OPD", address: "Jl. Ahmad Yani No. 25, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Pendidikan+Palopo" },
+  { name: "SETDA", category: "OPD", address: "Kantor Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Setda+Palopo" },
+  { name: "SETWAN", category: "OPD", address: "Gedung DPRD Palopo", mapsUrl: "https://maps.google.com/?q=DPRD+Palopo" },
+  { name: "Inspektorat", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Inspektorat+Palopo" },
+  { name: "Dinsosnakertrans", category: "OPD", address: "Jl. Andi Djemma No. 10, Palopo", mapsUrl: "https://maps.google.com/?q=Dinsos+Palopo" },
+  { name: "DPMPTSP", category: "OPD", address: "Jl. Durian No. 5, Palopo", mapsUrl: "https://maps.google.com/?q=DPMPTSP+Palopo" },
+  { name: "DPUPRPERKIM", category: "OPD", address: "Jl. Pulau Jawa No. 8, Palopo", mapsUrl: "https://maps.google.com/?q=PUPR+Palopo" },
+  { name: "DISKOPDAGRIN", category: "OPD", address: "Jl. Durian No. 7, Palopo", mapsUrl: "https://maps.google.com/?q=Diskopdagrin+Palopo" },
+  { name: "Satpol PP", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Satpol+PP+Palopo" },
+  { name: "Dinas Damkar dan Penyelamatan", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Damkar+Palopo" },
+  { name: "DLHP", category: "OPD", address: "Jl. Sulawesi No. 6, Palopo", mapsUrl: "https://maps.google.com/?q=DLH+Palopo" },
+  { name: "Dispusarsip", category: "OPD", address: "Jl. Andi Djemma, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Perpustakaan+Palopo" },
+  { name: "Dishub", category: "OPD", address: "Jl. Veteran No. 12, Palopo", mapsUrl: "https://maps.google.com/?q=Dishub+Palopo" },
+  { name: "Dispertan Pangan dan Perikanan", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Pertanian+Palopo" },
+
+  // KECAMATAN
+  { name: "Kecamatan Wara", category: "Kecamatan", address: "Jl. Jend. Sudirman, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Palopo" },
+  { name: "Kecamatan Wara Utara", category: "Kecamatan", address: "Jl. Cendana, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Utara+Palopo" },
+  { name: "Kecamatan Wara Timur", category: "Kecamatan", address: "Jl. Luwu, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Timur+Palopo" },
+  { name: "Kecamatan Wara Barat", category: "Kecamatan", address: "Poros Palopo - Toraja", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Barat+Palopo" },
+  { name: "Kecamatan Wara Selatan", category: "Kecamatan", address: "Poros Palopo - Makassar", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Selatan+Palopo" },
+  { name: "Kecamatan Mungkajang", category: "Kecamatan", address: "Poros Latuppa, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Mungkajang+Palopo" },
+  { name: "Kecamatan Sendana", category: "Kecamatan", address: "Kecamatan Sendana, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Sendana+Palopo" },
+  { name: "Kecamatan Bara", category: "Kecamatan", address: "Jl. To'Bulung, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Bara+Palopo" },
+  { name: "Kecamatan Telluwanua", category: "Kecamatan", address: "Poros Palopo - Walenrang", mapsUrl: "https://maps.google.com/?q=Kecamatan+Telluwanua+Palopo" },
+
+  // FASKES
+  { name: "RSUD Sawerigading", category: "Faskes", address: "Jl. Rampoang, Palopo", mapsUrl: "https://maps.google.com/?q=RSUD+Sawerigading+Palopo" },
+  { name: "RSUD Palemmai Tandi", category: "Faskes", address: "Jl. Samiun, Palopo", mapsUrl: "https://maps.google.com/?q=RSUD+Palemmai+Tandi+Palopo" },
+  { name: "Puskesmas Wara", category: "Faskes", address: "Jl. Wara, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Palopo" },
+  { name: "Puskesmas Wara Utara", category: "Faskes", address: "Jl. Battara, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Utara+Palopo" },
+  { name: "Puskesmas Mungkajang", category: "Faskes", address: "Mungkajang, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Mungkajang+Palopo" },
+  { name: "Puskesmas Sendana", category: "Faskes", address: "Sendana, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Sendana+Palopo" },
+  { name: "Puskesmas Pontap", category: "Faskes", address: "Jl. Salekoe, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Pontap+Palopo" },
+  { name: "Puskesmas Benteng", category: "Faskes", address: "Benteng, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Benteng+Palopo" },
+  { name: "Puskesmas Padang Lambe", category: "Faskes", address: "Padang Lambe, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Padang+Lambe+Palopo" },
+  { name: "Puskesmas Telluwanua", category: "Faskes", address: "Telluwanua, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Telluwanua+Palopo" },
+  { name: "Puskesmas Wara Selatan", category: "Faskes", address: "Wara Selatan, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Selatan+Palopo" },
+  { name: "Labkesda Palopo", category: "Faskes", address: "Jl. Landak, Palopo", mapsUrl: "https://maps.google.com/?q=Labkesda+Palopo" }
+];
 
     // Navigasi UI
     function toggleSideMenu() {
@@ -352,31 +412,37 @@
 
     // Handlers Chat
     async function handleChatSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('user-input');
-      const text = input.value.trim();
-      if (!text) return;
+  e.preventDefault();
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
 
-      showChatScreen();
-      appendUserMessage(text);
-      input.value = '';
+  showChatScreen();
+  appendUserMessage(text);
+  input.value = '';
 
-      showAITypingIndicator();
+  // 1. CEK ATAU FILTER LAYANAN DARURAT (EMERGENCY DIRECT TRIGGER)
+  const isEmergency = checkEmergencyTrigger(text);
+  if (isEmergency) {
+    return; // Jika ditemukan kata kunci darurat, langsung tampilkan respon darurat tanpa memanggil AI
+  }
 
-      try {
-        let aiResponseText = "";
-        if (customApiKey) {
-          aiResponseText = await callGeminiApi(text);
-        } else {
-          aiResponseText = await fallbackLLMEngine(text);
-        }
-        removeAITypingIndicator();
-        appendAIMessage(aiResponseText);
-      } catch (err) {
-        removeAITypingIndicator();
-        appendAIMessage("Mohon maaf, terjadi kendala koneksi ke server AI. Silakan coba beberapa saat lagi atau periksa API Key Anda.");
-      }
+  showAITypingIndicator();
+
+  try {
+    let aiResponseText = "";
+    if (customApiKey) {
+      aiResponseText = await callGeminiApi(text);
+    } else {
+      aiResponseText = await fallbackLLMEngine(text);
     }
+    removeAITypingIndicator();
+    appendAIMessage(aiResponseText);
+  } catch (err) {
+    removeAITypingIndicator();
+    appendAIMessage("Mohon maaf, terjadi kendala koneksi ke server AI. Silakan coba beberapa saat lagi atau periksa API Key Anda.");
+  }
+}
 
     function sendQuickPrompt(promptText) {
       document.getElementById('user-input').value = promptText;
@@ -484,40 +550,93 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
                "* **Persyaratan:** KTP/KK Palopo, Surat Keterangan Aktif Sekolah/Kuliah, dan SKTM dari Kelurahan atau Sertifikat Prestasi.\n\n" +
                "📍 **Lokasi:** Dinas Pendidikan Kota Palopo, Jl. Ahmad Yani No. 25.";
 
+              // ==========================================
+      // 1. LAYANAN PENGADUAN / LAPOR (OKE SAPPO!)
+      // ==========================================
+      } else if (text.includes("lapor") || text.includes("melapor") || text.includes("pengaduan") || text.includes("oke sappo")) {
+        return "**📢 Layanan Pengaduan Masyarakat (OKE SAPPO!)**\n\n" +
+               "Anda dapat menyampaikan laporan, keluhan, maupun aspirasi terkait pelayanan publik di Kota Palopo secara langsung melalui **OKE SAPPO!** yang dikelola oleh **Diskominfo SP Kota Palopo**.\n\n" +
+               "Silakan klik tombol di bawah ini untuk terhubung langsung dengan Admin Pengaduan via WhatsApp:\n\n" +
+               "<div class='pt-2 pb-1'><a href='https://wa.me/628114200112?text=HALO%20ADMIN%20OKE%20SAPPO!,%20Saya%20ingin%20menyampaikan%20laporan/pengaduan.' target='_blank' class='inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-brands fa-whatsapp text-sm'></i><span>Lapor via OKE SAPPO! (WhatsApp)</span></a></div>";
+
+      // ==========================================
+      // 2. LAYANAN PEMBAYARAN PAJAK (AKSARA SMART TAX)
+      // ==========================================
+      } else if (text.includes("pajak") || text.includes("bayar pajak") || text.includes("aksara") || text.includes("smart tax") || text.includes("pbb")) {
+        return "**💳 Layanan Pembayaran Pajak Daerah (AKSARA SMART TAX)**\n\n" +
+               "Untuk kemudahan pembayaran Pajak Daerah (PBB-P2, Pajak Restoran, Reklame, dll.), Anda dapat mengakses aplikasi resmi **AKSARA SMART TAX** yang dikelola oleh **BAPENDA Kota Palopo**.\n\n" +
+               "Silakan klik tombol di bawah ini untuk membuka portal/aplikasi pembayaran pajak:\n\n" +
+               "<div class='pt-2 pb-1'><a href='https://aksara.palopokota.go.id' target='_blank' class='inline-flex items-center space-x-2 bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-solid fa-credit-card text-sm'></i><span>Buka AKSARA SMART TAX</span></a></div>";
+
+        
+              // ==========================================
+      // INFORMASI HARGA PANGAN & SEMBAKO KOTA PALOPO (25 KOMODITAS)
+      // ==========================================
+      } else if (text.includes("harga pangan") || text.includes("harga sembako") || text.includes("harga telur") || text.includes("harga beras") || text.includes("harga cabai")) {
+        return "**📊 Daftar Informasi Harga Pangan & Sembako Kota Palopo**\n\n" +
+               "*Berikut adalah data perkiraan harga rata-rata 25 komoditas pangan utama di Pasar Sentral & Pasar Andi Tadda Palopo:*\n\n" +
+               "1. **Beras Medium:** Rp 13.500 / kg\n" +
+               "2. **Beras Premium:** Rp 15.000 / kg\n" +
+               "3. **Gula Pasir:** Rp 18.000 / kg\n" +
+               "4. **Minyak Goreng Kita (Kemasan):** Rp 16.000 / liter\n" +
+               "5. **Minyak Goreng Curah:** Rp 15.500 / liter\n" +
+               "6. **Daging Sapi Segar:** Rp 130.000 / kg\n" +
+               "7. **Daging Ayam Ras:** Rp 32.000 / kg\n" +
+               "8. **Daging Ayam Kampung:** Rp 65.000 / ekor\n" +
+               "9. **Telur Ayam Ras:** Rp 52.000 / rak (Rp 2.000 / butir)\n" +
+               "10. **Telur Ayam Kampung:** Rp 2.500 / butir\n" +
+               "11. **Cabai Merah Keriting:** Rp 35.000 / kg\n" +
+               "12. **Cabai Rawit Merah:** Rp 45.000 / kg\n" +
+               "13. **Bawang Merah:** Rp 30.000 / kg\n" +
+               "14. **Bawang Putih:** Rp 40.000 / kg\n" +
+               "15. **Tepung Terigu:** Rp 11.000 / kg\n" +
+               "16. **Tahu Putih:** Rp 5.000 / bungkus\n" +
+               "17. **Tempe:** Rp 5.000 / papan\n" +
+               "18. **Ikan Bandeng (Bolu):** Rp 25.000 / kg\n" +
+               "19. **Ikan Tongkol:** Rp 30.000 / kg\n" +
+               "20. **Udang Vaname:** Rp 60.000 / kg\n" +
+               "21. **Tomat Buah:** Rp 10.000 / kg\n" +
+               "22. **Kentang:** Rp 18.000 / kg\n" +
+               "23. **Wortel:** Rp 12.000 / kg\n" +
+               "24. **Sagu Basah (Manta'):** Rp 15.000 / tumpi\n" +
+               "25. **Gula Merah / Aren:** Rp 22.000 / kg\n\n" +
+               "📍 *Sumber Data: Pemantauan Dinas Koperasi, Perdagangan, dan Perindustrian (DISKOPDAGRIN) Kota Palopo.*";
+
+        
       // ==========================================
       // BADAN & INSPEKTORAT
       // ==========================================
-      } else if (text.includes("bakesbangpol") || text.includes("kesbangpol") || text.includes("ormas") || text.includes("politik")) {
+      } else if (text.includes("layanan bakesbangpol") || text.includes("kesbangpol") || text.includes("ormas") || text.includes("politik")) {
         return "**Layanan Badan Kesatuan Bangsa dan Politik (BAKESBANGPOL):**\n\n" +
                "* **Layanan Utama:** Pendaftaran & Pendataan Organisasi Kemasyarakatan (Ormas/LSM), Surat Keterangan Penelitian/Izin Riset, dan Pembinaan Wawasan Kebangsaan.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
 
-      } else if (text.includes("bkpsdm") || text.includes("bkd") || text.includes("asn") || text.includes("pns") || text.includes("cpns") || text.includes("pppk")) {
+      } else if (text.includes("layanan bkpsdm") || text.includes("bkd") || text.includes("asn") || text.includes("pns") || text.includes("cpns") || text.includes("pppk")) {
         return "**Layanan BKPSDM (Badan Kepegawaian & Pengembangan SDM):**\n\n" +
                "* **Layanan Utama:** Administrasi Kepegawaian ASN/P3K, Pengusulan Kenaikan Pangkat, Cuti, Mutasi, Informasi Seleksi CASN/PPPK, serta Pelatihan & Pengembangan Kompetensi.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
 
-      } else if (text.includes("bpbd") || text.includes("bencana") || text.includes("banjir") || text.includes("longsor") || text.includes("damkar")) {
+      } else if (text.includes("layanan bpbd") || text.includes("bencana") || text.includes("banjir") || text.includes("longsor") || text.includes("layanan BPBD")) {
         return "**Layanan BPBD (Badan Penanggulangan Bencana Daerah):**\n\n" +
                "* **Layanan Utama:** Penanganan Darurat Bencana Alam (Banjir, Longsor, Angin Kencang), Bantuan Logistik Bencana, dan Edukasi Mitigasi Bencana.\n" +
                "* **Call Center Darurat:** Siap 24 Jam | 📍 **Lokasi:** Jl. Anggrek / Perkantoran Pemkot Palopo.";
 
-      } else if (text.includes("bapperida") || text.includes("bappeda") || text.includes("riset") || text.includes("inovasi") || text.includes("sagu")) {
+      } else if (text.includes("layanan bapperida") || text.includes("bappeda") || text.includes("riset") || text.includes("inovasi") || text.includes("sagu")) {
         return "**Layanan BAPPERIDA (Badan Perencanaan Pembangunan, Riset & Inovasi Daerah):**\n\n" +
                "* **Layanan Utama:** Perencanaan Pembangunan Daerah (RPLPD/RPJMD/RKPD), Koordinasi Riset & Inovasi Daerah, Fasilitasi Pemanfaatan IPTEK (seperti Riset Unggulan Sagu), dan Pemetaan Dokumen Perencanaan.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
 
-      } else if (text.includes("bpkad") || text.includes("aset") || text.includes("keuangan daerah")) {
+      } else if (text.includes("layanan bpkad") || text.includes("aset") || text.includes("keuangan daerah")) {
         return "**Layanan BPKAD (Badan Pengelola Keuangan & Aset Daerah):**\n\n" +
                "* **Layanan Utama:** Pengelolaan Keuangan Daerah, Pencairan SP2D, Inventarisasi & Legalitas Aset Barang Milik Daerah (BMD).\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
 
-      } else if (text.includes("bapenda") || text.includes("pajak") || text.includes("pbb") || text.includes("retribusi") || text.includes("dispenda")) {
+      } else if (text.includes("layanan bapenda") || text.includes("pajak") || text.includes("pbb") || text.includes("retribusi") || text.includes("dispenda")) {
         return "**Layanan BAPENDA (Badan Pendapatan Daerah):**\n\n" +
                "* **Layanan Utama:** Pembayaran & Pendataan PBB-P2, Pajak Restoran, Hotel, Reklame, Air Tanah, BPHTB, dan Konsultasi Piutang Pajak Daerah.\n" +
                "* **Biaya:** Sesuai Tarif Ketetapan Pajak/Retribusi | 📍 **Lokasi:** Jl. Sanusi / Kompleks Pemkot Palopo.";
 
-      } else if (text.includes("inspektorat") || text.includes("pengawasan") || text.includes("siber") || text.includes("siber pungli")) {
+      } else if (text.includes("layanan inspektorat") || text.includes("pengawasan") || text.includes("siber") || text.includes("siber pungli")) {
         return "**Layanan Inspektorat Kota Palopo:**\n\n" +
                "* **Layanan Utama:** Pengawasan Internal Pemerintah, Konsultasi Pengawasan Keuangan Desa/Kelurahan, Layanan Whistleblowing System (WBS), dan Pengaduan Pungli.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kompleks Perkantoran Wali Kota Palopo.";
@@ -525,12 +644,12 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       // ==========================================
       // SECRETARIAT
       // ==========================================
-      } else if (text.includes("setda") || text.includes("sekretariat daerah") || text.includes("bagian hukum") || text.includes("humas")) {
+      } else if (text.includes("layanan setda") || text.includes("sekretariat daerah") || text.includes("bagian hukum") || text.includes("humas")) {
         return "**Layanan SETDA (Sekretariat Daerah Kota Palopo):**\n\n" +
                "* **Layanan Utama:** Administrasi Pemerintahan, Pelayanan JDIH (Produk Hukum/Perwali), Bagian Kerjasama, Tata Pemerintahan, dan Protokol Pimpinan.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Kantor Wali Kota Palopo, Jl. Andi Djemma.";
 
-      } else if (text.includes("setwan") || text.includes("sekretariat dprd") || text.includes("dprd")) {
+      } else if (text.includes("layanan setwan") || text.includes("sekretariat dprd") || text.includes("dprd")) {
         return "**Layanan SETWAN (Sekretariat DPRD Kota Palopo):**\n\n" +
                "* **Layanan Utama:** Fasilitasi Kegiatan Legislasi DPRD, Hubungan Masyarakat & Aspirasi Warga, serta Publikasi Risalah Rapat Paripurna.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Gedung DPRD Kota Palopo.";
@@ -538,42 +657,42 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       // ==========================================
       // DINAS-DINAS TEKNIS
       // ==========================================
-      } else if (text.includes("dispuprperkim") || text.includes("pupr") || text.includes("perkim") || text.includes("perumahan") || text.includes("jalan")) {
+      } else if (text.includes("layanan dispuprperkim") || text.includes("pupr") || text.includes("perkim") || text.includes("perumahan") || text.includes("jalan")) {
         return "**Layanan DISPUPRPERKIM (PUPR & Perumahan Rakyat/Kawasan Permukiman):**\n\n" +
                "* **Layanan Utama:** Rekomendasi Teknis PBG/IMB, Keterangan Rencana Kota (KRK), Bantuan Bedah Rumah/RTLH, Penataan Jalan, Drainase, dan Air Bersih.\n" +
                "* **Biaya:** Sesuai Perda Retribusi / Gratis untuk Bantuan RTLH | 📍 **Lokasi:** Jl. Pulau Jawa No. 8.";
 
-      } else if (text.includes("dispertan") || text.includes("pertanian") || text.includes("pangan") || text.includes("perikanan") || text.includes("nelayan") || text.includes("pupuk")) {
+      } else if (text.includes("layanan dispertan") || text.includes("pertanian") || text.includes("pangan") || text.includes("perikanan") || text.includes("nelayan") || text.includes("pupuk")) {
         return "**Layanan Dinas Pertanian, Pangan dan Perikanan:**\n\n" +
                "* **Layanan Utama:** Alokasi Pupuk Bersubsidi, Bantuan Beli Bibit/Benih Unggul, Bantuan Alat Tangkap Nelayan/Batu Es, Vaksinasi Hewan Ternak, dan Konsultasi Ketahanan Pangan.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Anggrek / Kompleks Pemkot.";
 
-      } else if (text.includes("diskopdagrin") || text.includes("koperasi") || text.includes("perdagangan") || text.includes("industri") || text.includes("pasar")) {
+      } else if (text.includes("layanan diskopdagrin") || text.includes("koperasi") || text.includes("perdagangan") || text.includes("industri") || text.includes("pasar")) {
         return "**Layanan DISKOPDAGRIN (Koperasi, Perdagangan, dan Perindustrian):**\n\n" +
                "* **Layanan Utama:** Legalitas Koperasi, Pembinaan Industri Kecil Menengah (IKM), Tera Ulang Timbangan Pasar, Pemantauan Harga Sembako, dan Pelatihan Wirausaha.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Durian No. 7 / Jl. Andi Djemma.";
 
-      } else if (text.includes("disparbud") || text.includes("pariwisata") || text.includes("kebudayaan") || text.includes("museum")) {
+      } else if (text.includes("layanan disparbud") || text.includes("pariwisata") || text.includes("kebudayaan") || text.includes("museum")) {
         return "**Layanan DISPARBUD (Dinas Pariwisata & Kebudayaan):**\n\n" +
                "* **Layanan Utama:** Rekomendasi Usaha Pariwisata (Hotel/Resto/Kafe), Promosi Wisata Daerah (Latuppa, Kambo, dll.), Pengelolaan Cagar Budaya & Museum Batara Guru.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Andi Djemma No. 30.";
 
-      } else if (text.includes("dinsosnakertrans") || text.includes("tenaga kerja") || text.includes("naker") || text.includes("transmigrasi") || text.includes("kartu kuning") || text.includes("ak1")) {
+      } else if (text.includes("layanan dinsosnakertrans") || text.includes("tenaga kerja") || text.includes("naker") || text.includes("transmigrasi") || text.includes("kartu kuning") || text.includes("ak1")) {
         return "**Layanan DINSOSNAKERTRANS (Sosial, Tenaga Kerja & Transmigrasi):**\n\n" +
                "* **Layanan Utama:** Pembuatan Kartu Kuning (AK-1 Perusahaan/Melamar Kerja), Penanganan Perselisihan Hubungan Industrial/Bipartit, Rekomendasi Bansos/DTKS, dan Pelatihan BLK.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Andi Djemma No. 10.";
 
-      } else if (text.includes("diskominfo sp") || text.includes("kominfo") || text.includes("statistik") || text.includes("persandian") || text.includes("lapor")) {
+      } else if (text.includes("layanan diskominfo sp") || text.includes("kominfo") || text.includes("statistik") || text.includes("persandian") || text.includes("lapor")) {
         return "**Layanan DISKOMINFO SP (Komunikasi, Informatika, Statistik & Persandian):**\n\n" +
                "* **Layanan Utama:** Layanan Pengaduan SP4N-LAPOR!, Informasi Publik (PPID), Data Statistik Sektoral Daerah, Keamanan Informasi/Persandian, dan Fasilitas Wifi Publik.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Landak No. 3.";
 
-      } else if (text.includes("dp3appkb") || text.includes("p3a") || text.includes("perlindungan anak") || text.includes("posyandu") || text.includes("stunting")) {
+      } else if (text.includes("layanan dp3appkb") || text.includes("p3a") || text.includes("perlindungan anak") || text.includes("posyandu") || text.includes("stunting")) {
         return "**Layanan DP3APPKB (Pemberdayaan Perempuan, Perlindungan Anak, Pengendalian Penduduk & KB):**\n\n" +
                "* **Layanan Utama:** Pendampingan Korban Kekerasan Perempuan/Anak (UPTD PPA), Pelayanan KB Gratis, Program Pencegahan Stunting, dan Ketahanan Keluarga.\n" +
                "* **Biaya:** Gratis (Rp 0) | 📍 **Lokasi:** Jl. Pahlawan No. 15.";
 
-      } else if (text.includes("rsud sawerigading") || text.includes("rsud") || text.includes("sawerigading")) {
+      } else if (text.includes("layanan rsud sawerigading") || text.includes("rsud") || text.includes("sawerigading")) {
         return "**Layanan RSUD Sawerigading Kota Palopo:**\n\n" +
                "* **Layanan Utama:** IGD 24 Jam, Rawat Jalan Spesialis, Rawat Inap, ICU, Laboratorium, Radiologi, serta Fasilitas Rujukan Pasien BPJS/JKN & Umum.\n" +
                "* **Call Center:** (0471) 12345 | 📍 **Lokasi:** Jl. Rampoang, Kec. Bara, Kota Palopo.";
@@ -973,21 +1092,25 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
         html += '</div>';
         body.innerHTML = html;
       } else if (type === 'GIS' || type === 'FASKES') {
-        title.innerText = "Peta & Lokasi Faskes / OPD";
-        let html = '<div class="space-y-2">';
-        faskesData.forEach(f => {
-          html += `
-            <div class="p-2.5 border rounded-xl bg-rose-50/50 flex justify-between items-center">
-              <div>
-                <strong class="text-xs text-slate-800">🏥 ${f.name}</strong>
-                <p class="text-[10px] text-slate-500">${f.address} • ${f.phone}</p>
-              </div>
-              <button onclick="askAI('Informasi ${f.name}')" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold">Info</button>
-            </div>
-          `;
-        });
-        html += '</div>';
+        title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
+        
+        let html = `
+          <!-- Tab Navigasi Kategori -->
+          <div class="flex space-x-1 overflow-x-auto pb-2 custom-scroll mb-2 text-[11px]">
+            <button onclick="renderGisList('Semua')" id="tab-Semua" class="gis-tab bg-brand-navy text-white px-3 py-1 rounded-full font-bold whitespace-nowrap">Semua</button>
+            <button onclick="renderGisList('Fasum')" id="tab-Fasum" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏛️ Fasum</button>
+            <button onclick="renderGisList('OPD')" id="tab-OPD" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏢 OPD</button>
+            <button onclick="renderGisList('Kecamatan')" id="tab-Kecamatan" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">📍 Kecamatan</button>
+            <button onclick="renderGisList('Faskes')" id="tab-Faskes" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏥 Faskes</button>
+          </div>
+          
+          <!-- Container List Lokasi -->
+          <div id="gis-list-container" class="space-y-2"></div>
+        `;
+        
         body.innerHTML = html;
+        // Tampilkan semua data secara default
+        renderGisList('Semua');
       }
     }
 
@@ -1046,6 +1169,179 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
     function escapeHtml(text) {
       return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
+  
+  // Function untuk merender list GIS berdasarkan Kategori
+function renderGisList(filterCategory) {
+  const container = document.getElementById('gis-list-container');
+  if (!container) return;
+
+  // Update style tombol tab aktif
+  document.querySelectorAll('.gis-tab').forEach(btn => {
+    btn.classList.remove('bg-brand-navy', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-slate-700');
+  });
+  const activeTab = document.getElementById(`tab-${filterCategory}`);
+  if (activeTab) {
+    activeTab.classList.remove('bg-slate-100', 'text-slate-700');
+    activeTab.classList.add('bg-brand-navy', 'text-white');
+  }
+
+  // Filter Data
+  const filtered = filterCategory === 'Semua' 
+    ? gisData 
+    : gisData.filter(item => item.category === filterCategory);
+
+  let html = '';
+  filtered.forEach(item => {
+    // Ikon Kategori
+    let icon = 'fa-location-dot';
+    let iconColor = 'text-indigo-500';
+    if (item.category === 'Fasum') { icon = 'fa-landmark'; iconColor = 'text-amber-500'; }
+    else if (item.category === 'OPD') { icon = 'fa-building'; iconColor = 'text-emerald-500'; }
+    else if (item.category === 'Kecamatan') { icon = 'fa-map'; iconColor = 'text-sky-500'; }
+    else if (item.category === 'Faskes') { icon = 'fa-hospital'; iconColor = 'text-rose-500'; }
+
+    html += `
+      <div class="p-2.5 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-between">
+        <div>
+          <strong class="text-xs text-slate-800 flex items-center">
+            <i class="fa-solid ${icon} ${iconColor} mr-1.5"></i> ${item.name}
+          </strong>
+          <p class="text-[10px] text-slate-500 mt-0.5">${item.address}</p>
+        </div>
+        <div class="flex space-x-1 shrink-0">
+          <a href="${item.mapsUrl}" target="_blank" class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg font-bold flex items-center hover:bg-indigo-100">
+            <i class="fa-solid fa-diamond-turn-right mr-1"></i> Peta
+          </a>
+          <button onclick="askAI('Info lokasi dan layanan ${item.name}')" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded-lg font-bold">
+            Tanya
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+  
+  function checkEmergencyTrigger(inputText) {
+  const text = inputText.toLowerCase();
+
+  // 1. DARURAT PEMADAM KEBAKARAN (DAMKAR)
+  if (text.includes("telpon damkar") || text.includes("telpon pemadam") || text.includes("panggil damkar") || text.includes("hubungi damkar") || text.includes("ada kebakaran")) {
+    const emergencyHTML = `
+      <div class="space-y-2">
+        <p class="font-extrabold text-rose-600 flex items-center text-sm">
+          <i class="fa-solid fa-triangle-exclamation mr-1.5 animate-bounce"></i> PANGGILAN DARURAT DAMKAR
+        </p>
+        <p class="text-xs text-slate-700">Layanan Siap Siga Pemadam Kebakaran & Penyelamatan Kota Palopo 24/7.</p>
+        
+        <div class="flex flex-col gap-2 pt-1">
+          <a href="https://wa.me/6285255551113?text=HALO%20DAMKAR%20PALOPO,%20SAYA%20MEMBUTUHKAN%20BANTUAN%20DARURAT!" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>Chat WhatsApp Damkar Palopo</span>
+          </a>
+
+          <a href="tel:0471113" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-solid fa-phone-volume text-sm"></i>
+            <span>Telepon Langsung (0471) 113</span>
+          </a>
+        </div>
+      </div>
+    `;
+    appendEmergencyMessage(emergencyHTML);
+    return true;
+  }
+
+  // 2. DARURAT AMBULANS & KESEHATAN (PSC 119)
+  if (text.includes("panggil ambulans") || text.includes("panggil ambulance") || text.includes("telpon ambulans") || text.includes("ada kecelakaan")) {
+    const emergencyHTML = `
+      <div class="space-y-2">
+        <p class="font-extrabold text-rose-600 flex items-center text-sm">
+          <i class="fa-solid fa-truck-medical mr-1.5 animate-pulse"></i> PANGGILAN DARURAT AMBULANS (PSC 119)
+        </p>
+        <p class="text-xs text-slate-700">Layanan Penanganan Medis Darurat & Rujukan Ambulans Kota Palopo.</p>
+        
+        <div class="flex flex-col gap-2 pt-1">
+          <a href="https://wa.me/628114211911?text=DARURAT%20AMBULANS%20PALOPO!%20Mohon%20bantuan%20segera." target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>Chat WhatsApp PSC 119 Palopo</span>
+          </a>
+
+          <a href="tel:119" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-solid fa-phone-volume text-sm"></i>
+            <span>Call Center 119 (Bebas Pulsa)</span>
+          </a>
+        </div>
+      </div>
+    `;
+    appendEmergencyMessage(emergencyHTML);
+    return true;
+  }
+
+  // 3. DARURAT BENCANA ALAM (BPBD)
+  if (text.includes("pangil bpbd") || text.includes("banjir") || text.includes("longsor") || text.includes("pohon tumbang")) {
+    const emergencyHTML = `
+      <div class="space-y-2">
+        <p class="font-extrabold text-amber-600 flex items-center text-sm">
+          <i class="fa-solid fa-house-chimney-crack mr-1.5"></i> POSKO DARURAT BENCANA (BPBD)
+        </p>
+        <p class="text-xs text-slate-700">Pelaporan Kejadian Bencana Alam & Evakuasi Tim BPBD Kota Palopo.</p>
+        
+        <div class="flex flex-col gap-2 pt-1">
+          <a href="https://wa.me/6285242000100?text=LAPOR%20BPBD%20PALOPO,%20Terjadi%20kejadian%20darurat." target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>Chat WhatsApp BPBD Palopo</span>
+          </a>
+        </div>
+      </div>
+    `;
+    appendEmergencyMessage(emergencyHTML);
+    return true;
+  }
+
+  // 4. DARURAT KEPOLISIAN (POLRES PALOPO)
+  if (text.includes("panggil polisi") || text.includes("panggil polres") || text.includes("kejahatan") || text.includes("maling")) {
+    const emergencyHTML = `
+      <div class="space-y-2">
+        <p class="font-extrabold text-blue-600 flex items-center text-sm">
+          <i class="fa-solid fa-shield-halved mr-1.5"></i> CALL CENTER POLRES PALOPO
+        </p>
+        <p class="text-xs text-slate-700">Layanan Pengaduan Gangguan Kamtibmas & Kejahatan Darurat.</p>
+        
+        <div class="flex flex-col gap-2 pt-1">
+          <a href="tel:110" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+            <i class="fa-solid fa-phone-volume text-sm"></i>
+            <span>Call Center 110 (Polres Palopo)</span>
+          </a>
+        </div>
+      </div>
+    `;
+    appendEmergencyMessage(emergencyHTML);
+    return true;
+  }
+
+  return false; // Bukan pesan darurat
+}
+
+// Function merender Bubble Chat Darurat
+function appendEmergencyMessage(htmlContent) {
+  const stream = document.getElementById('chat-stream');
+  chatHistory.push({ role: "model", parts: [{ text: "Respon Darurat Ditampilkan" }] });
+
+  stream.insertAdjacentHTML('beforeend', `
+    <div class="flex items-start space-x-2.5 my-2">
+      <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-md">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="bg-rose-50/80 border border-rose-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2">
+        ${htmlContent}
+      </div>
+    </div>
+  `);
+  stream.scrollTop = stream.scrollHeight;
+}
+
   </script>
 </body>
 </html>
