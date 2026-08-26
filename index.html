@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -713,6 +712,7 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       await new Promise(r => setTimeout(r, 1200));
       const text = prompt.toLowerCase();
 
+      // DOKUMEN KEPENDUDUKAN & KARTU
       if (text.includes("ktp") || text.includes("identitas")) {
         return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
                "* **KTP Rusak/Patah:** Bawa fisik KTP lama + Fotokopi Kartu Keluarga (KK).\n" +
@@ -734,6 +734,8 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
         return "**Beasiswa Palopo Pintar (Dinas Pendidikan):**\n\n" +
                "* **Persyaratan:** KTP/KK Palopo, Surat Keterangan Aktif Sekolah/Kuliah, dan SKTM dari Kelurahan atau Sertifikat Prestasi.\n\n" +
                "📍 **Lokasi:** Dinas Pendidikan Kota Palopo, Jl. Ahmad Yani No. 25.";
+      
+      // LAYANAN PENGADUAN & PAJAK
       } else if (text.includes("lapor") || text.includes("melapor") || text.includes("pengaduan") || text.includes("oke sappo")) {
         return "**📢 Layanan Pengaduan Masyarakat (OKE SAPPO!)**\n\n" +
                "Anda dapat menyampaikan laporan, keluhan, maupun aspirasi terkait pelayanan publik di Kota Palopo secara langsung melalui **OKE SAPPO!** yang dikelola oleh **Diskominfo SP Kota Palopo**.\n\n" +
@@ -744,6 +746,8 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
                "Untuk kemudahan pembayaran Pajak Daerah (PBB-P2, Pajak Restoran, Reklame, dll.), Anda dapat mengakses aplikasi resmi **AKSARA SMART TAX** yang dikelola oleh **BAPENDA Kota Palopo**.\n\n" +
                "Silakan klik tombol di bawah ini untuk membuka portal/aplikasi pembayaran pajak:\n\n" +
                "<div class='pt-2 pb-1'><a href='https://aksara.palopokota.go.id' target='_blank' class='inline-flex items-center space-x-2 bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-solid fa-credit-card text-sm'></i><span>Buka AKSARA SMART TAX</span></a></div>";
+
+      // INFORMASI HARGA PANGAN & SEMBAKO
       } else if (text.includes("harga pangan") || text.includes("harga sembako") || text.includes("harga telur") || text.includes("harga beras") || text.includes("harga cabai")) {
         return "**📊 Daftar Informasi Harga Pangan & Sembako Kota Palopo**\n\n" +
                "*Berikut adalah data perkiraan harga rata-rata 25 komoditas pangan utama di Pasar Sentral & Pasar Andi Tadda Palopo:*\n\n" +
@@ -773,28 +777,432 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
                "24. **Sagu Basah (Manta'):** Rp 15.000 / tumpi\n" +
                "25. **Gula Merah / Aren:** Rp 22.000 / kg\n\n" +
                "📍 *Sumber Data: Pemantauan Dinas Koperasi, Perdagangan, dan Perindustrian (DISKOPDAGRIN) Kota Palopo.*";
-      } else if (text.includes("layanan bakesbangpol") || text.includes("kesbangpol")) {
+
+      // PROFIL, SEJARAH, WISATA & PEMERINTAHAN KOTA PALOPO
+      } else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("dimana kota palopo")) {
+        return "🌆 **Profil Singkat Kota Palopo:**\n\n" +
+               "Palopo adalah kota otonom di Sulawesi Selatan yang dikenal sebagai pusat sejarah Kedatuan Luwu serta berkembang pesat sebagai kota jasa, perdagangan, dan pendidikan di kawasan Luwu Raya.";
+      } else if (text.includes("hari jadi kota palopo") || text.includes("ulang tahun palopo") || text.includes("hut palopo")) {
+        return "🎉 **Hari Jadi Kota Palopo** diperingati setiap tanggal **2 Juli**.\n\n" +
+               "Kota Palopo resmi terbentuk sebagai daerah otonom berdasarkan Undang-Undang Nomor 11 Tahun 2002.";
+      } else if (text.includes("kantor wali kota") || text.includes("kantor walikota") || text.includes("pemerintahan")) {
+        return "🏛️ **Pemerintahan Kota Palopo** berpusat di Balai Kota Palopo (Jl. Andi Djemma).\n\n" +
+               "Informasi resmi terkait jajaran pimpinan dan struktur organisasi daerah dapat diakses melalui portal resmi Pemkot Palopo (palopokota.go.id).";
+      } else if (text.includes("wisata") || text.includes("destinasi") || text.includes("liburan") || text.includes("jalan-jalan")) {
+        return "🌴 **Destinasi Wisata Unggulan Kota Palopo:**\n\n" +
+               "• **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo\n" +
+               "• **Wisata Alam & Rekreasi:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Pantai Labombo, Gua Kancing\n" +
+               "• **Kuliner:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco)";
+
+     // ==========================================
+      // LAYANAN DINAS / OPD (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan bakesbangpol") || text.includes("layanan kesbangpol")) {
         return "**Layanan BAKESBANGPOL Kota Palopo:**\n\n" +
                "* Surat Keterangan Penelitian (SKP)\n" +
-               "* Pendaftaran Ormas / LSM\n" +
-               "* Pembinaan Kesatuan Bangsa\n\n" +
-               "📍 **Lokasi:** Perkantoran Balai Kota Palopo";
-      } else if (text.includes("layanan bkpsdm") || text.includes("bkd")) {
+               "* Permohonan Izin Survey / Riset\n" +
+               "* Pendaftaran & Pendataan Ormas / LSM\n" +
+               "* Pembinaan Kesatuan Bangsa & Wawasan Kebangsaan\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan bkpsdm") || text.includes("layanan bkd")) {
         return "**Layanan BKPSDM Kota Palopo:**\n\n" +
-               "* Administrasi Kepegawaian ASN\n" +
-               "* Kenaikan Pangkat, Cuti, Mutasi\n" +
-               "* Informasi Seleksi CASN/PPPK\n\n" +
-               "📍 **Lokasi:** Perkantoran Balai Kota Palopo";
+               "* Administrasi Kepegawaian ASN & PPPK\n" +
+               "* Pengurusan Kenaikan Pangkat & Mutasi\n" +
+               "* Pengurusan Cuti Pegawai & Pensiun\n" +
+               "* Informasi Seleksi CASN / PPPK\n" +
+               "* Pelatihan & Pengembangan Kompetensi ASN\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
       } else if (text.includes("layanan bpbd")) {
         return "**Layanan BPBD Kota Palopo:**\n\n" +
-               "* Penanganan Bencana Alam 24/7\n" +
-               "* Bantuan Logistik & Mitigasi Bencana\n\n" +
+               "* Penanganan Bencana Alam 24/7 (Banjir, Longsor, Pohon Tumbang)\n" +
+               "* Penyaluran Bantuan Logistik Bencana\n" +
+               "* Edukasi, Pelatihan & Mitigasi Bencana\n" +
+               "* Pengaduan & Tim Evakuasi Bencana Daerah\n\n" +
                "📍 **Lokasi:** Posko BPBD Kota Palopo, Jl. Anggrek";
-      } else if (text.includes("layanan bapperida") || text.includes("bappeda") || text.includes("sagu")) {
+
+      } else if (text.includes("layanan bapperida") || text.includes("layanan bappeda")) {
         return "**Layanan BAPPERIDA Kota Palopo:**\n\n" +
-               "* Perencanaan Pembangunan & Inovasi Daerah\n" +
-               "* Koordinasi Riset & IPTEK Unggulan (Local Sago Management)\n\n" +
+               "* Perencanaan Pembangunan Daerah (RPJMD/RKPD)\n" +
+               "* Koordinasi Riset & Inovasi Daerah (Local Sago Management)\n" +
+               "* Pemetaan & Pengelolaan Dokumen Perencanaan\n" +
+               "* Fasilitasi Pemanfaatan IPTEK & Inovasi Daerah\n\n" +
                "📍 **Lokasi:** Jl. Andi Baso Rahim No. 2 Palopo";
+
+      } else if (text.includes("layanan bapenda") || text.includes("layanan pajak daerah")) {
+        return "**Layanan BAPENDA Kota Palopo:**\n\n" +
+               "* Pembayaran & Pendataan PBB-P2\n" +
+               "* Pengurusan Pajak Restoran, Hotel, & Reklame\n" +
+               "* Pembayaran BPHTB & Pajak Air Tanah\n" +
+               "* Konsultasi & Penagihan Piutang Pajak Daerah (AKSARA Smart Tax)\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan bpkad")) {
+        return "**Layanan BPKAD Kota Palopo:**\n\n" +
+               "* Pengelolaan Keuangan & Anggaran Daerah\n" +
+               "* Penerbitan & Pencairan SP2D\n" +
+               "* Inventarisasi & Legalitas Aset Barang Milik Daerah (BMD)\n" +
+               "* Konsultasi Penatausahaan Keuangan OPD\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan disdukcapil") || text.includes("layanan dukcapil")) {
+        return "**Layanan DISDUKCAPIL Kota Palopo:**\n\n" +
+               "* Perekaman & Pencetakan KTP-el\n" +
+               "* Penerbitan & Perubahan Kartu Keluarga (KK)\n" +
+               "* Penerbitan Akta Kelahiran & Akta Kematian\n" +
+               "* Pembuatan Kartu Identitas Anak (KIA)\n" +
+               "* Pengurusan Surat Pindah Domisili (SKPWNI)\n" +
+               "* Aktivasi Identitas Kependudukan Digital (IKD)\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 1 Palopo";
+
+      } else if (text.includes("layanan diskominfo sp") || text.includes("layanan diskominfo") || text.includes("layanan kominfo")) {
+        return "**Layanan DISKOMINFO SP Kota Palopo:**\n\n" +
+               "* Layanan Pengaduan Masyarakat (OKE SAPPO! & SP4N-LAPOR!)\n" +
+               "* Layanan Informasi Publik (PPID Utama)\n" +
+               "* Pengelolaan Data Statistik Sektoral Daerah\n" +
+               "* Keamanan Informasi & Persandian Daerah\n" +
+               "* Fasilitasi Tanda Tangan Elektronik (TTE) & Wifi Publik\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 3 Palopo";
+
+      } else if (text.includes("layanan disparbud") || text.includes("layanan pariwisata")) {
+        return "**Layanan DISPARBUD Kota Palopo:**\n\n" +
+               "* Rekomendasi Izin Usaha Pariwisata (Hotel, Resto, Kafe)\n" +
+               "* Promosi & Pengelolaan Destinasi Wisata Daerah\n" +
+               "* Pendaftaran & Pembinaan Pelaku Ekonomi Kreatif\n" +
+               "* Pengelolaan Cagar Budaya & Museum Batara Guru\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma No. 30 Palopo";
+
+      } else if (text.includes("layanan dinkes") || text.includes("layanan dinas kesehatan")) {
+        return "**Layanan Dinas Kesehatan Kota Palopo:**\n\n" +
+               "* Rekomendasi Sertifikat Laik Higiene Sanitasi\n" +
+               "* Rekomendasi Izin Operasional Faskes & Apotek\n" +
+               "* Pendaftaran BPJS Kesehatan PBI APBD\n" +
+               "* Pengawasan & Pelayanan Kesehatan Masyarakat / Posyandu\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 15 Palopo";
+
+      } else if (text.includes("layanan disdikpora") || text.includes("layanan disdik") || text.includes("layanan dinas pendidikan")) {
+        return "**Layanan DISDIKPORA Kota Palopo:**\n\n" +
+               "* Program Beasiswa Palopo Pintar\n" +
+               "* Pengelolaan Dana Bantuan Operasional Sekolah (BOS)\n" +
+               "* Fasilitasi Pendaftaran PPDB Online\n" +
+               "* Penerbitan Surat Mutasi / Pindah Sekolah\n" +
+               "* Legalisir Ijazah & Pengurusan NUPTK Guru\n\n" +
+               "📍 **Lokasi:** Jl. Ahmad Yani No. 25 Palopo";
+
+      } else if (text.includes("layanan setda") || text.includes("layanan sekretariat daerah")) {
+        return "**Layanan SETDA (Sekretariat Daerah) Kota Palopo:**\n\n" +
+               "* Pelayanan Informasi JDIH (Produk Hukum / Perwali)\n" +
+               "* Fasilitasi Kerjasama Antar Lembaga & Daerah\n" +
+               "* Pelayanan Administrasi Tata Pemerintahan & Kesra\n" +
+               "* Permohonan Audiensi & Protokol Pimpinan Wali Kota\n\n" +
+               "📍 **Lokasi:** Kantor Wali Kota Palopo, Jl. Andi Djemma";
+
+      } else if (text.includes("layanan setwan") || text.includes("layanan sekretariat dprd")) {
+        return "**Layanan SETWAN (Sekretariat DPRD) Kota Palopo:**\n\n" +
+               "* Fasilitasi Penyerapan Aspirasi Masyarakat ke DPRD\n" +
+               "* Publikasi Produk Hukum Daerah (Perda)\n" +
+               "* Pelayanan Penerimaan Kunjungan Kerja & Audiensi\n\n" +
+               "📍 **Lokasi:** Gedung DPRD Kota Palopo";
+
+      } else if (text.includes("layanan inspektorat")) {
+        return "**Layanan Inspektorat Kota Palopo:**\n\n" +
+               "* Layanan Pengaduan Masyarakat (Whistleblowing System / WBS)\n" +
+               "* Pengaduan Saber Pungli & Fraud\n" +
+               "* Konsultasi Pengawasan Keuangan Internal Pemerintah / Desa\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan dinsosnakertrans") || text.includes("layanan dinsos") || text.includes("layanan disnaker")) {
+        return "**Layanan DINSOSNAKERTRANS Kota Palopo:**\n\n" +
+               "* Penerbitan Kartu Kuning (AK-1) Melamar Kerja\n" +
+               "* Pendaftaran & Pengusulan Data DTKS / Bansos PKH / BPNT\n" +
+               "* Penerbitan Rekomendasi SKTM Sosial\n" +
+               "* Pendaftaran Pelatihan Kerja Pelatihan BLK\n" +
+               "* Penanganan Perselisihan Hubungan Industrial / Ketenagakerjaan\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma No. 10 Palopo";
+
+      } else if (text.includes("layanan dpmptsp") || text.includes("layanan perizinan")) {
+        return "**Layanan DPMPTSP Kota Palopo:**\n\n" +
+               "* Penerbitan NIB UMKM (Online Single Submission / OSS)\n" +
+               "* Pengurusan Persetujuan Bangunan Gedung (PBG / ex-IMB)\n" +
+               "* Pendampingan Sertifikasi Halal UMKM\n" +
+               "* Penerbitan SIUP & Izin Praktik Tenaga Kesehatan\n" +
+               "* Fasilitasi Layanan Investasi & Mal Pelayanan Publik (MPP)\n\n" +
+               "📍 **Lokasi:** Jl. Durian No. 5 Palopo";
+
+      } else if (text.includes("layanan dpuprperkim") || text.includes("layanan pupr") || text.includes("layanan perkim")) {
+        return "**Layanan DPUPRPERKIM Kota Palopo:**\n\n" +
+               "* Rekomendasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR)\n" +
+               "* Rekomendasi Teknis Bangunan Gedung (PBG)\n" +
+               "* Bantuan Bedah Rumah / Rumah Tidak Laik Huni (RTLH)\n" +
+               "* Perbaikan & Pengaduan Infrastruktur Jalan, Drainase, & Tata Ruang\n\n" +
+               "📍 **Lokasi:** Jl. Pulau Jawa No. 8 Palopo";
+
+      } else if (text.includes("layanan diskopdagrin") || text.includes("layanan perdagangan") || text.includes("layanan koperasi")) {
+        return "**Layanan DISKOPDAGRIN Kota Palopo:**\n\n" +
+               "* Legalisasi & Pembinaan Koperasi\n" +
+               "* Pelatihan Wirausaha & Pembinaan IKM / UMKM\n" +
+               "* Pelayanan Tera / Tera Ulang Alat Timbangan Pasar (UTTP)\n" +
+               "* Informasi & Pemantauan Harga Bahan Pokok (Kepokmas)\n\n" +
+               "📍 **Lokasi:** Jl. Durian No. 7 Palopo";
+
+      } else if (text.includes("layanan satpol pp") || text.includes("layanan satpol")) {
+        return "**Layanan SATPOL PP Kota Palopo:**\n\n" +
+               "* Pengaduan Gangguan Ketentraman & Ketertiban Umum (Trantibum)\n" +
+               "* Penegakan Peraturan Daerah (Perda) & Perwali\n" +
+               "* Pengawalan & Pengamanan Aset / Peristiwa Daerah\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan damkar") || text.includes("layanan dinas damkar")) {
+        return "**Layanan Dinas Damkar dan Penyelamatan:**\n\n" +
+               "* Penanganan Kebakaran 24 Jam (Telepon / WA Darurat)\n" +
+               "* Operasi Penyelamatan Non-Kebakaran (Penyelamatan Cincin, Sarang Tawon, Ular, dll.)\n" +
+               "* Edukasi & Inspeksi Alat Pemadam Api Ringan (APAR)\n\n" +
+               "📍 **Lokasi:** Jl. Anggrek Kota Palopo";
+
+      } else if (text.includes("layanan dlhp") || text.includes("layanan dlh") || text.includes("layanan lingkungan hidup")) {
+        return "**Layanan DLHP Kota Palopo:**\n\n" +
+               "* Rekomendasi Dokumen Lingkungan (AMDAL / UKL-UPL / SPPL)\n" +
+               "* Pengaduan Pencemaran & Kerusakan Lingkungan Hidup\n" +
+               "* Layanan Pengangkutan & Pengelolaan Sampah Kota\n" +
+               "* Permohonan Bibit Penghijauan & RTH\n\n" +
+               "📍 **Lokasi:** Jl. Sulawesi No. 6 Palopo";
+
+      } else if (text.includes("layanan dispusarsip") || text.includes("layanan perpustakaan")) {
+        return "**Layanan DISPUSARSIP Kota Palopo:**\n\n" +
+               "* Layanan Perpustakaan Umum & Baca di Tempat\n" +
+               "* Pembuatan Kartu Anggota Perpustakaan\n" +
+               "* Layanan Penelusuran Arsip Daerah\n" +
+               "* Pembinaan & Penataan Kearsipan OPD / Kelurahan\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma Kota Palopo";
+
+      } else if (text.includes("layanan dishub") || text.includes("layanan perhubungan")) {
+        return "**Layanan DISHUB Kota Palopo:**\n\n" +
+               "* Pengujian Berkala Kendaraan Bermotor (Uji KIR)\n" +
+               "* Penerbitan Izin Trayek Angkutan Kota\n" +
+               "* Pengawasan & Pengelolaan Parkir Tepi Jalan Umum\n" +
+               "* Rekomendasi Analisis Dampak Lalu Lintas (Andalalin)\n\n" +
+               "📍 **Lokasi:** Jl. Veteran No. 12 Palopo";
+
+      } else if (text.includes("layanan dispertan") || text.includes("layanan pertanian") || text.includes("layanan perikanan")) {
+        return "**Layanan Dispertan Pangan dan Perikanan Kota Palopo:**\n\n" +
+               "* Fasilitasi Alokasi Pupuk Bersubsidi & Kartu Tani\n" +
+               "* Bantuan Bibit Unggul Pertanian & Tanaman Pangan\n" +
+               "* Pelayanan Kesehatan Hewan (Vaksinasi & Pemeriksaan Ternak)\n" +
+               "* Bantuan Sarana & Alat Tangkap Nelayan / Budidaya Ikan\n\n" +
+               "📍 **Lokasi:** Jl. Anggrek Kota Palopo";
+
+      // ==========================================
+      // LAYANAN KECAMATAN (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan kecamatan wara barat") || text.includes("layanan wara barat")) {
+        return "**Layanan Kantor Kecamatan Wara Barat:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan (Pengantar KK/KTP)\n" +
+               "* Legalisasi Surat Keterangan Kelurahan / SKTM\n" +
+               "* Pelayanan Surat Keterangan Tanah (SKT / Rekomendasi)\n" +
+               "* Koordinasi Trantibum & Kebencanaan Wilayah Barat\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Toraja";
+
+      } else if (text.includes("layanan kecamatan wara utara") || text.includes("layanan wara utara")) {
+        return "**Layanan Kantor Kecamatan Wara Utara:**\n\n" +
+               "* Pelayanan Administrasi Terpadu Kecamatan (PATEN)\n" +
+               "* Pengantar Pengurusan Dokumen Kependudukan\n" +
+               "* Legalisir Surat Keterangan Usaha (SKU) & SKTM\n" +
+               "* Pengaduan Ketentraman & Ketertiban Umum\n\n" +
+               "📍 **Lokasi:** Jl. Cendana Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan wara timur") || text.includes("layanan wara timur")) {
+        return "**Layanan Kantor Kecamatan Wara Timur:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan PATEN\n" +
+               "* Rekomendasi Surat Izin Usaha Skala Mikro\n" +
+               "* Pengantar Pengurusan SKTM & Bantuan Sosial\n" +
+               "* Legalisasi Dokumen Keterangan Wilayah Pesisir\n\n" +
+               "📍 **Lokasi:** Jl. Luwu Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan wara selatan") || text.includes("layanan wara selatan")) {
+        return "**Layanan Kantor Kecamatan Wara Selatan:**\n\n" +
+               "* Pelayanan Surat Pengantar Nikah & Pindah Domisili\n" +
+               "* Legalisir Surat Keterangan Kelurahan / Domisili\n" +
+               "* Rekomendasi Usaha & Fasilitasi Program Sosial\n" +
+               "* Pengaduan Trantibum Wilayah Selatan\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Makassar (Sampoddo)";
+
+      } else if (text.includes("layanan kecamatan mungkajang") || text.includes("layanan mungkajang")) {
+        return "**Layanan Kantor Kecamatan Mungkajang:**\n\n" +
+               "* Pelayanan PATEN Kecamatan & Administrasi Warga\n" +
+               "* Pengantar Kependudukan & Surat Keterangan Domisili\n" +
+               "* Fasilitasi Bantuan Sosial & Pembinaan Wisata Latuppa\n\n" +
+               "📍 **Lokasi:** Poros Latuppa Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan sendana") || text.includes("layanan sendana")) {
+        return "**Layanan Kantor Kecamatan Sendana:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Terpadu\n" +
+               "* Pengantar Izin Usaha Mikro & SKTM\n" +
+               "* Koordinasi Pertanian, Perkebunan, & Pembangunan Wilayah\n\n" +
+               "📍 **Lokasi:** Kecamatan Sendana Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan bara") || text.includes("layanan bara")) {
+        return "**Layanan Kantor Kecamatan Bara:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Wilayah Utara\n" +
+               "* Pengantar Surat Keterangan Tanah (SKT) & Rekomendasi Building\n" +
+               "* Legalisir Dokumen Keterangan Tidak Mampu / Bansos\n\n" +
+               "📍 **Lokasi:** Jl. To'Bulung Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan telluwanua") || text.includes("layanan telluwanua") || text.includes("layanan tellu wanua")) {
+        return "**Layanan Kantor Kecamatan Telluwanua:**\n\n" +
+               "* Pelayanan Administrasi Terpadu Kecamatan (PATEN)\n" +
+               "* Pengantar Kependudukan (KK, KTP, Surat Pindah)\n" +
+               "* Fasilitasi Sektor Pertanian & Perikanan Wilayah Perbatasan\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Walenrang";
+
+      } else if (text.includes("layanan kecamatan wara") || text.includes("layanan wara")) {
+        return "**Layanan Kantor Kecamatan Wara (Pusat Kota):**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Pusat Kota\n" +
+               "* Rekomendasi Izin Usaha Mikro & Surat Keterangan Domisili\n" +
+               "* Legalisir Surat Keterangan Tidak Mampu (SKTM)\n" +
+               "* Pengaduan Trantibum Lingkungan Pusat Kota\n\n" +
+               "📍 **Lokasi:** Jl. Jend. Sudirman Kota Palopo";
+
+      // ==========================================
+      // LAYANAN FASILITAS KESEHATAN / FASKES (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan rsud sawerigading") || text.includes("layanan rs sawerigading")) {
+        return "**Layanan RSUD Sawerigading Kota Palopo:**\n\n" +
+               "* Pelayanan Gawat Darurat (IGD) 24 Jam\n" +
+               "* Rawat Jalan Poliklinik Spesialis & Sub-Spesialis\n" +
+               "* Pelayanan Rawat Inap, ICU, ICCU, & NICU/PICU\n" +
+               "* Pemeriksaan Penunjang (Laboratorium, Radiologi, CT-Scan, Ultrasonografi)\n" +
+               "* Layanan Medical Check-Up (MCU) & Konsultasi Gizi\n" +
+               "* Layanan Rujukan BPJS Kesehatan / JKN & Umum\n\n" +
+               "📍 **Lokasi:** Jl. Rampoang, Kec. Bara, Kota Palopo";
+
+      } else if (text.includes("layanan rsud palemmai tandi") || text.includes("layanan rs palemmai")) {
+        return "**Layanan RSUD Palemmai Tandi Kota Palopo:**\n\n" +
+               "* Pelayanan IGD 24 Jam\n" +
+               "* Poliklinik Rawat Jalan (Spesialis Penyakit Dalam, Anak, Kebidanan, dll.)\n" +
+               "* Fasilitas Rawat Inap & Bedah Sentral\n" +
+               "* Laboratorium Klinik & Radiologi\n" +
+               "* Pelayanan Pasien BPJS Kesehatan & Umum\n\n" +
+               "📍 **Lokasi:** Jl. Samiun Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara utara")) {
+        return "**Layanan Puskesmas Wara Utara:**\n\n" +
+               "* Pemeriksaan Umum & Lansia\n" +
+               "* Pelayanan Kesehatan Ibu dan Anak (KIA) & KB\n" +
+               "* Imunisasi Dasar Lengkap & Pemantauan Stunting / Posyandu\n" +
+               "* Pengobatan Gigi dan Mulut\n" +
+               "* Laboratorium Sederhana & Konsultasi Gizi\n\n" +
+               "📍 **Lokasi:** Jl. Battara Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas mungkajang")) {
+        return "**Layanan Puskesmas Mungkajang:**\n\n" +
+               "* Pelayanan Pengobatan Umum & Kunjungan Rumah (Puskesmas Keliling)\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, & Imunisasi\n" +
+               "* Konsultasi Sanitasi Lingkungan & Gizi Balita\n" +
+               "* Laboratorium Dasar & Pelayanan BPJS Kesehatan\n\n" +
+               "📍 **Lokasi:** Mungkajang, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas sendana")) {
+        return "**Layanan Puskesmas Sendana:**\n\n" +
+               "* Pengobatan Umum & Pelayanan Darurat Pertama\n" +
+               "* Pemeriksaan Kehamilan, Nifas, & KB\n" +
+               "* Penimbangan Balita & Pemantauan Gizi Stunting\n" +
+               "* Pelayanan Kesehatan Remaja & Lansia\n\n" +
+               "📍 **Lokasi:** Sendana, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas pontap")) {
+        return "**Layanan Puskesmas Pontap:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & BPJS Kesehatan\n" +
+               "* Kesehatan Ibu & Anak (KIA), Bersalin, & KB\n" +
+               "* Imunisasi & Pencegahan Penyakit Menular Pesisir\n" +
+               "* Pemeriksaan Kesehatan Gigi & Laboratorium Dasar\n\n" +
+               "📍 **Lokasi:** Jl. Salekoe (Pontap), Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas benteng")) {
+        return "**Layanan Puskesmas Benteng:**\n\n" +
+               "* Pelayanan Poli Umum & Pengobatan Lansia\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, Imunisasi, & KB\n" +
+               "* Konsultasi Gizi & Pencegahan Stunting\n" +
+               "* Pelayanan Rekam Medis & BPJS Kesehatan\n\n" +
+               "📍 **Lokasi:** Benteng, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas padang lambe")) {
+        return "**Layanan Puskesmas Padang Lambe:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & Pengobatan Dasar\n" +
+               "* Pelayanan KIA, Imunisasi, & Kesehatan Keluarga\n" +
+               "* Pelayanan Kesehatan Masyarakat & Puskesmas Keliling\n\n" +
+               "📍 **Lokasi:** Padang Lambe, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas telluwanua")) {
+        return "**Layanan Puskesmas Telluwanua:**\n\n" +
+               "* Pengobatan Umum & Penanganan Darurat Pertama\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, Bersalin, & Imunisasi\n" +
+               "* Pemeriksaan Laboratorium Sederhana\n" +
+               "* Konsultasi Gizi & Kesehatan Lingkungan\n\n" +
+               "📍 **Lokasi:** Telluwanua, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara selatan")) {
+        return "**Layanan Puskesmas Wara Selatan:**\n\n" +
+               "* Pelayanan Poli Umum & Poli Gigi\n" +
+               "* Pelayanan KIA, KB, Imunisasi, & Pemeriksaan Hamil\n" +
+               "* Pelayanan Posyandu Balita & Cegah Stunting\n" +
+               "* Pelayanan Kesehatan Masyarakat & BPJS\n\n" +
+               "📍 **Lokasi:** Wara Selatan, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara")) {
+        return "**Layanan Puskesmas Wara:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & Pengobatan Lansia\n" +
+               "* Pelayanan Ibu Hamil, Menyusui, KB, & Imunisasi Balita\n" +
+               "* Pelayanan Kesehatan Gigi & Mulut\n" +
+               "* Laboratorium Sederhana & Konsultasi Gizi Balita / Stunting\n\n" +
+               "📍 **Lokasi:** Jl. Wara Kota Palopo";
+
+      } else if (text.includes("layanan labkesda") || text.includes("layanan laboratorium kesehatan")) {
+        return "**Layanan Labkesda (Laboratorium Kesehatan Daerah) Palopo:**\n\n" +
+               "* Pemeriksaan Laboratorium Klinik (Darah, Urine, Patologi Sederhana)\n" +
+               "* Pengujian Sampel Air Minum & Air Bersih\n" +
+               "* Pengujian Sampel Makanan & Minuman (Higiene Sanitasi)\n" +
+               "* Pemeriksaan Kesehatan Lingkungan & Usaha\n\n" +
+               "📍 **Lokasi:** Jl. Landak, Kota Palopo";
+
+            // ==========================================
+      // INFORMASI KHUSUS PROFIL & PEMERINTAHAN KOTA PALOPO
+      // ==========================================
+      } else if (text.includes("siapa wali kota") || text.includes("walikota palopo") || text.includes("siapa walikota") || text.includes("ibu naili") || text.includes("wali kota palopo")) {
+        return "🏛️ **Pimpinan Pemerintah Kota Palopo**\n\n" +
+               "* **Wali Kota Palopo:** Ibu NAILI\n" +
+               "* **Pusat Pemerintahan:** Kantor Wali Kota Palopo / Balai Kota (Jl. Andi Djemma)\n" +
+               "* **Portal Resmi:** palopokota.go.id\n\n" +
+               "Pemerintah Kota Palopo terus berfokus pada peningkatan layanan publik digital, pembangunan ekonomi daerah, penataan kota, serta kesejahteraan masyarakat Luwu Raya.";
+
+      } else if (text.includes("pariwisata") || text.includes("wisata palopo") || text.includes("tempat wisata") || text.includes("destinasi") || text.includes("liburan")) {
+        return "🌴 **Destinasi Wisata Unggulan Kota Palopo**\n\n" +
+               "* **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo (salah satu masjid tertua di Sulsel), & Museum Batara Guru.\n" +
+               "* **Wisata Alam & Pegunungan:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Air Terjun Latuppa, & Gua Kancing.\n" +
+               "* **Wisata Bahari & Ruang Terbuka:** Pantai Labombo, Pelabuhan Tanjung Ringgit, Lapangan Pancasila, & Lapangan Gaspa.\n" +
+               "* **Wisata Kuliner Khas:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco, & Paredde).";
+
+      } else if (text.includes("hari jadi") || text.includes("ulang tahun palopo") || text.includes("hut palopo") || text.includes("sejarah palopo")) {
+        return "🎉 **Hari Jadi & Sejarah Singkat Kota Palopo**\n\n" +
+               "* **Hari Jadi Kota:** Peringatan setiap tanggal **2 Juli**.\n" +
+               "* **Dasar Hukum Otonomi:** Pembentukan daerah otonom berdasarkan UU Nomor 11 Tahun 2002.\n" +
+               "* **Latar Belakang Sejarah:** Palopo merupakan pusat kedudukan dan sejarah dari Kedatuan Luwu, salah satu kerajaan tertua di Sulawesi Selatan.";
+
+      } else if (text.includes("kuliner palopo") || text.includes("makanan khas palopo") || text.includes("kapurung")) {
+        return "🍲 **Kuliner Khas Kota Palopo**\n\n" +
+               "* **Kapurung:** Makanan khas berbasis olahan sagu dengan kuah bumbu ikan/daging serta sayuran segar.\n" +
+               "* **Pacco:** Olahan ikan segar mentah yang dibumbui perasan jeruk nipis dan cabai khas Luwu.\n" +
+               "* **Dange:** Pangan lokal dari tepung sagu/ketan yang dibakar dengan cetakan tanah liat.\n" +
+               "* **Paredde:** Olahan sup ikan kuah kuning dengan rasa asam gurih yang segar.";
+
+      } else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("kota palopo")) {
+        return "🌆 **Profil Umum Kota Palopo**\n\n" +
+               "* **Status:** Kota Otonom di Provinsi Sulawesi Selatan.\n" +
+               "* **Wali Kota:** Ibu NAILI\n" +
+               "* **Peran Strategis:** Pusat perdagangan, jasa, pendidikan, dan layanan kesehatan di kawasan Luwu Raya.\n" +
+               "* **Pembagian Wilayah:** Terdiri dari 9 Kecamatan dan 48 Kelurahan.";
+        
+      // SAPAAN, SALAM, PERKENALAN
       } else if (text.includes("assalamualaikum") || text.includes("salam")) {
         return "Wa'alaikumsalam Warahmatullahi Wabarakatuh! 🌿\n\n" +
                "Selamat datang di Layanan **Palopota AI**. Saya siap membantu Anda seputar pengurusan dokumen, izin UMKM, atau informasi layanan publik Kota Palopo. Ada yang bisa saya bantu hari ini?";
@@ -804,9 +1212,12 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       } else if (text.includes("tabe") || text.includes("salama")) {
         return "Salama’ki tapada salama! Tabe', aga kaperluangta ri layanan **Palopota AI** hari ini?\n\n" +
                "Saya siap membantu pengurusan berkas kependudukan, perizinan, dan informasi layanan publik di Kota Palopo.";
-      } else if (text.includes("terima kasih") || text.includes("makasih")) {
+      } else if (text.includes("terima kasih") || text.includes("makasih") || text.includes("thanks") || text.includes("makkasora")) {
         return "Sama-sama! 😊 Senang sekali bisa membantu Anda.\n\n" +
                "Jika masih ada dokumen atau layanan publik Kota Palopo yang ingin ditanyakan, jangan ragu untuk menyapa saya kembali. Palopota AI selalu siap 24/7 untuk Anda!";
+      } else if (text.includes("siapa kamu") || text.includes("perkenalan") || text.includes("tentang aplikasi")) {
+        return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\n" +
+               "Saya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
       } else {
         return `Terima kasih atas pertanyaan Anda mengenai **"${escapeHtml(prompt)}"**.\n\n` +
                `Sebagai Asisten AI Kota Palopo, saya dapat membimbing Anda mengenai:\n` +
