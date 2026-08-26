@@ -124,6 +124,56 @@
     .chat-body p:last-child { margin-bottom: 0; }
     .chat-body ul, .chat-body ol { margin-left: 1.2rem; margin-bottom: 0.4rem; list-style-type: disc; }
     .chat-body strong { color: #0f3c5f; font-weight: 700; }
+  
+  /* Styling Mode Aksesibilitas (Teks Besar & High-Contrast) */
+body.high-contrast {
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-size: 115% !important; /* Memperbesar ukuran teks global */
+}
+
+/* Warna latar & border pada High Contrast */
+body.high-contrast .chat-container,
+body.high-contrast .menu-card,
+body.high-contrast #side-drawer > div,
+body.high-contrast #feature-modal > div,
+body.high-contrast #ikm-popup,
+body.high-contrast header,
+body.high-contrast .bg-white {
+  background-color: #121212 !important;
+  border-color: #facc15 !important; /* Warna kuning terang untuk border kontras */
+  color: #ffffff !important;
+}
+
+/* Penyesuaian teks & judul */
+body.high-contrast h1, 
+body.high-contrast h2, 
+body.high-contrast h3, 
+body.high-contrast h4,
+body.high-contrast strong,
+body.high-contrast .text-brand-navy,
+body.high-contrast .text-slate-800,
+body.high-contrast .text-slate-700,
+body.high-contrast .text-slate-600 {
+  color: #ffff00 !important; /* Teks judul/penting menjadi Kuning Terang */
+}
+
+/* Bubble chat user & AI */
+body.high-contrast #chat-stream .chat-body {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border: 1px solid #facc15 !important;
+  font-size: 0.95rem !important;
+}
+
+body.high-contrast #user-input {
+  color: #ffffff !important;
+}
+
+body.high-contrast #user-input::placeholder {
+  color: #a1a1aa !important;
+}
+  
   </style>
 </head>
 
@@ -274,14 +324,25 @@
         </button>
 
         <div class="flex items-center space-x-2">
-          <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
-            <i class="fa-solid fa-microphone"></i>
-          </button>
+  <!-- Tombol Mode Teks Besar & High-Contrast (BARU) -->
+  <button type="button" id="accessibility-btn" onclick="toggleAccessibilityMode()" class="text-slate-500 hover:text-brand-blue text-lg px-1.5 transition-colors" title="Mode Aksesibilitas (Teks Besar & Kontras Tinggi)">
+    <i class="fa-solid fa-universal-access"></i>
+  </button>
+          
+  <!-- Tombol Suara (Text-to-Speech) -->
+  <button type="button" id="tts-btn" onclick="toggleSpeech()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Dengarkan Suara Respon">
+    <i class="fa-solid fa-volume-high"></i>
+  </button>
 
-          <button type="submit" class="w-8 h-8 bg-brand-navy hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md shrink-0">
-            <i class="fa-solid fa-arrow-up text-xs"></i>
-          </button>
-        </div>
+  <!-- Tombol Mikrofon yang sudah ada -->
+  <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
+    <i class="fa-solid fa-microphone"></i>
+  </button>
+
+  <button type="submit" class="w-8 h-8 bg-brand-navy hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md shrink-0">
+    <i class="fa-solid fa-arrow-up text-xs"></i>
+  </button>
+</div>
       </div>
     </form>
   </footer>
@@ -421,6 +482,19 @@ const gisData = [
   appendUserMessage(text);
   input.value = '';
 
+      // Di dalam fungsi handleChatSubmit(e):
+const textLower = text.toLowerCase();
+
+// Pemicu Pop-up IKM saat pengguna mengucapkan Terima Kasih
+if (textLower.includes("terima kasih") || textLower.includes("makasih") || textLower.includes("makkasora") || textLower.includes("thanks")) {
+  setTimeout(() => {
+    showIkmPopup();
+  }, 1500); // Tampil 1.5 detik setelah pesan dikirim
+}
+
+// Reset timer 5 menit setiap kali pengguna mengirim pesan baru
+startIdleTimer();
+      
   // 1. CEK ATAU FILTER LAYANAN DARURAT (EMERGENCY DIRECT TRIGGER)
   const isEmergency = checkEmergencyTrigger(text);
   if (isEmergency) {
@@ -450,35 +524,41 @@ const gisData = [
     }
 
     function appendUserMessage(text) {
-      const stream = document.getElementById('chat-stream');
-      chatHistory.push({ role: "user", parts: [{ text: text }] });
+  const stream = document.getElementById('chat-stream');
+  chatHistory.push({ role: "user", parts: [{ text: text }] });
 
-      stream.insertAdjacentHTML('beforeend', `
-        <div class="flex justify-end my-2">
-          <div class="bg-brand-navy text-white text-xs p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm leading-relaxed">
-            ${escapeHtml(text)}
-          </div>
-        </div>
-      `);
-      stream.scrollTop = stream.scrollHeight;
-    }
+  stream.insertAdjacentHTML('beforeend', `
+    <div class="flex justify-end my-2">
+      <div class="bg-brand-navy text-white text-xs p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm leading-relaxed">
+        ${escapeHtml(text)}
+      </div>
+    </div>
+  `);
+  stream.scrollTop = stream.scrollHeight;
 
-    function appendAIMessage(markdownText) {
-      const stream = document.getElementById('chat-stream');
-      chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
+  // Simpan perubahan ke localStorage
+  saveChatToLocalStorage();
+}
 
-      const htmlContent = marked.parse(markdownText);
+function appendAIMessage(markdownText) {
+  const stream = document.getElementById('chat-stream');
+  chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
-      stream.insertAdjacentHTML('beforeend', `
-        <div class="flex items-start space-x-2.5 my-2">
-          <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
-          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2 chat-body">
-            ${htmlContent}
-          </div>
-        </div>
-      `);
-      stream.scrollTop = stream.scrollHeight;
-    }
+  const htmlContent = marked.parse(markdownText);
+
+  stream.insertAdjacentHTML('beforeend', `
+    <div class="flex items-start space-x-2.5 my-2">
+      <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+      <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2 chat-body">
+        ${htmlContent}
+      </div>
+    </div>
+  `);
+  stream.scrollTop = stream.scrollHeight;
+
+  // Simpan perubahan ke localStorage
+  saveChatToLocalStorage();
+}
 
     function showAITypingIndicator() {
       const stream = document.getElementById('chat-stream');
@@ -964,17 +1044,20 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
     }
 
     function clearChat() {
-      chatHistory = [];
-      const stream = document.getElementById('chat-stream');
-      stream.innerHTML = `
-        <div class="flex items-start space-x-2.5 my-1">
-          <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
-          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-slate-700 shadow-sm">
-            Riwayat percakapan telah dibersihkan. Silakan tanyakan informasi layanan publik lainnya!
-          </div>
-        </div>
-      `;
-    }
+  chatHistory = [];
+  localStorage.removeItem(CHAT_STORAGE_KEY); // Hapus data dari penyimpanan lokal
+  
+  const stream = document.getElementById('chat-stream');
+  stream.innerHTML = `
+    <div class="flex items-start space-x-2.5 my-1">
+      <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+      <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-slate-700 shadow-sm">
+        Riwayat percakapan telah dibersihkan. Silakan tanyakan informasi layanan publik lainnya!
+      </div>
+    </div>
+  `;
+}
+
 
     // Dynamic Modal Feature
     function openFeatureModal(type) {
@@ -1342,6 +1425,207 @@ function appendEmergencyMessage(htmlContent) {
   stream.scrollTop = stream.scrollHeight;
 }
 
+  // Variable State Suara
+let isSpeaking = false;
+let currentUtterance = null;
+
+function toggleSpeech() {
+  const ttsBtn = document.getElementById('tts-btn');
+
+  // Jika sedang membaca suara, maka berhentikan (Stop)
+  if (isSpeaking) {
+    window.speechSynthesis.cancel();
+    isSpeaking = false;
+    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+    return;
+  }
+
+  // Cek dukungan browser
+  if (!('speechSynthesis' in window)) {
+    alert("Browser Anda belum mendukung fitur pembacaan suara (Text-to-Speech).");
+    return;
+  }
+
+  // Ambil elemen balasan AI terakhir
+  const aiMessages = document.querySelectorAll('#chat-stream .chat-body');
+  if (aiMessages.length === 0) {
+    alert("Belum ada jawaban dari AI untuk dibacakan.");
+    return;
+  }
+
+  // Ambil teks pesan AI terakhir (bersihkan format tag HTML)
+  const lastAiMessage = aiMessages[aiMessages.length - 1];
+  const textToRead = lastAiMessage.innerText || lastAiMessage.textContent;
+
+  speakText(textToRead);
+}
+
+function speakText(text) {
+  const ttsBtn = document.getElementById('tts-btn');
+
+  // Hentikan suara yang sedang berjalan sebelumnya
+  window.speechSynthesis.cancel();
+
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = 'id-ID'; // Menggunakan Bahasa Indonesia
+  currentUtterance.rate = 1.0;     // Kecepatan normal
+  currentUtterance.pitch = 1.0;    // Nada suara normal
+
+  // Efek visual saat membaca
+  currentUtterance.onstart = function () {
+    isSpeaking = true;
+    ttsBtn.classList.add('text-emerald-600', 'animate-pulse');
+  };
+
+  currentUtterance.onend = function () {
+    isSpeaking = false;
+    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+  };
+
+  currentUtterance.onerror = function () {
+    isSpeaking = false;
+    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+  };
+
+  window.speechSynthesis.speak(currentUtterance);
+}
+
+  // Variable State IKM
+let idleTimer = null;
+let ikmShownThisSession = false;
+
+// 1. Inisialisasi Timer 5 Menit Idle (Tidak ada aktivitas)
+function startIdleTimer() {
+  if (ikmShownThisSession) return;
+  
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    showIkmPopup();
+  }, 5 * 60 * 1000); // 5 Menit (300.000 ms)
+}
+
+function showIkmPopup() {
+  if (ikmShownThisSession) return;
+  const popup = document.getElementById('ikm-popup');
+  if (popup) {
+    popup.classList.remove('hidden', 'translate-y-4');
+    ikmShownThisSession = true;
+  }
+}
+
+function closeIkmPopup() {
+  const popup = document.getElementById('ikm-popup');
+  if (popup) {
+    popup.classList.add('hidden');
+  }
+}
+
+// Jalankan timer saat halaman pertama kali dimuat
+window.addEventListener('load', () => {
+  startIdleTimer();
+});
+
+  // State Mode Aksesibilitas
+let isAccessibilityMode = localStorage.getItem('PALOPO_ACCESSIBILITY_MODE') === 'true';
+
+// Terapkan mode saat halaman selesai dimuat jika sebelumnya diaktifkan
+window.addEventListener('DOMContentLoaded', () => {
+  if (isAccessibilityMode) {
+    applyAccessibilityMode(true);
+  }
+});
+  
+  window.addEventListener('DOMContentLoaded', () => {
+  // Muat preferensi aksesibilitas jika ada
+  if (typeof isAccessibilityMode !== 'undefined' && isAccessibilityMode) {
+    applyAccessibilityMode(true);
+  }
+
+  // Muat riwayat percakapan terakhir yang tersimpan
+  loadChatFromLocalStorage();
+});
+
+
+function toggleAccessibilityMode() {
+  isAccessibilityMode = !isAccessibilityMode;
+  localStorage.setItem('PALOPO_ACCESSIBILITY_MODE', isAccessibilityMode);
+  applyAccessibilityMode(isAccessibilityMode);
+}
+
+function applyAccessibilityMode(enable) {
+  const btn = document.getElementById('accessibility-btn');
+  if (enable) {
+    document.body.classList.add('high-contrast');
+    if (btn) btn.classList.add('text-amber-400', 'scale-110');
+  } else {
+    document.body.classList.remove('high-contrast');
+    if (btn) btn.classList.remove('text-amber-400', 'scale-110');
+  }
+}
+
+  
+  // Nama key penyimpanan lokal
+const CHAT_STORAGE_KEY = 'PALOPO_CHAT_HISTORY_DATA';
+
+// Fungsi menyimpan riwayat percakapan & tampilan HTML ke localStorage
+function saveChatToLocalStorage() {
+  const stream = document.getElementById('chat-stream');
+  if (!stream) return;
+
+  const chatData = {
+    history: chatHistory,               // Array data pesan AI & User
+    htmlContent: stream.innerHTML       // Tampilan HTML bubble chat
+  };
+
+  localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatData));
+}
+
+// Fungsi memuat riwayat percakapan saat aplikasi dibuka kembali
+function loadChatFromLocalStorage() {
+  const savedData = localStorage.getItem(CHAT_STORAGE_KEY);
+  if (!savedData) return;
+
+  try {
+    const chatData = JSON.parse(savedData);
+
+    // Pulihkan array chatHistory & Tampilan HTML jika ada data
+    if (chatData.history && chatData.history.length > 0) {
+      chatHistory = chatData.history;
+      
+      const stream = document.getElementById('chat-stream');
+      if (stream && chatData.htmlContent) {
+        stream.innerHTML = chatData.htmlContent;
+        stream.scrollTop = stream.scrollHeight;
+      }
+    }
+  } catch (e) {
+    console.error("Gagal memuat riwayat percakapan lokal:", e);
+  }
+}
+
+  
   </script>
+  
+  <!-- POP-UP SURVEI IKM (KECIL & TIDAK MENGGANGGU) -->
+<div id="ikm-popup" class="fixed bottom-20 right-4 z-40 hidden max-w-xs bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 transition-all duration-300 transform translate-y-4">
+  <div class="flex justify-between items-start mb-2">
+    <div class="flex items-center space-x-2">
+      <span class="text-amber-500 text-base"><i class="fa-solid fa-star"></i></span>
+      <h4 class="font-bold text-brand-navy text-xs">Survei Kepuasan (IKM)</h4>
+    </div>
+    <button onclick="closeIkmPopup()" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <p class="text-[11px] text-slate-600 mb-3 leading-snug">
+    Bantu kami meningkatkan kualitas pelayanan publik Kota Palopo dengan mengisi survei singkat ini.
+  </p>
+  <a href="https://forms.gle/LINK_GOOGLE_FORM_ANDA" target="_blank" onclick="closeIkmPopup()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition shadow-sm">
+    <span>Isi Survei IKM</span>
+    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+  </a>
+</div>
+
+  
 </body>
 </html>
