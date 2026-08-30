@@ -277,6 +277,33 @@
           Mau dibantu apa hari ini?
         </p>
       </div>
+      
+      <!-- BANNER INFORMASI CAROUSEL (30 DETIK & CAN BE SWIPED) -->
+<div id="banner-container" class="relative w-full mb-4 overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 bg-slate-100 group select-none">
+  <!-- Container Gambar Slider -->
+  <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out w-full">
+    <!-- Halaman 1 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner1.png" alt="Banner Informasi 1" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0f3c5f/ffffff?text=Banner+Informasi+1';">
+    </div>
+    <!-- Halaman 2 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner2.png" alt="Banner Informasi 2" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0284c7/ffffff?text=Banner+Informasi+2';">
+    </div>
+    <!-- Halaman 3 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner3.png" alt="Banner Informasi 3" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/06b6d4/ffffff?text=Banner+Informasi+3';">
+    </div>
+  </div>
+
+  <!-- Indikator Dots -->
+  <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-1.5 z-10">
+    <button onclick="goToBanner(0)" class="banner-dot w-5 h-2 rounded-full bg-white transition-all duration-300 shadow-sm" aria-label="Slide 1"></button>
+    <button onclick="goToBanner(1)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 2"></button>
+    <button onclick="goToBanner(2)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 3"></button>
+  </div>
+</div>
+
 
       <!-- MENU GRID 4 KARTU -->
       <div class="grid grid-cols-2 gap-3">
@@ -1847,6 +1874,97 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
 
       resultContainer.innerHTML = resultsHTML;
     }
+  
+  // ==========================================
+// LOGIKA CAROUSEL BANNER INFORMASI (30 DETIK & SWIPE)
+// ==========================================
+let currentBanner = 0;
+const totalBanners = 3;
+let bannerInterval = null;
+
+function updateBanner() {
+  const slider = document.getElementById('banner-slider');
+  const dots = document.querySelectorAll('.banner-dot');
+  if (!slider) return;
+
+  // Geser posisi slider secara komparatif (0%, -100%, -200%)
+  slider.style.transform = `translateX(-${currentBanner * 100}%)`;
+
+  // Update Tampilan Indikator Dots
+  dots.forEach((dot, index) => {
+    if (index === currentBanner) {
+      dot.classList.remove('bg-white/50', 'w-2');
+      dot.classList.add('bg-white', 'w-5');
+    } else {
+      dot.classList.remove('bg-white', 'w-5');
+      dot.classList.add('bg-white/50', 'w-2');
+    }
+  });
+}
+
+function goToBanner(index) {
+  currentBanner = index;
+  updateBanner();
+  resetBannerTimer();
+}
+
+function nextBanner() {
+  currentBanner = (currentBanner + 1) % totalBanners;
+  updateBanner();
+}
+
+function resetBannerTimer() {
+  clearInterval(bannerInterval);
+  bannerInterval = setInterval(nextBanner, 30000); // 30000 ms = 30 detik
+}
+
+// Mulai timer otomatis 30 detik saat aplikasi dimuat
+bannerInterval = setInterval(nextBanner, 30000);
+
+// Dukungan Gesture Geser / Touch Swipe (Mobile & Desktop)
+let touchStartX = 0;
+let touchEndX = 0;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const bannerContainer = document.getElementById('banner-container');
+  if (bannerContainer) {
+    // Touch Events (HP/Tablet)
+    bannerContainer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    bannerContainer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleBannerSwipe();
+    }, { passive: true });
+
+    // Mouse Drag (Desktop)
+    bannerContainer.addEventListener('mousedown', (e) => {
+      touchStartX = e.clientX;
+    });
+
+    bannerContainer.addEventListener('mouseup', (e) => {
+      touchEndX = e.clientX;
+      handleBannerSwipe();
+    });
+  }
+});
+
+function handleBannerSwipe() {
+  const swipeThreshold = 30; // Jarak minimal geser (pixel)
+  if (touchStartX - touchEndX > swipeThreshold) {
+    // Swipe Ke Kiri -> Slide Selanjutnya
+    currentBanner = (currentBanner + 1) % totalBanners;
+    updateBanner();
+    resetBannerTimer();
+  } else if (touchEndX - touchStartX > swipeThreshold) {
+    // Swipe Ke Kanan -> Slide Sebelumnya
+    currentBanner = (currentBanner - 1 + totalBanners) % totalBanners;
+    updateBanner();
+    resetBannerTimer();
+  }
+}
+
   </script>
 </body>
 </html>
