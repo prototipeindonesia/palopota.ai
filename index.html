@@ -217,7 +217,7 @@
           </select>
         </div>
 
-        <nav class="space-y-1 text-sm font-semibold text-slate-700">
+                <nav class="space-y-1 text-sm font-semibold text-slate-700">
           <button onclick="showHomeScreen(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
             <i class="fa-solid fa-house text-brand-blue"></i><span>Beranda Utama</span>
           </button>
@@ -230,6 +230,10 @@
           <button onclick="openFeatureModal('GIS'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
             <i class="fa-solid fa-map-location-dot text-indigo-500"></i><span>Peta GIS Layanan</span>
           </button>
+
+          <!-- Garis Pisah 1 -->
+          <hr class="my-2 border-slate-200">
+
           <button onclick="openEligibilityModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
             <i class="fa-solid fa-hand-holding-hand text-rose-500"></i><span>Cek Hak Bantuan</span>
           </button>
@@ -245,16 +249,23 @@
           <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
             <i class="fa-solid fa-credit-card text-sky-600"></i><span>Pembayaran Pajak</span>
           </button>
+          <!-- Fitur Tambahan: Layanan Cepat Darurat -->
+          <button onclick="openFeatureModal('EMERGENCY'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-rose-50 flex items-center space-x-3 text-rose-600 font-bold">
+            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i><span>Layanan Cepat Darurat</span>
+          </button>
 
-<!-- Fitur Survei IKM -->
-<a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-  <i class="fa-solid fa-star text-amber-500"></i><span>Survei IKM</span>
-</a>
+          <!-- Garis Pisah 2 -->
+          <hr class="my-2 border-slate-200">
 
-<!-- Fitur Saran & Masukan -->
-<a href="https://bit.ly/saranpalopota" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-  <i class="fa-solid fa-comment-dots text-purple-500"></i><span>Saran & Masukan</span>
-</a>
+          <!-- Fitur Survei IKM -->
+          <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-star text-amber-500"></i><span>Survei IKM</span>
+          </a>
+
+          <!-- Fitur Saran & Masukan -->
+          <a href="https://bit.ly/saranpalopota" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-comment-dots text-purple-500"></i><span>Saran & Masukan</span>
+          </a>
         </nav>
       </div>
 
@@ -1345,6 +1356,206 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
               <p class="text-[11px] text-slate-600 mb-2">Penerbitan Akta Kematian Disdukcapil + Perubahan Status KK + Santunan Duka / Ahli Waris.</p>
               <button onclick="askAI('Syarat pengurusan Akta Kematian dan KK baru')" class="text-[10px] bg-slate-700 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
             </div>
+          </div>
+        `;
+            } else if (type === 'EMERGENCY') {
+        title.innerText = "Layanan Cepat Darurat Kota Palopo";
+        body.innerHTML = `
+          <div class="space-y-3">
+            <!-- 1. Panggilan Darurat Utama -->
+            <div class="p-3 bg-rose-100 border border-rose-300 rounded-2xl space-y-1">
+              <div class="font-extrabold text-rose-900 text-xs flex items-center justify-between">
+                <span class="flex items-center"><i class="fa-solid fa-phone-volume text-rose-600 mr-1.5 animate-pulse"></i> Panggilan Darurat Tunggal</span>
+                <span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">112</span>
+              </div>
+              <p class="text-[11px] text-slate-600">Layanan bebas pulsa siaga darurat Kota Palopo.</p>
+              <a href="tel:112" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow mt-1">
+                <i class="fa-solid fa-phone"></i><span>Telepon 112 (Bebas Pulsa)</span>
+              </a>
+            </div>
+
+            <!-- 2. Kepolisian (Polres Palopo) -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-shield-halved text-blue-600 mr-1.5"></i> Kepolisian (Polres Palopo)
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Opu Tosappaile No.9, Wara, Palopo</p>
+              <div class="flex gap-2 pt-1">
+                <a href="tel:110" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>Call 110</span>
+                </a>
+                <a href="https://wa.me/6281218902002" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Hotline WA</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 3. Pemadam Kebakaran -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-fire-extinguisher text-rose-600 mr-1.5"></i> Pemadam Kebakaran
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Pongsimpin No.1, Wara, Palopo</p>
+              <div class="flex gap-2 pt-1">
+                <a href="tel:047122501" class="flex-1 bg-brand-navy hover:bg-slate-800 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>(0471) 22501</span>
+                </a>
+                <a href="https://wa.me/6285341341565" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. BPBD Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-house-chimney-crack text-amber-600 mr-1.5"></i> BPBD Kota Palopo
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Opu Toparambean No. 02, Mungkajang</p>
+              <div class="grid grid-cols-2 gap-1.5 pt-1">
+                <a href="tel:04713310239" class="bg-brand-navy text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>(0471) 3310239</span>
+                </a>
+                <a href="tel:082194699391" class="bg-amber-600 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-mobile-screen"></i><span>0821-9469-9391</span>
+                </a>
+              </div>
+              <a href="https://wa.me/6281242362552" target="_blank" class="w-full bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1 mt-1">
+                <i class="fa-brands fa-whatsapp"></i><span>Pengaduan WA (0812-4236-2552)</span>
+              </a>
+            </div>
+
+            <!-- 5. PLN Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center justify-between">
+                <span class="flex items-center"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i> PLN Kota Palopo</span>
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Jend. Sudirman No.1, Wara, Palopo</p>
+              <a href="tel:0471123" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-phone"></i><span>(0471) 123</span>
+              </a>
+            </div>
+
+            <!-- 6. PDAM Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-droplet text-sky-500 mr-1.5"></i> PDAM Kota Palopo
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Pongsimpin, Kel. Murante, Mungkajang</p>
+              <div class="flex gap-2 pt-1">
+                <a href="https://wa.me/6282395362269" target="_blank" class="flex-1 bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Humas WA</span>
+                </a>
+                <a href="https://wa.me/6285145320000" target="_blank" class="flex-1 bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Pengaduan WA</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- DAFTAR RUMAH SAKIT & FASKES -->
+            <div class="pt-2 border-t border-slate-200">
+              <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2">Rumah Sakit & Fasilitas Kesehatan</span>
+              <div class="space-y-2">
+                
+                <!-- RSUD Sawerigading -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSUD Sawerigading</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Dr. Ratulangi No.1, Wara</p>
+                  </div>
+                  <a href="tel:04713312133" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Mega Buana -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Mega Buana</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Andi Djemma No.99, Wara</p>
+                  </div>
+                  <a href="tel:047122266" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Bintang Laut -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Bintang Laut</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.45, Wara</p>
+                  </div>
+                  <a href="tel:047121302" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RSU St. Madyang -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSU St. Madyang</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Andi Djemma No.45, Wara</p>
+                  </div>
+                  <a href="tel:047124227" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RSU Mujaisyah -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSU Mujaisyah Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.25, Wara</p>
+                  </div>
+                  <a href="tel:04713311727" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Angkatan Darat -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Angkatan Darat</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.17, Wara</p>
+                  </div>
+                  <a href="tel:047122331" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- INSTANSI LAINNYA -->
+            <div class="pt-2 border-t border-slate-200">
+              <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2">Instansi Penegak Hukum & Keamanan</span>
+              <div class="space-y-2">
+
+                <!-- Satpol PP -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">Satpol PP Kota Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.21, Wara</p>
+                  </div>
+                  <a href="tel:047122671" class="bg-brand-navy text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- BNN Kota Palopo -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">BNN Kota Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.23, Wara</p>
+                  </div>
+                  <a href="tel:04713310675" class="bg-brand-navy text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+
           </div>
         `;
       } else if (type === 'OPD') {
