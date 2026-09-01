@@ -762,10 +762,41 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
       }
     }
 
+    // Ganti dengan Web App URL dari Google Apps Script Anda
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzSqUXuTX-ArZbalkva_3zv8bGnsxihgXd-6Abt_GEyDSgGDo05c7htrVpDopxI2Tre/exec";
+
+let sheetKnowledgeBase = [];
+
+// Fungsi mengambil data dari Google Sheets secara background
+async function loadKnowledgeBaseFromSheet() {
+  try {
+    const response = await fetch(GOOGLE_SHEET_API_URL);
+    if (response.ok) {
+      sheetKnowledgeBase = await response.json();
+      console.log("Database Google Sheets berhasil dimuat:", sheetKnowledgeBase);
+    }
+  } catch (error) {
+    console.warn("Gagal terhubung ke Google Sheets, menggunakan data internal code saja.", error);
+  }
+}
+
+// Panggil saat aplikasi pertama kali dimuat
+window.addEventListener('DOMContentLoaded', () => {
+  loadKnowledgeBaseFromSheet();
+});
+    
     async function fallbackLLMEngine(prompt) {
       await new Promise(r => setTimeout(r, 1200));
       const text = prompt.toLowerCase();
 
+      if (sheetKnowledgeBase && sheetKnowledgeBase.length > 0) {
+    for (let item of sheetKnowledgeBase) {
+      if (item.keyword && text.includes(item.keyword)) {
+        return item.response; // Mengembalikan respon dari Spreadsheet jika cocok
+      }
+    }
+  }
+      
       // DOKUMEN KEPENDUDUKAN & KARTU
       if (text.includes("ktp") || text.includes("identitas")) {
         return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
