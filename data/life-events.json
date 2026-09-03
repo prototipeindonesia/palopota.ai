@@ -1,0 +1,83 @@
+[
+  {
+    "id": "birth",
+    "title": "Melahirkan & Kelahiran Bayi",
+    "icon": "fa-baby",
+    "color": "rose",
+    "description": "Pengurusan dokumen terpadu untuk bayi baru lahir.",
+    "steps": [
+      {
+        "opd": "Disdukcapil",
+        "action": "Penerbitan Akta Kelahiran & Kartu Identitas Anak (KIA)",
+        "docs": ["Surat Keterangan Lahir RS/Bidan", "KK Asli", "KTP Orang Tua", "Buku Nikah"]
+      },
+      {
+        "opd": "Dinas Kesehatan / Puskesmas",
+        "action": "Pencatatan Buku KIA & Imunisasi Dasar Lengkap",
+        "docs": ["Buku KIA / Kartu Berobat Puskesmas"]
+      },
+      {
+        "opd": "BPJS Kesehatan",
+        "action": "Pendaftaran Bayi Baru Lahir ke JKN/BPJS",
+        "docs": ["Surat Keterangan Lahir", "Kartu BPJS Ibu"]
+      }
+    ]
+  },
+  {
+    "id": "business",
+    "title": "Membuka Usaha / UMKM Baru",
+    "icon": "fa-store",
+    "color": "emerald",
+    "description": "Legalitas dan pendampingan izin usaha dari awal.",
+    "steps": [
+      {
+        "opd": "DPMPTSP",
+        "action": "Penerbitan NIB (Nomor Induk Berusaha) via OSS",
+        "docs": ["NIK KTP", "Email Aktif", "Nomor WhatsApp"]
+      },
+      {
+        "opd": "Dinas Kesehatan",
+        "action": "Pengurusan Sertifikat Penyuluhan Keamanan Pangan (PIRT) jika kuliner",
+        "docs": ["Fotokopi KTP", "Sampel Produk / Denah Dapur"]
+      },
+      {
+        "opd": "DPMPTSP / Kementerian Agama",
+        "action": "Fasilitasi Sertifikasi Halal Gratis (Self Declare)",
+        "docs": ["NIB", "Daftar Bahan Baku Produk"]
+      }
+    ]
+  },
+  {
+    "id": "marriage",
+    "title": "Pernikahan & Pembentukan KK Baru",
+    "icon": "fa-ring",
+    "color": "pink",
+    "description": "Update status kependudukan pasca pernikahan.",
+    "steps": [
+      {
+        "opd": "Disdukcapil",
+        "action": "Penerbitan Kartu Keluarga (KK) Baru Pasutri & Update KTP",
+        "docs": ["Buku Nikah / Kutipan Akta Perkawinan", "KK Asli Orang Tua kedua belah pihak"]
+      }
+    ]
+  },
+  {
+    "id": "move",
+    "title": "Pindah Domisili ke Palopo",
+    "icon": "fa-house-user",
+    "color": "sky",
+    "description": "Pengurusan integrasi warga baru di Kota Palopo.",
+    "steps": [
+      {
+        "opd": "Disdukcapil",
+        "action": "Penerbitan KK & KTP Palopo via Surat Pindah (SKPWNI)",
+        "docs": ["Surat Keterangan Pindah (SKPWNI) dari daerah asal"]
+      },
+      {
+        "opd": "BPJS Kesehatan",
+        "action": "Mutasi Faskes Tingkat Pertama (Puskesmas/Klinik di Palopo)",
+        "docs": ["KTP/KK Palopo Baru", "Kartu BPJS"]
+      }
+    ]
+  }
+]
