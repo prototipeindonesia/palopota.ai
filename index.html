@@ -715,15 +715,15 @@ function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", up
       <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2.5 chat-body">
         <div>${htmlContent}</div>
 
-        <!-- Source Badge -->
+        <!-- Source Badge Container -->
         <div class="border-t border-slate-100 pt-2 flex flex-col gap-1 text-[10px] text-slate-400">
           <div class="flex items-center space-x-1 text-slate-500 font-semibold">
             <i class="fa-solid fa-circle-check text-emerald-500"></i>
             <span>Sumber Resmi: ${sourceName} • Diperbarui: ${updatedDate}</span>
           </div>
 
-          <!-- AI Feedback Control -->
-          <div class="flex items-center justify-between pt-1">
+          <!-- AI Feedback Control (Diberi ID Khusus) -->
+          <div id="feedback-${msgId}" class="flex items-center justify-between pt-1">
             <span class="text-[10px] text-slate-400">Apakah jawaban ini membantu?</span>
             <div class="flex items-center space-x-2">
               <button onclick="handleFeedback('${msgId}', true)" class="hover:text-emerald-600 px-1"><i class="fa-regular fa-thumbs-up"></i> Ya</button>
@@ -739,11 +739,14 @@ function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", up
 }
 
 function handleFeedback(msgId, isPositive) {
-  const container = document.querySelector(`#${msgId} .border-t`);
+  // Target hanya bagian feedback control, bukan seluruh elemen border-t
+  const feedbackContainer = document.getElementById(`feedback-${msgId}`);
+  if (!feedbackContainer) return;
+
   if (isPositive) {
-    container.innerHTML = `<span class="text-[10px] text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Terima kasih atas umpan balik Anda!</span>`;
+    feedbackContainer.innerHTML = `<span class="text-[10px] text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Terima kasih atas umpan balik Anda!</span>`;
   } else {
-    container.innerHTML = `<span class="text-[10px] text-brand-blue font-bold"><i class="fa-solid fa-check"></i> Catatan umpan balik telah disimpan untuk evaluasi AI.</span>`;
+    feedbackContainer.innerHTML = `<span class="text-[10px] text-brand-blue font-bold"><i class="fa-solid fa-check"></i> Catatan umpan balik telah disimpan untuk evaluasi AI.</span>`;
   }
 }
 
