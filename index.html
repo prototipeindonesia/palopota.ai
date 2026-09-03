@@ -702,23 +702,50 @@
       saveChatToLocalStorage();
     }
 
-    function appendAIMessage(markdownText) {
-      const stream = document.getElementById('chat-stream');
-      chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
+function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", updatedDate = "Terbaru") {
+  const stream = document.getElementById('chat-stream');
+  chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
-      const htmlContent = marked.parse(markdownText);
+  const htmlContent = marked.parse(markdownText);
+  const msgId = 'msg-' + Date.now();
 
-      stream.insertAdjacentHTML('beforeend', `
-        <div class="flex items-start space-x-2.5 my-2">
-          <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
-          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2 chat-body">
-            ${htmlContent}
+  stream.insertAdjacentHTML('beforeend', `
+    <div class="flex items-start space-x-2.5 my-2" id="${msgId}">
+      <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+      <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2.5 chat-body">
+        <div>${htmlContent}</div>
+
+        <!-- Source Badge -->
+        <div class="border-t border-slate-100 pt-2 flex flex-col gap-1 text-[10px] text-slate-400">
+          <div class="flex items-center space-x-1 text-slate-500 font-semibold">
+            <i class="fa-solid fa-circle-check text-emerald-500"></i>
+            <span>Sumber Resmi: ${sourceName} • Diperbarui: ${updatedDate}</span>
+          </div>
+
+          <!-- AI Feedback Control -->
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[10px] text-slate-400">Apakah jawaban ini membantu?</span>
+            <div class="flex items-center space-x-2">
+              <button onclick="handleFeedback('${msgId}', true)" class="hover:text-emerald-600 px-1"><i class="fa-regular fa-thumbs-up"></i> Ya</button>
+              <button onclick="handleFeedback('${msgId}', false)" class="hover:text-rose-600 px-1"><i class="fa-regular fa-thumbs-down"></i> Tidak</button>
+            </div>
           </div>
         </div>
-      `);
-      stream.scrollTop = stream.scrollHeight;
-      saveChatToLocalStorage();
-    }
+      </div>
+    </div>
+  `);
+  stream.scrollTop = stream.scrollHeight;
+  saveChatToLocalStorage();
+}
+
+function handleFeedback(msgId, isPositive) {
+  const container = document.querySelector(`#${msgId} .border-t`);
+  if (isPositive) {
+    container.innerHTML = `<span class="text-[10px] text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Terima kasih atas umpan balik Anda!</span>`;
+  } else {
+    container.innerHTML = `<span class="text-[10px] text-brand-blue font-bold"><i class="fa-solid fa-check"></i> Catatan umpan balik telah disimpan untuk evaluasi AI.</span>`;
+  }
+}
 
     function showAITypingIndicator() {
       const stream = document.getElementById('chat-stream');
@@ -2024,10 +2051,10 @@ window.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         eligibilityHTML = `
-          <div class="p-3.5 border rounded-2xl bg-emerald-50 border-emerald-200 text-emerald-900 space-y-2 text-xs">
-            <strong class="font-extrabold block text-sm">🟢 Berpotensi Layak Menerima Bantuan</strong>
-            <p class="text-[11px] leading-relaxed">Berdasarkan profil Anda, keluarga Anda berpotensi mendapatkan bantuan sosial/beasiswa daerah Palopo.</p>
-          </div>
+        <div class="p-3.5 border rounded-2xl bg-emerald-50 border-emerald-200 text-emerald-900 space-y-2 text-xs">
+          <strong class="font-extrabold block text-sm">🟢 Hasil Simulasi: Berpotensi Layak Syarat</strong>
+          <p class="text-[11px] leading-relaxed">Berdasarkan data kriteria awal, keluarga Anda memenuhi indikator awal pengusulan Bansos/Beasiswa. Keputusan resmi tetap melalui penetapan Dinas Sosial/Muskel.</p>
+        </div>
         `;
       }
 
@@ -2079,17 +2106,13 @@ window.addEventListener('DOMContentLoaded', () => {
       let description = "";
 
       if (heightDiff < -5) {
-        statusTitle = "⚠️ Indikasi Risiko Stunting (Sangat Pendek / Pendek)";
+        statusTitle = "⚠️ Skrining Awal: Perlu Perhatian Tumbuh Tumbuh";
         statusClass = "bg-rose-50 border-rose-200 text-rose-900";
-        description = "Tinggi badan balita berada di bawah rata-rata standar pertumbuhan seusianya. Disarankan untuk segera melakukan konsultasi ke Posyandu atau Puskesmas terdekat.";
-      } else if (heightDiff >= -5 && heightDiff <= 5) {
-        statusTitle = "🟢 Pertumbuhan Normal (Gizi Baik)";
-        statusClass = "bg-emerald-50 border-emerald-200 text-emerald-900";
-        description = "Tinggi dan berat badan balita dalam rentang standar yang sesuai dengan usianya. Pertahankan pola makan bergizi seimbang dan vitamin.";
+        description = "Hasil indikasi awal menunjukkan tinggi badan balita di bawah rata-rata standar pertumbuhannya. *Catatan: Ini adalah skrining awal — bukan diagnosis medis.*";
       } else {
-        statusTitle = "🔵 Pertumbuhan Optimal (Tinggi)";
-        statusClass = "bg-sky-50 border-sky-200 text-sky-900";
-        description = "Tinggi badan balita di atas rata-rata standar pertumbuhannya. Pastikan asupan nutrisi dan pola asuh tetap terjaga.";
+        statusTitle = "🟢 Skrining Awal: Pertumbuhan Sesuai Standar";
+        statusClass = "bg-emerald-50 border-emerald-200 text-emerald-900";
+        description = "Tinggi badan balita berada dalam rentang pertumbuhan yang baik sesuai kelompok usianya.";
       }
 
       let resultsHTML = `
