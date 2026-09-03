@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ktp-el",
+    "keywords": ["ktp", "e-ktp", "ktp-el", "rekam ktp", "ktp rusak", "ktp hilang"],
+    "title": "Pengurusan KTP-el (Cetak / Rusak / Hilang)",
+    "opd": "Disdukcapil Kota Palopo",
+    "cost": "Gratis (Rp 0)",
+    "duration": "1 Hari Kerja (Jika berkas lengkap)",
+    "location": "Jl. Landak No. 1, Palopo",
+    "mapsUrl": "https://maps.google.com/?q=Disdukcapil+Palopo",
+    "requirements": [
+      "Fotokopi Kartu Keluarga (KK)",
+      "KTP Asli yang rusak (khusus penggantian rusak)",
+      "Surat Keterangan Hilang dari Kepolisian (khusus KTP hilang)"
+    ],
+    "actionText": "Tanyakan Lokasi / Alur Disdukcapil"
+  },
+  {
+    "id": "nib-umkm",
+    "keywords": ["nib", "umkm", "izin usaha", "oss", "daftar umkm", "pirt"],
+    "title": "Penerbitan NIB (Nomor Induk Berusaha) UMKM",
+    "opd": "DPMPTSP Kota Palopo",
+    "cost": "Gratis (Rp 0)",
+    "duration": "10 - 15 Menit (Instan via OSS)",
+    "location": "Jl. Durian No. 5, Palopo",
+    "mapsUrl": "https://maps.google.com/?q=DPMPTSP+Palopo",
+    "requirements": [
+      "NIK KTP Pemilik Usaha",
+      "Nomor WhatsApp Aktif",
+      "Alamat Email Aktif"
+    ],
+    "actionText": "Pandu Pendaftaran OSS"
+  },
+  {
+    "id": "bansos-dtks",
+    "keywords": ["bansos", "pkh", "dtks", "bpnt", "sktm", "bantuan sosial"],
+    "title": "Pengusulan Data DTKS & Bantuan Sosial (PKH/BPNT)",
+    "opd": "Dinas Sosial Kota Palopo",
+    "cost": "Gratis (Rp 0)",
+    "duration": "Sesuai Jadwal Muskel & Verifikasi Lapangan",
+    "location": "Jl. Andi Djemma No. 10, Palopo",
+    "mapsUrl": "https://maps.google.com/?q=Dinsos+Palopo",
+    "requirements": [
+      "Fotokopi KTP & KK Kota Palopo",
+      "Surat Pengantar dari Kelurahan",
+      "Dokumentasi kondisi rumah/ekonomi"
+    ],
+    "actionText": "Cek Simulasi Bansos Saya"
+  }
+]
