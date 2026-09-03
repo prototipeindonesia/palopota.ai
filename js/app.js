@@ -228,21 +228,8 @@ function openFeatureModal(type) {
   modal.classList.remove('hidden');
 
   if (type === 'LIFE_EVENT') {
-    title.innerText = "Life Event Engine";
-    body.innerHTML = `
-      <div class="space-y-2">
-        <div class="p-3 border rounded-2xl bg-rose-50/70 border-rose-200">
-          <div class="font-bold text-rose-900 text-xs mb-1">👶 Melahirkan & Kelahiran Bayi</div>
-          <p class="text-[11px] text-slate-600 mb-2">Panduan Akta Kelahiran + BPJS Bayi + Posyandu Dinkes.</p>
-          <button onclick="askAI('Syarat pengurusan akta kelahiran dan BPJS bayi baru lahir')" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold">Panduan Langkah</button>
-        </div>
-        <div class="p-3 border rounded-2xl bg-emerald-50/70 border-emerald-200">
-          <div class="font-bold text-emerald-900 text-xs mb-1">🏪 Membuka Usaha Baru</div>
-          <p class="text-[11px] text-slate-600 mb-2">Panduan NIB DPMPTSP + Sertifikat Halal + PIRT.</p>
-          <button onclick="askAI('Bagaimana cara buat NIB UMKM dan Sertifikat Halal?')" class="text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold">Panduan Langkah</button>
-        </div>
-      </div>
-    `;
+  renderLifeEventModal();
+    
   } else if (type === 'EMERGENCY') {
     title.innerText = "Layanan Cepat Darurat (Direct Action)";
     body.innerHTML = `
