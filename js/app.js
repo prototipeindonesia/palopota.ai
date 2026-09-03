@@ -65,19 +65,22 @@ async function handleChatSubmit(e) {
       aiResponseText = await fallbackLLMEngine(text);
     }
 
-    // Pengecekan AI Service Navigator (Safe Check)
+    // STEP 4.3: Cek pencocokan AI Service Navigator secara terpisah
     let matchedService = null;
+    let actionCardHtml = "";
+
     if (typeof findMatchingService === 'function') {
       matchedService = findMatchingService(text);
       if (matchedService && typeof renderServiceActionCard === 'function') {
-        aiResponseText += "\n\n" + renderServiceActionCard(matchedService);
+        actionCardHtml = renderServiceActionCard(matchedService);
       }
     }
 
     removeAITypingIndicator();
 
     const sourceOpd = matchedService ? matchedService.opd : "Pemkot Palopo";
-    appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026");
+    // Kirimkan actionCardHtml secara terpisah
+    appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026", actionCardHtml);
   } catch (err) {
     removeAITypingIndicator();
     appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
@@ -104,19 +107,26 @@ function appendUserMessage(text) {
   saveChatToLocalStorage();
 }
 
-function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", updatedDate = "Terbaru") {
+function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", updatedDate = "Terbaru", actionCardHtml = "") {
   const stream = document.getElementById('chat-stream');
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
-  const htmlContent = typeof marked !== 'undefined' ? marked.parse(markdownText) : markdownText;
+  // Parse markdown khusus untuk teks AI, tanpa mempengaruhi elemen HTML Action Card
+  const parsedMarkdown = typeof marked !== 'undefined' ? marked.parse(markdownText) : markdownText;
   const msgId = 'msg-' + Date.now();
 
   stream.insertAdjacentHTML('beforeend', `
     <div class="flex items-start space-x-2.5 my-2" id="${msgId}">
       <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
       <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2.5 chat-body">
-        <div>${htmlContent}</div>
+        
+        <!-- Teks Jawaban AI (Markdown) -->
+        <div>${parsedMarkdown}</div>
 
+        <!-- Direct Action Card (HTML Murni) -->
+        ${actionCardHtml}
+
+        <!-- Source Badge Container -->
         <div class="border-t border-slate-100 pt-2 flex flex-col gap-1 text-[10px] text-slate-400">
           <div class="flex items-center space-x-1 text-slate-500 font-semibold">
             <i class="fa-solid fa-circle-check text-emerald-500"></i>
@@ -131,6 +141,7 @@ function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", up
             </div>
           </div>
         </div>
+
       </div>
     </div>
   `);
