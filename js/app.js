@@ -17,19 +17,22 @@ async function loadAppData() {
 }
 
 function toggleSideMenu() {
-  document.getElementById('side-drawer').classList.toggle('hidden');
+  const drawer = document.getElementById('side-drawer');
+  if (drawer) drawer.classList.toggle('hidden');
 }
 
 function showHomeScreen() {
   document.getElementById('home-screen').classList.remove('hidden');
-  document.getElementById('chat-screen').classList.add('hidden');
-  document.getElementById('chat-screen').classList.remove('flex');
+  const chatScreen = document.getElementById('chat-screen');
+  chatScreen.classList.add('hidden');
+  chatScreen.classList.remove('flex');
 }
 
 function showChatScreen() {
   document.getElementById('home-screen').classList.add('hidden');
-  document.getElementById('chat-screen').classList.remove('hidden');
-  document.getElementById('chat-screen').classList.add('flex');
+  const chatScreen = document.getElementById('chat-screen');
+  chatScreen.classList.remove('hidden');
+  chatScreen.classList.add('flex');
 }
 
 async function handleChatSubmit(e) {
@@ -55,27 +58,29 @@ async function handleChatSubmit(e) {
   showAITypingIndicator();
 
   try {
-  let aiResponseText = "";
-  if (customApiKey) {
-    aiResponseText = await callGeminiApi(text);
-  } else {
-    aiResponseText = await fallbackLLMEngine(text);
-  }
+    let aiResponseText = "";
+    if (customApiKey) {
+      aiResponseText = await callGeminiApi(text);
+    } else {
+      aiResponseText = await fallbackLLMEngine(text);
+    }
 
-  // STEP 4.3: Cek apakah pertanyaan cocok dengan katalog AI Service Navigator
-  const matchedService = findMatchingService(text);
-  if (matchedService) {
-    aiResponseText += "\n\n" + renderServiceActionCard(matchedService);
-  }
+    // Pengecekan AI Service Navigator (Safe Check)
+    let matchedService = null;
+    if (typeof findMatchingService === 'function') {
+      matchedService = findMatchingService(text);
+      if (matchedService && typeof renderServiceActionCard === 'function') {
+        aiResponseText += "\n\n" + renderServiceActionCard(matchedService);
+      }
+    }
 
-  removeAITypingIndicator();
+    removeAITypingIndicator();
 
-  // Tentukan nama OPD sumber secara dinamis jika ada pencocokan
-  const sourceOpd = matchedService ? matchedService.opd : "Pemkot Palopo";
-  appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026");
-} catch (err) {
-  removeAITypingIndicator();
-  appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
+    const sourceOpd = matchedService ? matchedService.opd : "Pemkot Palopo";
+    appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026");
+  } catch (err) {
+    removeAITypingIndicator();
+    appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
   }
 }
 
@@ -103,7 +108,7 @@ function appendAIMessage(markdownText, sourceName = "Pemerintah Kota Palopo", up
   const stream = document.getElementById('chat-stream');
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
-  const htmlContent = marked.parse(markdownText);
+  const htmlContent = typeof marked !== 'undefined' ? marked.parse(markdownText) : markdownText;
   const msgId = 'msg-' + Date.now();
 
   stream.insertAdjacentHTML('beforeend', `
@@ -235,29 +240,35 @@ function openFeatureModal(type) {
   const modal = document.getElementById('feature-modal');
   const title = document.getElementById('modal-title');
   const body = document.getElementById('modal-body');
-  modal.classList.remove('hidden');
+  if (modal) modal.classList.remove('hidden');
 
   if (type === 'LIFE_EVENT') {
-  renderLifeEventModal();
-    
+    if (typeof renderLifeEventModal === 'function') {
+      renderLifeEventModal();
+    } else {
+      if (title) title.innerText = "Life Event Engine";
+      if (body) body.innerHTML = `<p class="text-xs text-slate-500">Modul Life Event sedang dimuat...</p>`;
+    }
   } else if (type === 'EMERGENCY') {
-    title.innerText = "Layanan Cepat Darurat (Direct Action)";
-    body.innerHTML = `
-      <div class="space-y-3">
-        <div class="p-3 bg-rose-100 border border-rose-300 rounded-2xl space-y-1">
-          <div class="font-extrabold text-rose-900 text-xs flex items-center justify-between">
-            <span><i class="fa-solid fa-phone-volume text-rose-600 mr-1.5 animate-pulse"></i> Panggilan Siaga</span>
-            <span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">112</span>
+    if (title) title.innerText = "Layanan Cepat Darurat (Direct Action)";
+    if (body) {
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div class="p-3 bg-rose-100 border border-rose-300 rounded-2xl space-y-1">
+            <div class="font-extrabold text-rose-900 text-xs flex items-center justify-between">
+              <span><i class="fa-solid fa-phone-volume text-rose-600 mr-1.5 animate-pulse"></i> Panggilan Siaga</span>
+              <span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">112</span>
+            </div>
+            <p class="text-[11px] text-slate-600">Layanan bebas pulsa darurat Kota Palopo.</p>
+            <a href="tel:112" class="w-full bg-rose-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow mt-1">
+              <i class="fa-solid fa-phone"></i><span>Telepon 112 Langsung</span>
+            </a>
           </div>
-          <p class="text-[11px] text-slate-600">Layanan bebas pulsa darurat Kota Palopo.</p>
-          <a href="tel:112" class="w-full bg-rose-600 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow mt-1">
-            <i class="fa-solid fa-phone"></i><span>Telepon 112 Langsung</span>
-          </a>
         </div>
-      </div>
-    `;
+      `;
+    }
   } else if (type === 'OPD') {
-    title.innerText = "Layanan Pemerintah / OPD";
+    if (title) title.innerText = "Layanan Pemerintah / OPD";
     let html = '<div class="space-y-2.5">';
     opdData.forEach(opd => {
       html += `
@@ -268,9 +279,9 @@ function openFeatureModal(type) {
       `;
     });
     html += '</div>';
-    body.innerHTML = html;
+    if (body) body.innerHTML = html;
   } else if (type === 'GIS') {
-    title.innerText = "Peta & Lokasi Layanan";
+    if (title) title.innerText = "Peta & Lokasi Layanan";
     let html = '<div class="space-y-2">';
     gisData.forEach(item => {
       html += `
@@ -284,11 +295,15 @@ function openFeatureModal(type) {
       `;
     });
     html += '</div>';
-    body.innerHTML = html;
+    if (body) body.innerHTML = html;
   }
 }
 
-function closeFeatureModal() { document.getElementById('feature-modal').classList.add('hidden'); }
+function closeFeatureModal() {
+  const modal = document.getElementById('feature-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
 function askAI(p) { closeFeatureModal(); sendQuickPrompt(p); }
 
 function checkEmergencyTrigger(inputText) {
@@ -334,7 +349,10 @@ function openEligibilityModal() {
   document.getElementById('quiz-step-container').classList.remove('hidden');
   document.getElementById('quiz-result-container').classList.add('hidden');
 }
-function closeEligibilityModal() { document.getElementById('eligibility-modal').classList.add('hidden'); }
+
+function closeEligibilityModal() {
+  document.getElementById('eligibility-modal').classList.add('hidden');
+}
 
 function calculateEligibility() {
   const kk = document.getElementById('q-kk').value;
@@ -372,7 +390,10 @@ function openStuntingModal() {
   document.getElementById('stunting-form-container').classList.remove('hidden');
   document.getElementById('stunting-result-container').classList.add('hidden');
 }
-function closeStuntingModal() { document.getElementById('stunting-modal').classList.add('hidden'); }
+
+function closeStuntingModal() {
+  document.getElementById('stunting-modal').classList.add('hidden');
+}
 
 function calculateStunting() {
   const age = parseFloat(document.getElementById('st-age').value);
@@ -445,21 +466,21 @@ function changeLanguage() {
   const title = document.getElementById('main-title');
   const sub = document.getElementById('sub-welcome');
   if (lang === 'tae') {
-    title.innerText = "Aga kaperluangta ri layanan hari ini?";
-    sub.innerText = "Pauangki kaperluangta, PALOPOTA siap membantu.";
+    if (title) title.innerText = "Aga kaperluangta ri layanan hari ini?";
+    if (sub) sub.innerText = "Pauangki kaperluangta, PALOPOTA siap membantu.";
   } else if (lang === 'en') {
-    title.innerText = "What would you like to resolve today?";
-    sub.innerText = "Tell us your needs. PALOPOTA helps you find the right public service.";
+    if (title) title.innerText = "What would you like to resolve today?";
+    if (sub) sub.innerText = "Tell us your needs. PALOPOTA helps you find the right public service.";
   } else {
-    title.innerText = "Apa yang ingin Anda selesaikan hari ini?";
-    sub.innerText = "Ceritakan kebutuhan Anda. PALOPOTA membantu menemukan layanan yang tepat.";
+    if (title) title.innerText = "Apa yang ingin Anda selesaikan hari ini?";
+    if (sub) sub.innerText = "Ceritakan kebutuhan Anda. PALOPOTA membantu menemukan layanan yang tepat.";
   }
 }
 
 function escapeHtml(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function startIdleTimer() { setTimeout(showIkmPopup, 5 * 60 * 1000); }
-function showIkmPopup() { document.getElementById('ikm-popup').classList.remove('hidden'); }
-function closeIkmPopup() { document.getElementById('ikm-popup').classList.add('hidden'); }
+function showIkmPopup() { const el = document.getElementById('ikm-popup'); if (el) el.classList.remove('hidden'); }
+function closeIkmPopup() { const el = document.getElementById('ikm-popup'); if (el) el.classList.add('hidden'); }
 function saveChatToLocalStorage() { localStorage.setItem('PALOPO_CHAT_HISTORY_DATA', JSON.stringify(chatHistory)); }
 
 // Banner Carousel Engine
