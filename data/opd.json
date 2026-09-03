@@ -1,0 +1,11 @@
+[
+  { "name": "Disdukcapil", "services": ["KTP-el", "Kartu Keluarga", "Akta Kelahiran", "Akta Kematian", "KIA", "Surat Pindah (SKPWNI)", "IKD"], "address": "Jl. Landak No. 1 Palopo" },
+  { "name": "DPMPTSP", "services": ["NIB UMKM", "PBG (ex-IMB)", "Sertifikat Halal", "SIUP", "Izin Investasi"], "address": "Jl. Durian No. 5 Palopo" },
+  { "name": "Dinas Sosial", "services": ["Bansos PKH", "BPNT", "Pengusulan DTKS", "Rekomendasi SKTM", "Bantuan Sembako"], "address": "Jl. Andi Djemma No. 10 Palopo" },
+  { "name": "Dinas Pendidikan", "services": ["Beasiswa Palopo Pintar", "BOS", "Pendaftaran PPDB", "Bantuan Siswa Miskin"], "address": "Jl. Ahmad Yani No. 25 Palopo" },
+  { "name": "Dinas Kesehatan", "services": ["Puskesmas", "Pelayanan BPJS / JKN", "Vaksinasi", "Posyandu", "RSUD Sawerigading"], "address": "Jl. Landak No. 15 Palopo" },
+  { "name": "Dinas PUPR", "services": ["Rekomendasi PBG", "Infrastruktur Jalan", "Drainase", "Konsultasi Tata Ruang"], "address": "Jl. Pulau Jawa No. 8 Palopo" },
+  { "name": "Dishub", "services": ["Pengujian KIR", "Izin Trayek Angkot", "Pengelolaan Parkir", "Terminal"], "address": "Jl. Veteran No. 12 Palopo" },
+  { "name": "BAPPERIDA", "services": ["Izin Penelitian", "Data Perencanaan", "Data Inovasi (Local Sago Management)", "Pendaftaran Inovasi"], "address": "Jl. Andi Baso Rahim No. 2 Palopo" },
+  { "name": "DLH", "services": ["Izin Lingkungan", "Pengaduan Sampah", "Kebersihan Kota", "Penghijauan"], "address": "Jl. Sulawesi No. 6 Palopo" }
+]
