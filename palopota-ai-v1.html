@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PALOPOTA AI — Layanan Publik Berbasis AI Kota Palopo</title>
+
+<!-- Panggil file manifest di sini -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="iconpalopota192.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Marked JS untuk Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              navy: '#0f3c5f',
+              blue: '#0284c7',
+              cyan: '#06b6d4',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Fix untuk Layout Mobile Browser (Address Bar & Keyboard dynamic height) */
+    html, body {
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%, #e8fadf 100%);
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    .menu-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 22px;
+      transition: all 0.2s ease-in-out;
+    }
+    .menu-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .chat-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(203, 213, 225, 0.8);
+      border-radius: 24px;
+    }
+
+    /* Scrollbar Styling */
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 99px; }
+
+    /* Animation Loading Pulse for AI Typing */
+    .dot-flashing {
+      position: relative;
+      width: 6px;
+      height: 6px;
+      border-radius: 5px;
+      background-color: #0284c7;
+      color: #0284c7;
+      animation: dot-flashing 1s infinite linear alternate;
+      animation-delay: 0.5s;
+    }
+    .dot-flashing::before, .dot-flashing::after {
+      content: "";
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 5px;
+      background-color: #0284c7;
+      color: #0284c7;
+    }
+    .dot-flashing::before {
+      left: -10px;
+      animation: dot-flashing 1s infinite alternate;
+      animation-delay: 0s;
+    }
+    .dot-flashing::after {
+      left: 10px;
+      animation: dot-flashing 1s infinite alternate;
+      animation-delay: 1s;
+    }
+    @keyframes dot-flashing {
+      0% { background-color: #0284c7; }
+      50%, 100% { background-color: rgba(2, 132, 199, 0.2); }
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-container img {
+      height: 30px;
+      object-fit: contain;
+    }
+
+    /* Markdown Styling in Chat */
+    .chat-body p { margin-bottom: 0.4rem; }
+    .chat-body p:last-child { margin-bottom: 0; }
+    .chat-body ul, .chat-body ol { margin-left: 1.2rem; margin-bottom: 0.4rem; list-style-type: disc; }
+    .chat-body strong { color: #0f3c5f; font-weight: 700; }
+  
+    /* Styling Mode Aksesibilitas (Teks Besar & High-Contrast) */
+    body.high-contrast {
+      background: #000000 !important;
+      color: #ffffff !important;
+      font-size: 115% !important;
+    }
+
+    body.high-contrast .chat-container,
+    body.high-contrast .menu-card,
+    body.high-contrast #side-drawer > div,
+    body.high-contrast #feature-modal > div,
+    body.high-contrast #eligibility-modal > div,
+    body.high-contrast #stunting-modal > div,
+    body.high-contrast #ikm-popup,
+    body.high-contrast header,
+    body.high-contrast .bg-white {
+      background-color: #121212 !important;
+      border-color: #facc15 !important;
+      color: #ffffff !important;
+    }
+
+    body.high-contrast h1, 
+    body.high-contrast h2, 
+    body.high-contrast h3, 
+    body.high-contrast h4,
+    body.high-contrast strong,
+    body.high-contrast .text-brand-navy,
+    body.high-contrast .text-slate-800,
+    body.high-contrast .text-slate-700,
+    body.high-contrast .text-slate-600 {
+      color: #ffff00 !important;
+    }
+
+    body.high-contrast #chat-stream .chat-body {
+      background-color: #1e1e1e !important;
+      color: #ffffff !important;
+      border: 1px solid #facc15 !important;
+      font-size: 0.95rem !important;
+    }
+
+    body.high-contrast #user-input {
+      color: #ffffff !important;
+    }
+
+    body.high-contrast #user-input::placeholder {
+      color: #a1a1aa !important;
+    }
+  </style>
+</head>
+
+<body class="text-slate-800 antialiased flex flex-col h-[100dvh] max-w-md mx-auto relative p-3 md:p-5">
+
+  <!-- HEADER -->
+  <header class="flex justify-between items-center py-2 w-full shrink-0 z-20 border-b border-slate-200/60 pb-2.5">
+    <div class="flex items-center space-x-2.5 cursor-pointer" onclick="showHomeScreen()">
+      <div class="logo-container">
+        <img src="logopalopo.png" alt="Logo Palopo" class="h-9 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/40';">
+        <img src="palopotaai.png" alt="Palopota AI" class="h-7 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x32';">
+      </div>
+    </div>
+
+    <!-- Menu Hamburger -->
+    <button onclick="toggleSideMenu()" class="text-slate-600 hover:text-slate-900 p-2 text-xl focus:outline-none">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- SIDE MENU / DRAWER -->
+  <div id="side-drawer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden transition-opacity">
+    <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-white p-5 shadow-2xl flex flex-col justify-between overflow-y-auto custom-scroll">
+      <div>
+        <div class="flex justify-between items-center border-b pb-4 mb-4">
+          <span class="font-extrabold text-brand-navy">Menu & Pengaturan</span>
+          <button onclick="toggleSideMenu()" class="text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <!-- Opsi Bahasa -->
+        <div class="space-y-3 mb-5">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bahasa Antarmuka</div>
+          <select id="lang-select" onchange="changeLanguage()" class="w-full bg-slate-50 text-slate-700 text-xs rounded-xl p-2.5 border border-slate-200">
+            <option value="id">🇮🇩 Bahasa Indonesia</option>
+            <option value="tae">📍 Tae' / Luwu</option>
+            <option value="en">🇬🇧 English</option>
+          </select>
+        </div>
+
+                <nav class="space-y-1 text-sm font-semibold text-slate-700">
+          <button onclick="showHomeScreen(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-house text-brand-blue"></i><span>Beranda Utama</span>
+          </button>
+          <button onclick="openFeatureModal('LIFE_EVENT'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-compass text-amber-500"></i><span>Life Event Mode</span>
+          </button>
+          <button onclick="openFeatureModal('OPD'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-building text-emerald-500"></i><span>Direktori OPD</span>
+          </button>
+          <button onclick="openFeatureModal('GIS'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-map-location-dot text-indigo-500"></i><span>Peta Layanan</span>
+          </button>
+
+          <!-- Garis Pisah 1 -->
+          <hr class="my-2 border-slate-200">
+
+          <button onclick="openEligibilityModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-hand-holding-hand text-rose-500"></i><span>Cek Hak Bantuan</span>
+          </button>
+          <button onclick="openStuntingModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-baby text-pink-500"></i><span>Cek Gizi Stunting</span>
+          </button>
+          <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-wheat-awn text-amber-600"></i><span>Daftar Harga Pangan</span>
+          </button>
+          <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-bullhorn text-teal-500"></i><span>Layanan Pengaduan</span>
+          </button>
+          <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-credit-card text-sky-600"></i><span>Pembayaran Pajak</span>
+          </button>
+          <!-- Fitur Tambahan: Layanan Cepat Darurat -->
+          <button onclick="openFeatureModal('EMERGENCY'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-rose-50 flex items-center space-x-3 text-rose-600 font-bold">
+            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i><span>Layanan Cepat Darurat</span>
+          </button>
+
+          <!-- Garis Pisah 2 -->
+          <hr class="my-2 border-slate-200">
+
+          <!-- Fitur Survei IKM -->
+          <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-star text-amber-500"></i><span>Survei IKM</span>
+          </a>
+
+          <!-- Fitur Saran & Masukan -->
+          <a href="https://bit.ly/saranpalopota" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+            <i class="fa-solid fa-comment-dots text-purple-500"></i><span>Saran & Masukan</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="border-t pt-4 text-[11px] text-slate-400 text-center font-mono">
+        PALOPOTA AI v1.0 • Pemkot Palopo
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER UTAMA -->
+  <div class="flex-1 flex flex-col overflow-hidden relative my-1">
+
+    <!-- BERANDA UTAMA (GRID 4 KARTU SIMETRIS) -->
+    <main id="home-screen" class="flex-1 flex flex-col justify-center my-auto">
+      <div class="mb-5">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-brand-navy tracking-tight leading-none mb-2">
+          Selamat Datang!
+        </h1>
+        <p class="text-brand-cyan font-semibold text-base md:text-lg" id="sub-welcome">
+          Apa yang ingin Anda selesaikan hari ini?
+        </p>
+      </div>
+      
+      <!-- BANNER INFORMASI CAROUSEL (30 DETIK & CAN BE SWIPED) -->
+<div id="banner-container" class="relative w-full mb-4 overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 bg-slate-100 group select-none">
+  <!-- Container Gambar Slider -->
+  <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out w-full">
+    <!-- Halaman 1 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner1.png" alt="Banner Informasi 1" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0f3c5f/ffffff?text=Banner+Informasi+1';">
+    </div>
+    <!-- Halaman 2 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner2.png" alt="Banner Informasi 2" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0284c7/ffffff?text=Banner+Informasi+2';">
+    </div>
+    <!-- Halaman 3 -->
+    <div class="w-full flex-shrink-0">
+      <img src="banner3.png" alt="Banner Informasi 3" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/06b6d4/ffffff?text=Banner+Informasi+3';">
+    </div>
+  </div>
+
+  <!-- Indikator Dots -->
+  <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-1.5 z-10">
+    <button onclick="goToBanner(0)" class="banner-dot w-5 h-2 rounded-full bg-white transition-all duration-300 shadow-sm" aria-label="Slide 1"></button>
+    <button onclick="goToBanner(1)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 2"></button>
+    <button onclick="goToBanner(2)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 3"></button>
+  </div>
+</div>
+
+
+      <!-- MENU GRID 4 KARTU -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="openFeatureModal('LIFE_EVENT')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+          <div class="text-amber-500 text-2xl"><i class="fa-solid fa-route"></i></div>
+          <span class="text-slate-700 font-bold text-sm leading-snug">Life Event<br>Mode</span>
+        </button>
+
+        <button onclick="openFeatureModal('OPD')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+          <div class="text-emerald-500 text-2xl"><i class="fa-solid fa-building-columns"></i></div>
+          <span class="text-slate-700 font-bold text-sm leading-snug">Layanan<br>Pemerintah</span>
+        </button>
+
+        <button onclick="openFeatureModal('GIS')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+          <div class="text-indigo-500 text-2xl"><i class="fa-solid fa-map-location-dot"></i></div>
+          <span class="text-slate-700 font-bold text-sm leading-snug">Cari Lokasi<br>Layanan</span>
+        </button>
+
+        <button onclick="showChatScreen()" class="menu-card p-4 text-left flex flex-col justify-between h-36 border-brand-cyan/40 bg-sky-50/60">
+          <div class="text-brand-blue text-2xl"><i class="fa-solid fa-robot"></i></div>
+          <span class="text-brand-navy font-bold text-sm leading-snug">Tanya Palopota<br>Langsung</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- INTERFACE CHAT FULL SCREEN -->
+    <section id="chat-screen" class="flex-1 flex flex-col h-full overflow-hidden hidden">
+      <!-- Chat Sub-Header -->
+      <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 shrink-0 mb-1">
+        <button onclick="showHomeScreen()" class="text-xs font-bold text-brand-blue flex items-center hover:underline">
+          <i class="fa-solid fa-arrow-left mr-1.5"></i> Beranda
+        </button>
+        <span class="text-xs font-extrabold text-brand-navy flex items-center">
+          <i class="fa-solid fa-robot text-brand-cyan mr-1.5"></i> Palopota AI Assistant
+        </span>
+        <button onclick="clearChat()" class="text-xs text-rose-500 font-bold hover:underline">
+          <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan
+        </button>
+      </div>
+
+      <!-- Chat Scroll Area -->
+      <div id="chat-stream" class="custom-scroll flex-1 overflow-y-auto space-y-3 pr-1 py-2">
+        <!-- Pesan Selamat Datang -->
+        <div class="flex items-start space-x-2.5 my-1">
+          <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+          <div class="bg-white border border-slate-200/90 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm space-y-2 chat-body">
+            <p class="font-bold text-brand-navy text-sm">Salama’ki tapada salama! 👋</p>
+            <p>Saya Asisten AI Palopota. Saya selalu siap membantu pengurusan dokumen & layanan publik Kota Palopo secara akurat.</p>
+            
+            <div class="text-[11px] font-bold text-slate-500 pt-1">Rekomendasi Pertanyaan:</div>
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <button onclick="sendQuickPrompt('Bagaimana syarat cetak KTP rusak?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🆔 KTP Rusak</button>
+              <button onclick="sendQuickPrompt('Bagaimana cara daftar NIB UMKM online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🏪 NIB UMKM</button>
+              <button onclick="sendQuickPrompt('Syarat pendaftaran Bansos PKH dan DTKS')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🤲 Bansos PKH</button>
+              <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🌾 Harga Pangan</button>
+              <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">📢 Lapor Pengaduan</button>
+              <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">💳 Bayar Pajak (AKSARA)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- CHAT INPUT BAR -->
+  <footer class="w-full shrink-0 z-30 pt-1 pb-safe">
+    <form onsubmit="handleChatSubmit(event)" class="chat-container p-2.5 flex flex-col justify-between space-y-2 shadow-lg border border-slate-200/90">
+      <input type="text" id="user-input" autocomplete="off" placeholder="Tanyakan syarat dokumen, NIB, KTP, dll..." class="w-full bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none px-2 py-1">
+      
+      <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+        <button type="button" onclick="openFeatureModal('LIFE_EVENT')" class="text-slate-500 hover:text-brand-navy text-lg px-2" title="Life Event Mode">
+          <i class="fa-solid fa-layer-group"></i>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <!-- Tombol Mode Aksesibilitas -->
+          <button type="button" id="accessibility-btn" onclick="toggleAccessibilityMode()" class="text-slate-500 hover:text-brand-blue text-lg px-1.5 transition-colors" title="Mode Aksesibilitas (Teks Besar & Kontras Tinggi)">
+            <i class="fa-solid fa-universal-access"></i>
+          </button>
+                  
+          <!-- Tombol Suara (Text-to-Speech) -->
+          <button type="button" id="tts-btn" onclick="toggleSpeech()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Dengarkan Suara Respon">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+
+          <!-- Tombol Mikrofon -->
+          <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+
+          <button type="submit" class="w-8 h-8 bg-brand-navy hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md shrink-0">
+            <i class="fa-solid fa-arrow-up text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </footer>
+
+  <!-- MODAL DYNAMIC FITUR -->
+  <div id="feature-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[82vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-title" class="font-extrabold text-brand-navy text-base">Detail Fitur</h3>
+        <button onclick="closeFeatureModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div id="modal-body" class="text-xs text-slate-600 space-y-3">
+        <!-- Konten Dimuat Dinamis -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- MODAL SIMULATOR CEK HAK BANTUAN -->
+  <div id="eligibility-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
+          <i class="fa-solid fa-hand-holding-hand text-rose-500 mr-2"></i> Cek Hak Bantuan Warga (Bansos & Beasiswa)
+        </h3>
+        <button onclick="closeEligibilityModal()" class="text-slate-400 hover:text-slate-700 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Form Pertanyaan Kuis -->
+      <div id="quiz-step-container" class="space-y-4 text-xs text-slate-700">
+        <div>
+          <label class="font-bold block mb-1">1. Apakah Anda memiliki Kartu Keluarga (KK) Kota Palopo?</label>
+          <select id="q-kk" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+            <option value="ya">Ya, KK Kota Palopo</option>
+            <option value="tidak">Bukan / Pendatang</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">2. Berapa total estimasi penghasilan keluarga per bulan?</label>
+          <select id="q-income" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+            <option value="low">Di bawah Rp 1.500.000 / bulan</option>
+            <option value="mid">Rp 1.500.000 – Rp 3.000.000 / bulan</option>
+            <option value="high">Di atas Rp 3.000.000 / bulan</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">3. Apakah ada anggota keluarga yang sedang bersekolah/kuliah?</label>
+          <select id="q-student" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+            <option value="ya">Ya (SD / SMP / SMA / Perguruan Tinggi)</option>
+            <option value="tidak">Tidak ada</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">4. Apakah keluarga Anda sudah terdaftar di DTKS?</label>
+          <select id="q-dtks" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+            <option value="belum">Belum / Tidak Tahu</option>
+            <option value="sudah">Sudah Terdaftar</option>
+          </select>
+        </div>
+
+        <button onclick="calculateEligibility()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+          Analisis Kelayakan Bantuan Saya
+        </button>
+      </div>
+
+      <!-- Container Hasil Analisis -->
+      <div id="quiz-result-container" class="hidden space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- MODAL KALKULATOR CEK GIZI STUNTING -->
+  <div id="stunting-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
+          <i class="fa-solid fa-baby text-pink-500 mr-2"></i> Kalkulator Cek Gizi & Stunting Balita
+        </h3>
+        <button onclick="closeStuntingModal()" class="text-slate-400 hover:text-slate-700 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Form Input Data Balita -->
+      <div id="stunting-form-container" class="space-y-3 text-xs text-slate-700">
+        <div>
+          <label class="font-bold block mb-1">Usia Balita (Bulan):</label>
+          <input type="number" id="st-age" placeholder="Contoh: 12" min="0" max="60" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">Jenis Kelamin:</label>
+          <select id="st-gender" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+            <option value="male">Laki-Laki</option>
+            <option value="female">Perempuan</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">Tinggi / Panjang Badan (cm):</label>
+          <input type="number" id="st-height" placeholder="Contoh: 75" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1">Berat Badan (kg):</label>
+          <input type="number" id="st-weight" placeholder="Contoh: 9.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+        </div>
+
+        <button onclick="calculateStunting()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md mt-2">
+          Analisis Status Gizi Balita
+        </button>
+      </div>
+
+      <!-- Hasil Analisis Stunting -->
+      <div id="stunting-result-container" class="hidden space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- POP-UP SURVEI IKM -->
+  <div id="ikm-popup" class="fixed bottom-20 right-4 z-40 hidden max-w-xs bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 transition-all duration-300 transform translate-y-4">
+    <div class="flex justify-between items-start mb-2">
+      <div class="flex items-center space-x-2">
+        <span class="text-amber-500 text-base"><i class="fa-solid fa-star"></i></span>
+        <h4 class="font-bold text-brand-navy text-xs">Survei Kepuasan (IKM)</h4>
+      </div>
+      <button onclick="closeIkmPopup()" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <p class="text-[11px] text-slate-600 mb-3 leading-snug">
+      Bantu kami meningkatkan kualitas pelayanan publik Kota Palopo dengan mengisi survei singkat ini.
+    </p>
+    <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="closeIkmPopup()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition shadow-sm">
+      <span>Isi Survei IKM</span>
+      <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+    </a>
+  </div>
+
+  <!-- JAVASCRIPT & LOGIKA AI ADVANCED -->
+  <script>
+    let chatHistory = [];
+    let customApiKey = localStorage.getItem('PALOPO_GEMINI_KEY') || '';
+
+    const opdData = [
+      { name: "Disdukcapil", services: ["KTP-el", "Kartu Keluarga", "Akta Kelahiran", "Akta Kematian", "KIA", "Surat Pindah (SKPWNI)", "IKD"], address: "Jl. Landak No. 1 Palopo" },
+      { name: "DPMPTSP", services: ["NIB UMKM", "PBG (ex-IMB)", "Sertifikat Halal", "SIUP", "Izin Investasi"], address: "Jl. Durian No. 5 Palopo" },
+      { name: "Dinas Sosial", services: ["Bansos PKH", "BPNT", "Pengusulan DTKS", "Rekomendasi SKTM", "Bantuan Sembako"], address: "Jl. Andi Djemma No. 10 Palopo" },
+      { name: "Dinas Pendidikan", services: ["Beasiswa Palopo Pintar", "BOS", "Pendaftaran PPDB", "Bantuan Siswa Miskin"], address: "Jl. Ahmad Yani No. 25 Palopo" },
+      { name: "Dinas Kesehatan", services: ["Puskesmas", "Pelayanan BPJS / JKN", "Vaksinasi", "Posyandu", "RSUD Sawerigading"], address: "Jl. Landak No. 15 Palopo" },
+      { name: "Dinas PUPR", services: ["Rekomendasi PBG", "Infrastruktur Jalan", "Drainase", "Konsultasi Tata Ruang"], address: "Jl. Pulau Jawa No. 8 Palopo" },
+      { name: "Dishub", services: ["Pengujian KIR", "Izin Trayek Angkot", "Pengelolaan Parkir", "Terminal"], address: "Jl. Veteran No. 12 Palopo" },
+      { name: "BAPPERIDA", services: ["Izin Penelitian", "Data Perencanaan", "Data Inovasi", "Pendaftaran Inovasi"], address: "Jl. Andi Baso Rahim No. 2 Palopo" },
+      { name: "DLH", services: ["Izin Lingkungan", "Pengaduan Sampah", "Kebersihan Kota", "Penghijauan"], address: "Jl. Sulawesi No. 6 Palopo" }
+    ];
+
+    const gisData = [
+      { name: "Kantor Wali Kota", category: "Fasum", address: "Jl. Andi Djemma, Palopo", mapsUrl: "https://maps.google.com/?q=Kantor+Wali+Kota+Palopo" },
+      { name: "Lapangan Pancasila", category: "Fasum", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Lapangan+Pancasila+Palopo" },
+      { name: "Lapangan Gaspa", category: "Fasum", address: "Jl. S. Parman, Palopo", mapsUrl: "https://maps.google.com/?q=Lapangan+Gaspa+Palopo" },
+      { name: "Masjid Agung Palopo", category: "Fasum", address: "Jl. Sultan Hasanuddin, Palopo", mapsUrl: "https://maps.google.com/?q=Masjid+Agung+Palopo" },
+      { name: "Masjid Islamic Center", category: "Fasum", address: "Jl. Soekarno-Hatta, Palopo", mapsUrl: "https://maps.google.com/?q=Islamic+Center+Palopo" },
+      { name: "Pelabuhan Tanjung Ringgit", category: "Fasum", address: "Jl. Pelabuhan, Palopo", mapsUrl: "https://maps.google.com/?q=Pelabuhan+Tanjung+Ringgit+Palopo" },
+      { name: "Pasar Sentral Palopo", category: "Fasum", address: "Jl. Kelapa, Palopo", mapsUrl: "https://maps.google.com/?q=Pasar+Sentral+Palopo" },
+      { name: "Pasar Andi Tadda", category: "Fasum", address: "Jl. Andi Tadda, Palopo", mapsUrl: "https://maps.google.com/?q=Pasar+Andi+Tadda+Palopo" },
+      { name: "BAKESBANGPOL", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Bakesbangpol+Palopo" },
+      { name: "BKPSDM", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=BKPSDM+Palopo" },
+      { name: "BPBD", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=BPBD+Palopo" },
+      { name: "BAPPERIDA", category: "OPD", address: "Jl. Andi Baso Rahim No. 2, Palopo", mapsUrl: "https://maps.google.com/?q=Bapperida+Palopo" },
+      { name: "BAPENDA", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Bapenda+Palopo" },
+      { name: "BPKAD", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=BPKAD+Palopo" },
+      { name: "Disdukcapil", category: "OPD", address: "Jl. Landak No. 1, Palopo", mapsUrl: "https://maps.google.com/?q=Disdukcapil+Palopo" },
+      { name: "Diskominfo SP", category: "OPD", address: "Jl. Landak No. 3, Palopo", mapsUrl: "https://maps.google.com/?q=Diskominfo+Palopo" },
+      { name: "Disparbud", category: "OPD", address: "Jl. Andi Djemma No. 30, Palopo", mapsUrl: "https://maps.google.com/?q=Disparbud+Palopo" },
+      { name: "Dinkes", category: "OPD", address: "Jl. Landak No. 15, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Kesehatan+Palopo" },
+      { name: "Disdikpora", category: "OPD", address: "Jl. Ahmad Yani No. 25, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Pendidikan+Palopo" },
+      { name: "SETDA", category: "OPD", address: "Kantor Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Setda+Palopo" },
+      { name: "SETWAN", category: "OPD", address: "Gedung DPRD Palopo", mapsUrl: "https://maps.google.com/?q=DPRD+Palopo" },
+      { name: "Inspektorat", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Inspektorat+Palopo" },
+      { name: "Dinsosnakertrans", category: "OPD", address: "Jl. Andi Djemma No. 10, Palopo", mapsUrl: "https://maps.google.com/?q=Dinsos+Palopo" },
+      { name: "DPMPTSP", category: "OPD", address: "Jl. Durian No. 5, Palopo", mapsUrl: "https://maps.google.com/?q=DPMPTSP+Palopo" },
+      { name: "DPUPRPERKIM", category: "OPD", address: "Jl. Pulau Jawa No. 8, Palopo", mapsUrl: "https://maps.google.com/?q=PUPR+Palopo" },
+      { name: "DISKOPDAGRIN", category: "OPD", address: "Jl. Durian No. 7, Palopo", mapsUrl: "https://maps.google.com/?q=Diskopdagrin+Palopo" },
+      { name: "Satpol PP", category: "OPD", address: "Kompleks Wali Kota Palopo", mapsUrl: "https://maps.google.com/?q=Satpol+PP+Palopo" },
+      { name: "Dinas Damkar dan Penyelamatan", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Damkar+Palopo" },
+      { name: "DLHP", category: "OPD", address: "Jl. Sulawesi No. 6, Palopo", mapsUrl: "https://maps.google.com/?q=DLH+Palopo" },
+      { name: "Dispusarsip", category: "OPD", address: "Jl. Andi Djemma, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Perpustakaan+Palopo" },
+      { name: "Dishub", category: "OPD", address: "Jl. Veteran No. 12, Palopo", mapsUrl: "https://maps.google.com/?q=Dishub+Palopo" },
+      { name: "Dispertan Pangan dan Perikanan", category: "OPD", address: "Jl. Anggrek, Palopo", mapsUrl: "https://maps.google.com/?q=Dinas+Pertanian+Palopo" },
+      { name: "Kecamatan Wara", category: "Kecamatan", address: "Jl. Jend. Sudirman, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Palopo" },
+      { name: "Kecamatan Wara Utara", category: "Kecamatan", address: "Jl. Cendana, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Utara+Palopo" },
+      { name: "Kecamatan Wara Timur", category: "Kecamatan", address: "Jl. Luwu, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Timur+Palopo" },
+      { name: "Kecamatan Wara Barat", category: "Kecamatan", address: "Poros Palopo - Toraja", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Barat+Palopo" },
+      { name: "Kecamatan Wara Selatan", category: "Kecamatan", address: "Poros Palopo - Makassar", mapsUrl: "https://maps.google.com/?q=Kecamatan+Wara+Selatan+Palopo" },
+      { name: "Kecamatan Mungkajang", category: "Kecamatan", address: "Poros Latuppa, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Mungkajang+Palopo" },
+      { name: "Kecamatan Sendana", category: "Kecamatan", address: "Kecamatan Sendana, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Sendana+Palopo" },
+      { name: "Kecamatan Bara", category: "Kecamatan", address: "Jl. To'Bulung, Palopo", mapsUrl: "https://maps.google.com/?q=Kecamatan+Bara+Palopo" },
+      { name: "Kecamatan Telluwanua", category: "Kecamatan", address: "Poros Palopo - Walenrang", mapsUrl: "https://maps.google.com/?q=Kecamatan+Telluwanua+Palopo" },
+      { name: "RSUD Sawerigading", category: "Faskes", address: "Jl. Rampoang, Palopo", mapsUrl: "https://maps.google.com/?q=RSUD+Sawerigading+Palopo" },
+      { name: "RSUD Palemmai Tandi", category: "Faskes", address: "Jl. Samiun, Palopo", mapsUrl: "https://maps.google.com/?q=RSUD+Palemmai+Tandi+Palopo" },
+      { name: "Puskesmas Wara", category: "Faskes", address: "Jl. Wara, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Palopo" },
+      { name: "Puskesmas Wara Utara", category: "Faskes", address: "Jl. Battara, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Utara+Palopo" },
+      { name: "Puskesmas Mungkajang", category: "Faskes", address: "Mungkajang, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Mungkajang+Palopo" },
+      { name: "Puskesmas Sendana", category: "Faskes", address: "Sendana, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Sendana+Palopo" },
+      { name: "Puskesmas Pontap", category: "Faskes", address: "Jl. Salekoe, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Pontap+Palopo" },
+      { name: "Puskesmas Benteng", category: "Faskes", address: "Benteng, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Benteng+Palopo" },
+      { name: "Puskesmas Padang Lambe", category: "Faskes", address: "Padang Lambe, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Padang+Lambe+Palopo" },
+      { name: "Puskesmas Telluwanua", category: "Faskes", address: "Telluwanua, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Telluwanua+Palopo" },
+      { name: "Puskesmas Wara Selatan", category: "Faskes", address: "Wara Selatan, Palopo", mapsUrl: "https://maps.google.com/?q=Puskesmas+Wara+Selatan+Palopo" },
+      { name: "Labkesda Palopo", category: "Faskes", address: "Jl. Landak, Palopo", mapsUrl: "https://maps.google.com/?q=Labkesda+Palopo" }
+    ];
+
+    function toggleSideMenu() {
+      document.getElementById('side-drawer').classList.toggle('hidden');
+    }
+
+    function showHomeScreen() {
+      document.getElementById('home-screen').classList.remove('hidden');
+      document.getElementById('chat-screen').classList.add('hidden');
+      document.getElementById('chat-screen').classList.remove('flex');
+    }
+
+    function showChatScreen() {
+      document.getElementById('home-screen').classList.add('hidden');
+      document.getElementById('chat-screen').classList.remove('hidden');
+      document.getElementById('chat-screen').classList.add('flex');
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      showChatScreen();
+      appendUserMessage(text);
+      input.value = '';
+
+      const textLower = text.toLowerCase();
+
+      if (textLower.includes("terima kasih") || textLower.includes("makasih") || textLower.includes("makkasora") || textLower.includes("thanks")) {
+        setTimeout(() => {
+          showIkmPopup();
+        }, 1500);
+      }
+
+      startIdleTimer();
+            
+      const isEmergency = checkEmergencyTrigger(text);
+      if (isEmergency) {
+        return;
+      }
+
+      showAITypingIndicator();
+
+      try {
+        let aiResponseText = "";
+        if (customApiKey) {
+          aiResponseText = await callGeminiApi(text);
+        } else {
+          aiResponseText = await fallbackLLMEngine(text);
+        }
+        removeAITypingIndicator();
+        appendAIMessage(aiResponseText);
+      } catch (err) {
+        removeAITypingIndicator();
+        appendAIMessage("Mohon maaf, terjadi kendala koneksi ke server AI. Silakan coba beberapa saat lagi atau periksa API Key Anda.");
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('user-input').value = promptText;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    function appendUserMessage(text) {
+      const stream = document.getElementById('chat-stream');
+      chatHistory.push({ role: "user", parts: [{ text: text }] });
+
+      stream.insertAdjacentHTML('beforeend', `
+        <div class="flex justify-end my-2">
+          <div class="bg-brand-navy text-white text-xs p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm leading-relaxed">
+            ${escapeHtml(text)}
+          </div>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+      saveChatToLocalStorage();
+    }
+
+    function appendAIMessage(markdownText) {
+      const stream = document.getElementById('chat-stream');
+      chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
+
+      const htmlContent = marked.parse(markdownText);
+
+      stream.insertAdjacentHTML('beforeend', `
+        <div class="flex items-start space-x-2.5 my-2">
+          <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2 chat-body">
+            ${htmlContent}
+          </div>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+      saveChatToLocalStorage();
+    }
+
+    function showAITypingIndicator() {
+      const stream = document.getElementById('chat-stream');
+      stream.insertAdjacentHTML('beforeend', `
+        <div id="ai-typing" class="flex items-start space-x-2.5 my-2">
+          <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none text-slate-500 shadow-sm flex items-center space-x-3">
+            <span class="text-[11px] font-medium">Palopota AI sedang menyusun jawaban...</span>
+            <div class="dot-flashing ml-2"></div>
+          </div>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function removeAITypingIndicator() {
+      const el = document.getElementById('ai-typing');
+      if (el) el.remove();
+    }
+
+    async function callGeminiApi(prompt) {
+      const systemInstruction = `Kamu adalah Palopota AI, asisten virtual resmi Pemerintah Kota Palopo, Sulawesi Selatan.
+Tugas utama: Memberikan informasi akurat mengenai layanan publik, izin usaha (NIB), dokumen kependudukan (KTP, KK, Akta), bantuan sosial, dan direktori OPD Kota Palopo.
+Gaya Bahasa: Ramah, sopan, komunikatif, dan responsif. Boleh menyapa dengan salam lokal khas Luwu/Palopo (seperti "Salama'ki tapada salama" atau "Tabe'").
+Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta sertakan persyaratan, biaya (mayoritas Gratis/Rp 0), dan lokasi dinas terkait jika relevan.`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${customApiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: chatHistory,
+          systemInstruction: { parts: [{ text: systemInstruction }] }
+        })
+      });
+
+      const data = await response.json();
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        return data.candidates[0].content.parts[0].text;
+      } else {
+        throw new Error("Invalid API Response");
+      }
+    }
+
+    // Ganti dengan Web App URL dari Google Apps Script Anda
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzSqUXuTX-ArZbalkva_3zv8bGnsxihgXd-6Abt_GEyDSgGDo05c7htrVpDopxI2Tre/exec";
+
+let sheetKnowledgeBase = [];
+
+// Fungsi mengambil data dari Google Sheets secara background
+async function loadKnowledgeBaseFromSheet() {
+  try {
+    const response = await fetch(GOOGLE_SHEET_API_URL);
+    if (response.ok) {
+      sheetKnowledgeBase = await response.json();
+      console.log("Database Google Sheets berhasil dimuat:", sheetKnowledgeBase);
+    }
+  } catch (error) {
+    console.warn("Gagal terhubung ke Google Sheets, menggunakan data internal code saja.", error);
+  }
+}
+
+// Panggil saat aplikasi pertama kali dimuat
+window.addEventListener('DOMContentLoaded', () => {
+  loadKnowledgeBaseFromSheet();
+});
+    
+    async function fallbackLLMEngine(prompt) {
+      await new Promise(r => setTimeout(r, 1200));
+      const text = prompt.toLowerCase();
+
+      if (sheetKnowledgeBase && sheetKnowledgeBase.length > 0) {
+    for (let item of sheetKnowledgeBase) {
+      if (item.keyword && text.includes(item.keyword)) {
+        return item.response; // Mengembalikan respon dari Spreadsheet jika cocok
+      }
+    }
+  }
+      
+      // DOKUMEN KEPENDUDUKAN & KARTU
+      if (text.includes("ktp") || text.includes("identitas")) {
+        return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
+               "* **KTP Rusak/Patah:** Bawa fisik KTP lama + Fotokopi Kartu Keluarga (KK).\n" +
+               "* **KTP Hilang:** Surat Keterangan Hilang dari Kepolisian + Fotokopi KK.\n" +
+               "* **Pemula (17 Tahun):** Cukup membawa Fotokopi KK untuk rekam foto/sidik jari.\n\n" +
+               "💰 **Biaya:** Gratis (Rp 0)\n📍 **Lokasi:** Kantor Disdukcapil Kota Palopo, Jl. Landak No. 1.";
+      } else if (text.includes("nib") || text.includes("umkm") || text.includes("izin usaha")) {
+        return "**Pembuatan NIB (Nomor Induk Berusaha) UMKM:**\n\n" +
+               "1. **Syarat:** NIK KTP, Nomor WhatsApp aktif, dan Email aktif.\n" +
+               "2. **Prosedur:** Diproses melalui sistem OSS (Online Single Submission).\n" +
+               "3. **Waktu Selesai:** ~10-15 Menit Instan.\n\n" +
+               "💰 **Biaya:** Gratis (Rp 0)\n📍 **Bantuan Pendampingan:** DPMPTSP Kota Palopo, Jl. Durian No. 5.";
+      } else if (text.includes("pkh") || text.includes("bansos") || text.includes("dtks")) {
+        return "**Pendaftaran Bansos PKH / Usulan DTKS:**\n\n" +
+               "* **Syarat:** Fotokopi KTP & Kartu Keluarga (KK).\n" +
+               "* **Alur:** Pengusulan nama melalui Musyawarah Kelurahan (Muskel) setempat, dilanjutkan verifikasi lapangan oleh petugas Dinas Sosial.\n\n" +
+               "📍 **Pusat Informasi:** Dinas Sosial Kota Palopo, Jl. Andi Djemma No. 10.";
+      } else if (text.includes("beasiswa") || text.includes("sekolah")) {
+        return "**Beasiswa Palopo Pintar (Dinas Pendidikan):**\n\n" +
+               "* **Persyaratan:** KTP/KK Palopo, Surat Keterangan Aktif Sekolah/Kuliah, dan SKTM dari Kelurahan atau Sertifikat Prestasi.\n\n" +
+               "📍 **Lokasi:** Dinas Pendidikan Kota Palopo, Jl. Ahmad Yani No. 25.";
+      
+      // LAYANAN PENGADUAN & PAJAK
+      } else if (text.includes("lapor") || text.includes("melapor") || text.includes("pengaduan") || text.includes("oke sappo")) {
+        return "**📢 Layanan Pengaduan Masyarakat (Oke Sappo!)**\n\n" +
+               "Anda dapat menyampaikan laporan, keluhan, maupun aspirasi terkait pelayanan publik di Kota Palopo secara langsung melalui **OKE SAPPO!** yang dikelola oleh **Diskominfo SP Kota Palopo**.\n\n" +
+               "Silakan klik tombol di bawah ini untuk terhubung langsung dengan Admin Pengaduan via WhatsApp:\n\n" +
+               "<div class='pt-2 pb-1'><a href='https://wa.me/6285165478686?text=HALO%20ADMIN%20OKE%20SAPPO!,%20Saya%20ingin%20menyampaikan%20laporan/pengaduan.' target='_blank' class='inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-brands fa-whatsapp text-sm'></i><span>Lapor via OKE SAPPO! (WhatsApp)</span></a></div>";
+      } else if (text.includes("pajak") || text.includes("bayar pajak") || text.includes("aksara") || text.includes("smart tax") || text.includes("pbb")) {
+        return "**💳 Layanan Pembayaran Pajak Daerah (AKSARA SMART TAX)**\n\n" +
+               "Untuk kemudahan pembayaran Pajak Daerah (PBB-P2, Pajak Restoran, Reklame, dll.), Anda dapat mengakses aplikasi resmi **AKSARA SMART TAX** yang dikelola oleh **BAPENDA Kota Palopo**.\n\n" +
+               "Silakan klik tombol di bawah ini untuk membuka portal/aplikasi pembayaran pajak:\n\n" +
+               "<div class='pt-2 pb-1'><a href='https://pajakdaerah.palopokota.go.id' target='_blank' class='inline-flex items-center space-x-2 bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-solid fa-credit-card text-sm'></i><span>Buka AKSARA SMART TAX</span></a></div>";
+
+      // INFORMASI HARGA PANGAN & SEMBAKO
+      } else if (text.includes("harga pangan") || text.includes("harga sembako") || text.includes("harga telur") || text.includes("harga beras") || text.includes("harga cabai")) {
+        return "**📊 Daftar Informasi Harga Pangan & Sembako Kota Palopo**\n\n" +
+               "*Berikut adalah data perkiraan harga rata-rata 25 komoditas pangan utama di Pasar Sentral & Pasar Andi Tadda Palopo:*\n\n" +
+               "1. **Beras Medium:** Rp 13.500 / kg\n" +
+               "2. **Beras Premium:** Rp 15.000 / kg\n" +
+               "3. **Gula Pasir:** Rp 18.000 / kg\n" +
+               "4. **Minyak Goreng Kita (Kemasan):** Rp 16.000 / liter\n" +
+               "5. **Minyak Goreng Curah:** Rp 15.500 / liter\n" +
+               "6. **Daging Sapi Segar:** Rp 130.000 / kg\n" +
+               "7. **Daging Ayam Ras:** Rp 32.000 / kg\n" +
+               "8. **Daging Ayam Kampung:** Rp 65.000 / ekor\n" +
+               "9. **Telur Ayam Ras:** Rp 52.000 / rak (Rp 2.000 / butir)\n" +
+               "10. **Telur Ayam Kampung:** Rp 2.500 / butir\n" +
+               "11. **Cabai Merah Keriting:** Rp 35.000 / kg\n" +
+               "12. **Cabai Rawit Merah:** Rp 45.000 / kg\n" +
+               "13. **Bawang Merah:** Rp 30.000 / kg\n" +
+               "14. **Bawang Putih:** Rp 40.000 / kg\n" +
+               "15. **Tepung Terigu:** Rp 11.000 / kg\n" +
+               "16. **Tahu Putih:** Rp 5.000 / bungkus\n" +
+               "17. **Tempe:** Rp 5.000 / papan\n" +
+               "18. **Ikan Bandeng (Bolu):** Rp 25.000 / kg\n" +
+               "19. **Ikan Tongkol:** Rp 30.000 / kg\n" +
+               "20. **Udang Vaname:** Rp 60.000 / kg\n" +
+               "21. **Tomat Buah:** Rp 10.000 / kg\n" +
+               "22. **Kentang:** Rp 18.000 / kg\n" +
+               "23. **Wortel:** Rp 12.000 / kg\n" +
+               "24. **Sagu Basah (Manta'):** Rp 15.000 / tumpi\n" +
+               "25. **Gula Merah / Aren:** Rp 22.000 / kg\n\n" +
+               "📍 *Sumber Data: Pemantauan Dinas Koperasi, Perdagangan, dan Perindustrian (DISKOPDAGRIN) Kota Palopo.*";
+
+      // PROFIL, SEJARAH, WISATA & PEMERINTAHAN KOTA PALOPO
+      } else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("dimana kota palopo")) {
+        return "🌆 **Profil Singkat Kota Palopo:**\n\n" +
+               "Palopo adalah kota otonom di Sulawesi Selatan yang dikenal sebagai pusat sejarah Kedatuan Luwu serta berkembang pesat sebagai kota jasa, perdagangan, dan pendidikan di kawasan Luwu Raya.";
+      } else if (text.includes("hari jadi kota palopo") || text.includes("ulang tahun palopo") || text.includes("hut palopo")) {
+        return "🎉 **Hari Jadi Kota Palopo** diperingati setiap tanggal **2 Juli**.\n\n" +
+               "Kota Palopo resmi terbentuk sebagai daerah otonom berdasarkan Undang-Undang Nomor 11 Tahun 2002.";
+      } else if (text.includes("kantor wali kota") || text.includes("kantor walikota") || text.includes("pemerintahan")) {
+        return "🏛️ **Pemerintahan Kota Palopo** berpusat di Balai Kota Palopo (Jl. Andi Djemma).\n\n" +
+               "Informasi resmi terkait jajaran pimpinan dan struktur organisasi daerah dapat diakses melalui portal resmi Pemkot Palopo (palopokota.go.id).";
+      } else if (text.includes("wisata") || text.includes("destinasi") || text.includes("liburan") || text.includes("jalan-jalan")) {
+        return "🌴 **Destinasi Wisata Unggulan Kota Palopo:**\n\n" +
+               "• **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo\n" +
+               "• **Wisata Alam & Rekreasi:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Pantai Labombo, Gua Kancing\n" +
+               "• **Kuliner:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco)";
+
+     // ==========================================
+      // LAYANAN DINAS / OPD (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan bakesbangpol") || text.includes("layanan kesbangpol")) {
+        return "**Layanan BAKESBANGPOL Kota Palopo:**\n\n" +
+               "* Surat Keterangan Penelitian (SKP)\n" +
+               "* Permohonan Izin Survey / Riset\n" +
+               "* Pendaftaran & Pendataan Ormas / LSM\n" +
+               "* Pembinaan Kesatuan Bangsa & Wawasan Kebangsaan\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan bkpsdm") || text.includes("layanan bkd")) {
+        return "**Layanan BKPSDM Kota Palopo:**\n\n" +
+               "* Administrasi Kepegawaian ASN & PPPK\n" +
+               "* Pengurusan Kenaikan Pangkat & Mutasi\n" +
+               "* Pengurusan Cuti Pegawai & Pensiun\n" +
+               "* Informasi Seleksi CASN / PPPK\n" +
+               "* Pelatihan & Pengembangan Kompetensi ASN\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan bpbd")) {
+        return "**Layanan BPBD Kota Palopo:**\n\n" +
+               "* Penanganan Bencana Alam 24/7 (Banjir, Longsor, Pohon Tumbang)\n" +
+               "* Penyaluran Bantuan Logistik Bencana\n" +
+               "* Edukasi, Pelatihan & Mitigasi Bencana\n" +
+               "* Pengaduan & Tim Evakuasi Bencana Daerah\n\n" +
+               "📍 **Lokasi:** Posko BPBD Kota Palopo, Jl. Anggrek";
+
+      } else if (text.includes("layanan bapperida") || text.includes("layanan bappeda")) {
+        return "**Layanan BAPPERIDA Kota Palopo:**\n\n" +
+               "* Perencanaan Pembangunan Daerah (RPJMD/RKPD)\n" +
+               "* Koordinasi Riset & Inovasi Daerah (Local Sago Management)\n" +
+               "* Pemetaan & Pengelolaan Dokumen Perencanaan\n" +
+               "* Fasilitasi Pemanfaatan IPTEK & Inovasi Daerah\n\n" +
+               "📍 **Lokasi:** Jl. Andi Baso Rahim No. 2 Palopo";
+
+      } else if (text.includes("layanan bapenda") || text.includes("layanan pajak daerah")) {
+        return "**Layanan BAPENDA Kota Palopo:**\n\n" +
+               "* Pembayaran & Pendataan PBB-P2\n" +
+               "* Pengurusan Pajak Restoran, Hotel, & Reklame\n" +
+               "* Pembayaran BPHTB & Pajak Air Tanah\n" +
+               "* Konsultasi & Penagihan Piutang Pajak Daerah (AKSARA Smart Tax)\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan bpkad")) {
+        return "**Layanan BPKAD Kota Palopo:**\n\n" +
+               "* Pengelolaan Keuangan & Anggaran Daerah\n" +
+               "* Penerbitan & Pencairan SP2D\n" +
+               "* Inventarisasi & Legalitas Aset Barang Milik Daerah (BMD)\n" +
+               "* Konsultasi Penatausahaan Keuangan OPD\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan disdukcapil") || text.includes("layanan dukcapil")) {
+        return "**Layanan DISDUKCAPIL Kota Palopo:**\n\n" +
+               "* Perekaman & Pencetakan KTP-el\n" +
+               "* Penerbitan & Perubahan Kartu Keluarga (KK)\n" +
+               "* Penerbitan Akta Kelahiran & Akta Kematian\n" +
+               "* Pembuatan Kartu Identitas Anak (KIA)\n" +
+               "* Pengurusan Surat Pindah Domisili (SKPWNI)\n" +
+               "* Aktivasi Identitas Kependudukan Digital (IKD)\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 1 Palopo";
+
+      } else if (text.includes("layanan diskominfo sp") || text.includes("layanan diskominfo") || text.includes("layanan kominfo")) {
+        return "**Layanan DISKOMINFO SP Kota Palopo:**\n\n" +
+               "* Layanan Pengaduan Masyarakat (OKE SAPPO! & SP4N-LAPOR!)\n" +
+               "* Layanan Informasi Publik (PPID Utama)\n" +
+               "* Pengelolaan Data Statistik Sektoral Daerah\n" +
+               "* Keamanan Informasi & Persandian Daerah\n" +
+               "* Fasilitasi Tanda Tangan Elektronik (TTE) & Wifi Publik\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 3 Palopo";
+
+      } else if (text.includes("layanan disparbud") || text.includes("layanan pariwisata")) {
+        return "**Layanan DISPARBUD Kota Palopo:**\n\n" +
+               "* Rekomendasi Izin Usaha Pariwisata (Hotel, Resto, Kafe)\n" +
+               "* Promosi & Pengelolaan Destinasi Wisata Daerah\n" +
+               "* Pendaftaran & Pembinaan Pelaku Ekonomi Kreatif\n" +
+               "* Pengelolaan Cagar Budaya & Museum Batara Guru\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma No. 30 Palopo";
+
+      } else if (text.includes("layanan dinkes") || text.includes("layanan dinas kesehatan")) {
+        return "**Layanan Dinas Kesehatan Kota Palopo:**\n\n" +
+               "* Rekomendasi Sertifikat Laik Higiene Sanitasi\n" +
+               "* Rekomendasi Izin Operasional Faskes & Apotek\n" +
+               "* Pendaftaran BPJS Kesehatan PBI APBD\n" +
+               "* Pengawasan & Pelayanan Kesehatan Masyarakat / Posyandu\n\n" +
+               "📍 **Lokasi:** Jl. Landak No. 15 Palopo";
+
+      } else if (text.includes("layanan disdikpora") || text.includes("layanan disdik") || text.includes("layanan dinas pendidikan")) {
+        return "**Layanan DISDIKPORA Kota Palopo:**\n\n" +
+               "* Program Beasiswa Palopo Pintar\n" +
+               "* Pengelolaan Dana Bantuan Operasional Sekolah (BOS)\n" +
+               "* Fasilitasi Pendaftaran PPDB Online\n" +
+               "* Penerbitan Surat Mutasi / Pindah Sekolah\n" +
+               "* Legalisir Ijazah & Pengurusan NUPTK Guru\n\n" +
+               "📍 **Lokasi:** Jl. Ahmad Yani No. 25 Palopo";
+
+      } else if (text.includes("layanan setda") || text.includes("layanan sekretariat daerah")) {
+        return "**Layanan SETDA (Sekretariat Daerah) Kota Palopo:**\n\n" +
+               "* Pelayanan Informasi JDIH (Produk Hukum / Perwali)\n" +
+               "* Fasilitasi Kerjasama Antar Lembaga & Daerah\n" +
+               "* Pelayanan Administrasi Tata Pemerintahan & Kesra\n" +
+               "* Permohonan Audiensi & Protokol Pimpinan Wali Kota\n\n" +
+               "📍 **Lokasi:** Kantor Wali Kota Palopo, Jl. Andi Djemma";
+
+      } else if (text.includes("layanan setwan") || text.includes("layanan sekretariat dprd")) {
+        return "**Layanan SETWAN (Sekretariat DPRD) Kota Palopo:**\n\n" +
+               "* Fasilitasi Penyerapan Aspirasi Masyarakat ke DPRD\n" +
+               "* Publikasi Produk Hukum Daerah (Perda)\n" +
+               "* Pelayanan Penerimaan Kunjungan Kerja & Audiensi\n\n" +
+               "📍 **Lokasi:** Gedung DPRD Kota Palopo";
+
+      } else if (text.includes("layanan inspektorat")) {
+        return "**Layanan Inspektorat Kota Palopo:**\n\n" +
+               "* Layanan Pengaduan Masyarakat (Whistleblowing System / WBS)\n" +
+               "* Pengaduan Saber Pungli & Fraud\n" +
+               "* Konsultasi Pengawasan Keuangan Internal Pemerintah / Desa\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan dinsosnakertrans") || text.includes("layanan dinsos") || text.includes("layanan disnaker")) {
+        return "**Layanan DINSOSNAKERTRANS Kota Palopo:**\n\n" +
+               "* Penerbitan Kartu Kuning (AK-1) Melamar Kerja\n" +
+               "* Pendaftaran & Pengusulan Data DTKS / Bansos PKH / BPNT\n" +
+               "* Penerbitan Rekomendasi SKTM Sosial\n" +
+               "* Pendaftaran Pelatihan Kerja Pelatihan BLK\n" +
+               "* Penanganan Perselisihan Hubungan Industrial / Ketenagakerjaan\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma No. 10 Palopo";
+
+      } else if (text.includes("layanan dpmptsp") || text.includes("layanan perizinan")) {
+        return "**Layanan DPMPTSP Kota Palopo:**\n\n" +
+               "* Penerbitan NIB UMKM (Online Single Submission / OSS)\n" +
+               "* Pengurusan Persetujuan Bangunan Gedung (PBG / ex-IMB)\n" +
+               "* Pendampingan Sertifikasi Halal UMKM\n" +
+               "* Penerbitan SIUP & Izin Praktik Tenaga Kesehatan\n" +
+               "* Fasilitasi Layanan Investasi & Mal Pelayanan Publik (MPP)\n\n" +
+               "📍 **Lokasi:** Jl. Durian No. 5 Palopo";
+
+      } else if (text.includes("layanan dpuprperkim") || text.includes("layanan pupr") || text.includes("layanan perkim")) {
+        return "**Layanan DPUPRPERKIM Kota Palopo:**\n\n" +
+               "* Rekomendasi Kesesuaian Kegiatan Pemanfaatan Ruang (KKPR)\n" +
+               "* Rekomendasi Teknis Bangunan Gedung (PBG)\n" +
+               "* Bantuan Bedah Rumah / Rumah Tidak Laik Huni (RTLH)\n" +
+               "* Perbaikan & Pengaduan Infrastruktur Jalan, Drainase, & Tata Ruang\n\n" +
+               "📍 **Lokasi:** Jl. Pulau Jawa No. 8 Palopo";
+
+      } else if (text.includes("layanan diskopdagrin") || text.includes("layanan perdagangan") || text.includes("layanan koperasi")) {
+        return "**Layanan DISKOPDAGRIN Kota Palopo:**\n\n" +
+               "* Legalisasi & Pembinaan Koperasi\n" +
+               "* Pelatihan Wirausaha & Pembinaan IKM / UMKM\n" +
+               "* Pelayanan Tera / Tera Ulang Alat Timbangan Pasar (UTTP)\n" +
+               "* Informasi & Pemantauan Harga Bahan Pokok (Kepokmas)\n\n" +
+               "📍 **Lokasi:** Jl. Durian No. 7 Palopo";
+
+      } else if (text.includes("layanan satpol pp") || text.includes("layanan satpol")) {
+        return "**Layanan SATPOL PP Kota Palopo:**\n\n" +
+               "* Pengaduan Gangguan Ketentraman & Ketertiban Umum (Trantibum)\n" +
+               "* Penegakan Peraturan Daerah (Perda) & Perwali\n" +
+               "* Pengawalan & Pengamanan Aset / Peristiwa Daerah\n\n" +
+               "📍 **Lokasi:** Kompleks Perkantoran Balai Kota Palopo";
+
+      } else if (text.includes("layanan damkar") || text.includes("layanan dinas damkar")) {
+        return "**Layanan Dinas Damkar dan Penyelamatan:**\n\n" +
+               "* Penanganan Kebakaran 24 Jam (Telepon / WA Darurat)\n" +
+               "* Operasi Penyelamatan Non-Kebakaran (Penyelamatan Cincin, Sarang Tawon, Ular, dll.)\n" +
+               "* Edukasi & Inspeksi Alat Pemadam Api Ringan (APAR)\n\n" +
+               "📍 **Lokasi:** Jl. Anggrek Kota Palopo";
+
+      } else if (text.includes("layanan dlhp") || text.includes("layanan dlh") || text.includes("layanan lingkungan hidup")) {
+        return "**Layanan DLHP Kota Palopo:**\n\n" +
+               "* Rekomendasi Dokumen Lingkungan (AMDAL / UKL-UPL / SPPL)\n" +
+               "* Pengaduan Pencemaran & Kerusakan Lingkungan Hidup\n" +
+               "* Layanan Pengangkutan & Pengelolaan Sampah Kota\n" +
+               "* Permohonan Bibit Penghijauan & RTH\n\n" +
+               "📍 **Lokasi:** Jl. Sulawesi No. 6 Palopo";
+
+      } else if (text.includes("layanan dispusarsip") || text.includes("layanan perpustakaan")) {
+        return "**Layanan DISPUSARSIP Kota Palopo:**\n\n" +
+               "* Layanan Perpustakaan Umum & Baca di Tempat\n" +
+               "* Pembuatan Kartu Anggota Perpustakaan\n" +
+               "* Layanan Penelusuran Arsip Daerah\n" +
+               "* Pembinaan & Penataan Kearsipan OPD / Kelurahan\n\n" +
+               "📍 **Lokasi:** Jl. Andi Djemma Kota Palopo";
+
+      } else if (text.includes("layanan dishub") || text.includes("layanan perhubungan")) {
+        return "**Layanan DISHUB Kota Palopo:**\n\n" +
+               "* Pengujian Berkala Kendaraan Bermotor (Uji KIR)\n" +
+               "* Penerbitan Izin Trayek Angkutan Kota\n" +
+               "* Pengawasan & Pengelolaan Parkir Tepi Jalan Umum\n" +
+               "* Rekomendasi Analisis Dampak Lalu Lintas (Andalalin)\n\n" +
+               "📍 **Lokasi:** Jl. Veteran No. 12 Palopo";
+
+      } else if (text.includes("layanan dispertan") || text.includes("layanan pertanian") || text.includes("layanan perikanan")) {
+        return "**Layanan Dispertan Pangan dan Perikanan Kota Palopo:**\n\n" +
+               "* Fasilitasi Alokasi Pupuk Bersubsidi & Kartu Tani\n" +
+               "* Bantuan Bibit Unggul Pertanian & Tanaman Pangan\n" +
+               "* Pelayanan Kesehatan Hewan (Vaksinasi & Pemeriksaan Ternak)\n" +
+               "* Bantuan Sarana & Alat Tangkap Nelayan / Budidaya Ikan\n\n" +
+               "📍 **Lokasi:** Jl. Anggrek Kota Palopo";
+
+      // ==========================================
+      // LAYANAN KECAMATAN (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan kecamatan wara barat") || text.includes("layanan wara barat")) {
+        return "**Layanan Kantor Kecamatan Wara Barat:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan (Pengantar KK/KTP)\n" +
+               "* Legalisasi Surat Keterangan Kelurahan / SKTM\n" +
+               "* Pelayanan Surat Keterangan Tanah (SKT / Rekomendasi)\n" +
+               "* Koordinasi Trantibum & Kebencanaan Wilayah Barat\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Toraja";
+
+      } else if (text.includes("layanan kecamatan wara utara") || text.includes("layanan wara utara")) {
+        return "**Layanan Kantor Kecamatan Wara Utara:**\n\n" +
+               "* Pelayanan Administrasi Terpadu Kecamatan (PATEN)\n" +
+               "* Pengantar Pengurusan Dokumen Kependudukan\n" +
+               "* Legalisir Surat Keterangan Usaha (SKU) & SKTM\n" +
+               "* Pengaduan Ketentraman & Ketertiban Umum\n\n" +
+               "📍 **Lokasi:** Jl. Cendana Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan wara timur") || text.includes("layanan wara timur")) {
+        return "**Layanan Kantor Kecamatan Wara Timur:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan PATEN\n" +
+               "* Rekomendasi Surat Izin Usaha Skala Mikro\n" +
+               "* Pengantar Pengurusan SKTM & Bantuan Sosial\n" +
+               "* Legalisasi Dokumen Keterangan Wilayah Pesisir\n\n" +
+               "📍 **Lokasi:** Jl. Luwu Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan wara selatan") || text.includes("layanan wara selatan")) {
+        return "**Layanan Kantor Kecamatan Wara Selatan:**\n\n" +
+               "* Pelayanan Surat Pengantar Nikah & Pindah Domisili\n" +
+               "* Legalisir Surat Keterangan Kelurahan / Domisili\n" +
+               "* Rekomendasi Usaha & Fasilitasi Program Sosial\n" +
+               "* Pengaduan Trantibum Wilayah Selatan\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Makassar (Sampoddo)";
+
+      } else if (text.includes("layanan kecamatan mungkajang") || text.includes("layanan mungkajang")) {
+        return "**Layanan Kantor Kecamatan Mungkajang:**\n\n" +
+               "* Pelayanan PATEN Kecamatan & Administrasi Warga\n" +
+               "* Pengantar Kependudukan & Surat Keterangan Domisili\n" +
+               "* Fasilitasi Bantuan Sosial & Pembinaan Wisata Latuppa\n\n" +
+               "📍 **Lokasi:** Poros Latuppa Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan sendana") || text.includes("layanan sendana")) {
+        return "**Layanan Kantor Kecamatan Sendana:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Terpadu\n" +
+               "* Pengantar Izin Usaha Mikro & SKTM\n" +
+               "* Koordinasi Pertanian, Perkebunan, & Pembangunan Wilayah\n\n" +
+               "📍 **Lokasi:** Kecamatan Sendana Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan bara") || text.includes("layanan bara")) {
+        return "**Layanan Kantor Kecamatan Bara:**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Wilayah Utara\n" +
+               "* Pengantar Surat Keterangan Tanah (SKT) & Rekomendasi Building\n" +
+               "* Legalisir Dokumen Keterangan Tidak Mampu / Bansos\n\n" +
+               "📍 **Lokasi:** Jl. To'Bulung Kota Palopo";
+
+      } else if (text.includes("layanan kecamatan telluwanua") || text.includes("layanan telluwanua") || text.includes("layanan tellu wanua")) {
+        return "**Layanan Kantor Kecamatan Telluwanua:**\n\n" +
+               "* Pelayanan Administrasi Terpadu Kecamatan (PATEN)\n" +
+               "* Pengantar Kependudukan (KK, KTP, Surat Pindah)\n" +
+               "* Fasilitasi Sektor Pertanian & Perikanan Wilayah Perbatasan\n\n" +
+               "📍 **Lokasi:** Poros Palopo - Walenrang";
+
+      } else if (text.includes("layanan kecamatan wara") || text.includes("layanan wara")) {
+        return "**Layanan Kantor Kecamatan Wara (Pusat Kota):**\n\n" +
+               "* Pelayanan Administrasi Kependudukan Pusat Kota\n" +
+               "* Rekomendasi Izin Usaha Mikro & Surat Keterangan Domisili\n" +
+               "* Legalisir Surat Keterangan Tidak Mampu (SKTM)\n" +
+               "* Pengaduan Trantibum Lingkungan Pusat Kota\n\n" +
+               "📍 **Lokasi:** Jl. Jend. Sudirman Kota Palopo";
+
+      // ==========================================
+      // LAYANAN FASILITAS KESEHATAN / FASKES (FORMAT LIST)
+      // ==========================================
+      } else if (text.includes("layanan rsud sawerigading") || text.includes("layanan rs sawerigading")) {
+        return "**Layanan RSUD Sawerigading Kota Palopo:**\n\n" +
+               "* Pelayanan Gawat Darurat (IGD) 24 Jam\n" +
+               "* Rawat Jalan Poliklinik Spesialis & Sub-Spesialis\n" +
+               "* Pelayanan Rawat Inap, ICU, ICCU, & NICU/PICU\n" +
+               "* Pemeriksaan Penunjang (Laboratorium, Radiologi, CT-Scan, Ultrasonografi)\n" +
+               "* Layanan Medical Check-Up (MCU) & Konsultasi Gizi\n" +
+               "* Layanan Rujukan BPJS Kesehatan / JKN & Umum\n\n" +
+               "📍 **Lokasi:** Jl. Rampoang, Kec. Bara, Kota Palopo";
+
+      } else if (text.includes("layanan rsud palemmai tandi") || text.includes("layanan rs palemmai")) {
+        return "**Layanan RSUD Palemmai Tandi Kota Palopo:**\n\n" +
+               "* Pelayanan IGD 24 Jam\n" +
+               "* Poliklinik Rawat Jalan (Spesialis Penyakit Dalam, Anak, Kebidanan, dll.)\n" +
+               "* Fasilitas Rawat Inap & Bedah Sentral\n" +
+               "* Laboratorium Klinik & Radiologi\n" +
+               "* Pelayanan Pasien BPJS Kesehatan & Umum\n\n" +
+               "📍 **Lokasi:** Jl. Samiun Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara utara")) {
+        return "**Layanan Puskesmas Wara Utara:**\n\n" +
+               "* Pemeriksaan Umum & Lansia\n" +
+               "* Pelayanan Kesehatan Ibu dan Anak (KIA) & KB\n" +
+               "* Imunisasi Dasar Lengkap & Pemantauan Stunting / Posyandu\n" +
+               "* Pengobatan Gigi dan Mulut\n" +
+               "* Laboratorium Sederhana & Konsultasi Gizi\n\n" +
+               "📍 **Lokasi:** Jl. Battara Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas mungkajang")) {
+        return "**Layanan Puskesmas Mungkajang:**\n\n" +
+               "* Pelayanan Pengobatan Umum & Kunjungan Rumah (Puskesmas Keliling)\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, & Imunisasi\n" +
+               "* Konsultasi Sanitasi Lingkungan & Gizi Balita\n" +
+               "* Laboratorium Dasar & Pelayanan BPJS Kesehatan\n\n" +
+               "📍 **Lokasi:** Mungkajang, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas sendana")) {
+        return "**Layanan Puskesmas Sendana:**\n\n" +
+               "* Pengobatan Umum & Pelayanan Darurat Pertama\n" +
+               "* Pemeriksaan Kehamilan, Nifas, & KB\n" +
+               "* Penimbangan Balita & Pemantauan Gizi Stunting\n" +
+               "* Pelayanan Kesehatan Remaja & Lansia\n\n" +
+               "📍 **Lokasi:** Sendana, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas pontap")) {
+        return "**Layanan Puskesmas Pontap:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & BPJS Kesehatan\n" +
+               "* Kesehatan Ibu & Anak (KIA), Bersalin, & KB\n" +
+               "* Imunisasi & Pencegahan Penyakit Menular Pesisir\n" +
+               "* Pemeriksaan Kesehatan Gigi & Laboratorium Dasar\n\n" +
+               "📍 **Lokasi:** Jl. Salekoe (Pontap), Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas benteng")) {
+        return "**Layanan Puskesmas Benteng:**\n\n" +
+               "* Pelayanan Poli Umum & Pengobatan Lansia\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, Imunisasi, & KB\n" +
+               "* Konsultasi Gizi & Pencegahan Stunting\n" +
+               "* Pelayanan Rekam Medis & BPJS Kesehatan\n\n" +
+               "📍 **Lokasi:** Benteng, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas padang lambe")) {
+        return "**Layanan Puskesmas Padang Lambe:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & Pengobatan Dasar\n" +
+               "* Pelayanan KIA, Imunisasi, & Kesehatan Keluarga\n" +
+               "* Pelayanan Kesehatan Masyarakat & Puskesmas Keliling\n\n" +
+               "📍 **Lokasi:** Padang Lambe, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas telluwanua")) {
+        return "**Layanan Puskesmas Telluwanua:**\n\n" +
+               "* Pengobatan Umum & Penanganan Darurat Pertama\n" +
+               "* Pelayanan Kesehatan Ibu, Anak, Bersalin, & Imunisasi\n" +
+               "* Pemeriksaan Laboratorium Sederhana\n" +
+               "* Konsultasi Gizi & Kesehatan Lingkungan\n\n" +
+               "📍 **Lokasi:** Telluwanua, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara selatan")) {
+        return "**Layanan Puskesmas Wara Selatan:**\n\n" +
+               "* Pelayanan Poli Umum & Poli Gigi\n" +
+               "* Pelayanan KIA, KB, Imunisasi, & Pemeriksaan Hamil\n" +
+               "* Pelayanan Posyandu Balita & Cegah Stunting\n" +
+               "* Pelayanan Kesehatan Masyarakat & BPJS\n\n" +
+               "📍 **Lokasi:** Wara Selatan, Kota Palopo";
+
+      } else if (text.includes("layanan puskesmas wara")) {
+        return "**Layanan Puskesmas Wara:**\n\n" +
+               "* Pemeriksaan Kesehatan Umum & Pengobatan Lansia\n" +
+               "* Pelayanan Ibu Hamil, Menyusui, KB, & Imunisasi Balita\n" +
+               "* Pelayanan Kesehatan Gigi & Mulut\n" +
+               "* Laboratorium Sederhana & Konsultasi Gizi Balita / Stunting\n\n" +
+               "📍 **Lokasi:** Jl. Wara Kota Palopo";
+
+      } else if (text.includes("layanan labkesda") || text.includes("layanan laboratorium kesehatan")) {
+        return "**Layanan Labkesda (Laboratorium Kesehatan Daerah) Palopo:**\n\n" +
+               "* Pemeriksaan Laboratorium Klinik (Darah, Urine, Patologi Sederhana)\n" +
+               "* Pengujian Sampel Air Minum & Air Bersih\n" +
+               "* Pengujian Sampel Makanan & Minuman (Higiene Sanitasi)\n" +
+               "* Pemeriksaan Kesehatan Lingkungan & Usaha\n\n" +
+               "📍 **Lokasi:** Jl. Landak, Kota Palopo";
+
+            // ==========================================
+      // INFORMASI KHUSUS PROFIL & PEMERINTAHAN KOTA PALOPO
+      // ==========================================
+      } else if (text.includes("siapa wali kota") || text.includes("walikota palopo") || text.includes("siapa walikota") || text.includes("ibu naili") || text.includes("wali kota palopo")) {
+        return "🏛️ **Pimpinan Pemerintah Kota Palopo**\n\n" +
+               "* **Wali Kota Palopo:** Ibu NAILI\n" +
+               "* **Pusat Pemerintahan:** Kantor Wali Kota Palopo / Balai Kota (Jl. Andi Djemma)\n" +
+               "* **Portal Resmi:** palopokota.go.id\n\n" +
+               "Pemerintah Kota Palopo terus berfokus pada peningkatan layanan publik digital, pembangunan ekonomi daerah, penataan kota, serta kesejahteraan masyarakat Luwu Raya.";
+
+      } else if (text.includes("pariwisata") || text.includes("wisata palopo") || text.includes("tempat wisata") || text.includes("destinasi") || text.includes("liburan")) {
+        return "🌴 **Destinasi Wisata Unggulan Kota Palopo**\n\n" +
+               "* **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo (salah satu masjid tertua di Sulsel), & Museum Batara Guru.\n" +
+               "* **Wisata Alam & Pegunungan:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Air Terjun Latuppa, & Gua Kancing.\n" +
+               "* **Wisata Bahari & Ruang Terbuka:** Pantai Labombo, Pelabuhan Tanjung Ringgit, Lapangan Pancasila, & Lapangan Gaspa.\n" +
+               "* **Wisata Kuliner Khas:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco, & Paredde).";
+
+      } else if (text.includes("hari jadi") || text.includes("ulang tahun palopo") || text.includes("hut palopo") || text.includes("sejarah palopo")) {
+        return "🎉 **Hari Jadi & Sejarah Singkat Kota Palopo**\n\n" +
+               "* **Hari Jadi Kota:** Peringatan setiap tanggal **2 Juli**.\n" +
+               "* **Dasar Hukum Otonomi:** Pembentukan daerah otonom berdasarkan UU Nomor 11 Tahun 2002.\n" +
+               "* **Latar Belakang Sejarah:** Palopo merupakan pusat kedudukan dan sejarah dari Kedatuan Luwu, salah satu kerajaan tertua di Sulawesi Selatan.";
+
+      } else if (text.includes("kuliner palopo") || text.includes("makanan khas palopo") || text.includes("kapurung")) {
+        return "🍲 **Kuliner Khas Kota Palopo**\n\n" +
+               "* **Kapurung:** Makanan khas berbasis olahan sagu dengan kuah bumbu ikan/daging serta sayuran segar.\n" +
+               "* **Pacco:** Olahan ikan segar mentah yang dibumbui perasan jeruk nipis dan cabai khas Luwu.\n" +
+               "* **Dange:** Pangan lokal dari tepung sagu/ketan yang dibakar dengan cetakan tanah liat.\n" +
+               "* **Paredde:** Olahan sup ikan kuah kuning dengan rasa asam gurih yang segar.";
+
+      } else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("kota palopo")) {
+        return "🌆 **Profil Umum Kota Palopo**\n\n" +
+               "* **Status:** Kota Otonom di Provinsi Sulawesi Selatan.\n" +
+               "* **Wali Kota:** Ibu NAILI\n" +
+               "* **Peran Strategis:** Pusat perdagangan, jasa, pendidikan, dan layanan kesehatan di kawasan Luwu Raya.\n" +
+               "* **Pembagian Wilayah:** Terdiri dari 9 Kecamatan dan 48 Kelurahan.";
+        
+      // SAPAAN, SALAM, PERKENALAN
+      } else if (text.includes("assalamualaikum") || text.includes("salam")) {
+        return "Wa'alaikumsalam Warahmatullahi Wabarakatuh! 🌿\n\n" +
+               "Selamat datang di Layanan **Palopota AI**. Saya siap membantu Anda seputar pengurusan dokumen, izin UMKM, atau informasi layanan publik Kota Palopo. Ada yang bisa saya bantu hari ini?";
+      } else if (text.includes("halo") || text.includes("hai") || text.includes("hello")) {
+        return "Halo! 👋 Selamat datang di **Palopota AI**.\n\n" +
+               "Saya asisten digital resmi Kota Palopo. Silakan tanyakan syarat pembuatan KTP, KK, Akta Kelahiran, NIB UMKM, Beasiswa, Bansos, atau layanan OPD lainnya!";
+      } else if (text.includes("tabe") || text.includes("salama")) {
+        return "Salama’ki tapada salama! Tabe', aga kaperluangta ri layanan **Palopota AI** hari ini?\n\n" +
+               "Saya siap membantu pengurusan berkas kependudukan, perizinan, dan informasi layanan publik di Kota Palopo.";
+      } else if (text.includes("terima kasih") || text.includes("makasih") || text.includes("thanks") || text.includes("makkasora")) {
+        return "Sama-sama! 😊 Senang sekali bisa membantu Anda.\n\n" +
+               "Jika masih ada dokumen atau layanan publik Kota Palopo yang ingin ditanyakan, jangan ragu untuk menyapa saya kembali. Palopota AI selalu siap 24/7 untuk Anda!";
+      } else if (text.includes("siapa kamu") || text.includes("perkenalan") || text.includes("tentang aplikasi")) {
+        return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\n" +
+               "Saya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
+      } else {
+        return `Terima kasih atas pertanyaan Anda mengenai **"${escapeHtml(prompt)}"**.\n\n` +
+               `Sebagai Asisten AI Kota Palopo, saya dapat membimbing Anda mengenai:\n` +
+               `* **Disdukcapil:** KTP-el, KK, Akta Lahir/Kematian, Surat Pindah.\n` +
+               `* **DPMPTSP:** NIB UMKM, Sertifikat Halal, PBG Bangunan.\n` +
+               `* **Dinas Sosial:** DTKS, PKH, BPNT, SKTM.\n\n`;
+      }
+    }
+
+    function clearChat() {
+      chatHistory = [];
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+      
+      const stream = document.getElementById('chat-stream');
+      stream.innerHTML = `
+        <div class="flex items-start space-x-2.5 my-1">
+          <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+          <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-slate-700 shadow-sm">
+            Riwayat percakapan telah dibersihkan. Silakan tanyakan informasi layanan publik lainnya!
+          </div>
+        </div>
+      `;
+    }
+
+    function openFeatureModal(type) {
+      const modal = document.getElementById('feature-modal');
+      const title = document.getElementById('modal-title');
+      const body = document.getElementById('modal-body');
+      modal.classList.remove('hidden');
+
+      if (type === 'LIFE_EVENT') {
+        title.innerText = "Life Event Mode (Layanan Terpadu)";
+        body.innerHTML = `
+          <div class="space-y-2.5">
+            <div class="p-3 border rounded-2xl bg-rose-50/70 border-rose-200">
+              <div class="font-bold text-rose-900 text-xs mb-1">👶 Melahirkan & Kelahiran Bayi</div>
+              <p class="text-[11px] text-slate-600 mb-2">Integrasi Akta Kelahiran Disdukcapil + Posyandu Dinkes + BPJS Kesehatan.</p>
+              <button onclick="askAI('Syarat pengurusan akta kelahiran dan BPJS bayi baru lahir')" class="text-[10px] bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-emerald-50/70 border-emerald-200">
+              <div class="font-bold text-emerald-900 text-xs mb-1">🏪 Membuka Usaha / UMKM Baru</div>
+              <p class="text-[11px] text-slate-600 mb-2">Integrasi NIB DPMPTSP + Sertifikat Halal + PIRT Kesehatan + Bantuan Modal Diskopdagrin.</p>
+              <button onclick="askAI('Bagaimana cara buat NIB UMKM dan Sertifikat Halal?')" class="text-[10px] bg-emerald-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-pink-50/70 border-pink-200">
+              <div class="font-bold text-pink-900 text-xs mb-1">💍 Pernikahan & Pembentukan KK Baru</div>
+              <p class="text-[11px] text-slate-600 mb-2">Pemisahan Kartu Keluarga (KK) Disdukcapil + Update Status KTP Pasutri.</p>
+              <button onclick="askAI('Syarat buat KK baru setelah menikah dan update KTP')" class="text-[10px] bg-pink-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-sky-50/70 border-sky-200">
+              <div class="font-bold text-sky-900 text-xs mb-1">🏡 Pindah Domisili ke Palopo</div>
+              <p class="text-[11px] text-slate-600 mb-2">SKPWNI Disdukcapil + Pembaruan KK/KTP + Mutasi BPJS Kesehatan Faskes.</p>
+              <button onclick="askAI('Prosedur dan syarat pindah domisili masuk ke Kota Palopo')" class="text-[10px] bg-sky-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-amber-50/70 border-amber-200">
+              <div class="font-bold text-amber-900 text-xs mb-1">🎓 Masuk Sekolah & Beasiswa</div>
+              <p class="text-[11px] text-slate-600 mb-2">Pendaftaran PPDB Dinas Pendidikan + Pengurusan Beasiswa Palopo Pintar & SKTM Kelurahan.</p>
+              <button onclick="askAI('Syarat daftar Beasiswa Palopo Pintar dan SKTM')" class="text-[10px] bg-amber-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-indigo-50/70 border-indigo-200">
+              <div class="font-bold text-indigo-900 text-xs mb-1">💼 Mencari Kerja & Pelatihan Kerja</div>
+              <p class="text-[11px] text-slate-600 mb-2">Pembuatan Kartu Kuning (AK-1) Dinsosnakertrans + Pendaftaran Pelatihan Kerja BLK.</p>
+              <button onclick="askAI('Syarat membuat Kartu Kuning AK1 melamar kerja')" class="text-[10px] bg-indigo-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-teal-50/70 border-teal-200">
+              <div class="font-bold text-teal-900 text-xs mb-1">🤲 Pengusulan Bantuan Sosial (Bansos)</div>
+              <p class="text-[11px] text-slate-600 mb-2">Pengusulan Masuk DTKS Dinas Sosial + Pendaftaran PKH/BPNT + PBI BPJS Gratis.</p>
+              <button onclick="askAI('Cara daftar DTKS dan Bansos PKH di Palopo')" class="text-[10px] bg-teal-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-orange-50/70 border-orange-200">
+              <div class="font-bold text-orange-900 text-xs mb-1">🏗️ Pembangunan & Perizinan Rumah</div>
+              <p class="text-[11px] text-slate-600 mb-2">Penerbitan Persetujuan Bangunan Gedung (PBG/IMB) PUPR/DPMPTSP + Kesesuaian Tata Ruang (KKPR).</p>
+              <button onclick="askAI('Syarat mengurus PBG atau IMB bangunan rumah')" class="text-[10px] bg-orange-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-purple-50/70 border-purple-200">
+              <div class="font-bold text-purple-900 text-xs mb-1">📄 Pengurusan Dokumen Hilang / Rusak</div>
+              <p class="text-[11px] text-slate-600 mb-2">Cetak ulang KTP/KK/Akta Hilang (Surat Kehilangan Kepolisian + Disdukcapil).</p>
+              <button onclick="askAI('Syarat cetak ulang KTP dan KK yang hilang atau rusak')" class="text-[10px] bg-purple-600 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+            <div class="p-3 border rounded-2xl bg-slate-100 border-slate-300">
+              <div class="font-bold text-slate-800 text-xs mb-1">🕊️ Kematian & Ahli Waris</div>
+              <p class="text-[11px] text-slate-600 mb-2">Penerbitan Akta Kematian Disdukcapil + Perubahan Status KK + Santunan Duka / Ahli Waris.</p>
+              <button onclick="askAI('Syarat pengurusan Akta Kematian dan KK baru')" class="text-[10px] bg-slate-700 text-white px-2.5 py-1 rounded-lg font-bold">Tanya Syarat</button>
+            </div>
+          </div>
+        `;
+            } else if (type === 'EMERGENCY') {
+        title.innerText = "Layanan Cepat Darurat Kota Palopo";
+        body.innerHTML = `
+          <div class="space-y-3">
+            <!-- 1. Panggilan Darurat Utama -->
+            <div class="p-3 bg-rose-100 border border-rose-300 rounded-2xl space-y-1">
+              <div class="font-extrabold text-rose-900 text-xs flex items-center justify-between">
+                <span class="flex items-center"><i class="fa-solid fa-phone-volume text-rose-600 mr-1.5 animate-pulse"></i> Panggilan Darurat Tunggal</span>
+                <span class="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">112</span>
+              </div>
+              <p class="text-[11px] text-slate-600">Layanan bebas pulsa siaga darurat Kota Palopo.</p>
+              <a href="tel:112" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow mt-1">
+                <i class="fa-solid fa-phone"></i><span>Telepon 112 (Bebas Pulsa)</span>
+              </a>
+            </div>
+
+            <!-- 2. Kepolisian (Polres Palopo) -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-shield-halved text-blue-600 mr-1.5"></i> Kepolisian (Polres Palopo)
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Opu Tosappaile No.9, Wara, Palopo</p>
+              <div class="flex gap-2 pt-1">
+                <a href="tel:110" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>Call 110</span>
+                </a>
+                <a href="https://wa.me/6281218902002" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Hotline WA</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 3. Pemadam Kebakaran -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-fire-extinguisher text-rose-600 mr-1.5"></i> Pemadam Kebakaran
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Pongsimpin No.1, Wara, Palopo</p>
+              <div class="flex gap-2 pt-1">
+                <a href="tel:047122501" class="flex-1 bg-brand-navy hover:bg-slate-800 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>(0471) 22501</span>
+                </a>
+                <a href="https://wa.me/6285341341565" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. BPBD Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-house-chimney-crack text-amber-600 mr-1.5"></i> BPBD Kota Palopo
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Opu Toparambean No. 02, Mungkajang</p>
+              <div class="grid grid-cols-2 gap-1.5 pt-1">
+                <a href="tel:04713310239" class="bg-brand-navy text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-phone"></i><span>(0471) 3310239</span>
+                </a>
+                <a href="tel:082194699391" class="bg-amber-600 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-mobile-screen"></i><span>0821-9469-9391</span>
+                </a>
+              </div>
+              <a href="https://wa.me/6281242362552" target="_blank" class="w-full bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1 mt-1">
+                <i class="fa-brands fa-whatsapp"></i><span>Pengaduan WA (0812-4236-2552)</span>
+              </a>
+            </div>
+
+            <!-- 5. PLN Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center justify-between">
+                <span class="flex items-center"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i> PLN Kota Palopo</span>
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Jend. Sudirman No.1, Wara, Palopo</p>
+              <a href="tel:0471123" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-1.5 rounded-lg text-[11px] flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-phone"></i><span>(0471) 123</span>
+              </a>
+            </div>
+
+            <!-- 6. PDAM Kota Palopo -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5">
+              <div class="font-extrabold text-brand-navy text-xs flex items-center">
+                <i class="fa-solid fa-droplet text-sky-500 mr-1.5"></i> PDAM Kota Palopo
+              </div>
+              <p class="text-[10px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i>Jl. Pongsimpin, Kel. Murante, Mungkajang</p>
+              <div class="flex gap-2 pt-1">
+                <a href="https://wa.me/6282395362269" target="_blank" class="flex-1 bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Humas WA</span>
+                </a>
+                <a href="https://wa.me/6285145320000" target="_blank" class="flex-1 bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-[10px] flex items-center justify-center space-x-1">
+                  <i class="fa-brands fa-whatsapp"></i><span>Pengaduan WA</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- DAFTAR RUMAH SAKIT & FASKES -->
+            <div class="pt-2 border-t border-slate-200">
+              <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2">Rumah Sakit & Fasilitas Kesehatan</span>
+              <div class="space-y-2">
+                
+                <!-- RSUD Sawerigading -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSUD Sawerigading</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Dr. Ratulangi No.1, Wara</p>
+                  </div>
+                  <a href="tel:04713312133" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Mega Buana -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Mega Buana</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Andi Djemma No.99, Wara</p>
+                  </div>
+                  <a href="tel:047122266" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Bintang Laut -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Bintang Laut</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.45, Wara</p>
+                  </div>
+                  <a href="tel:047121302" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RSU St. Madyang -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSU St. Madyang</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Andi Djemma No.45, Wara</p>
+                  </div>
+                  <a href="tel:047124227" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RSU Mujaisyah -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RSU Mujaisyah Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.25, Wara</p>
+                  </div>
+                  <a href="tel:04713311727" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- RS Angkatan Darat -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">RS Angkatan Darat</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.17, Wara</p>
+                  </div>
+                  <a href="tel:047122331" class="bg-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- INSTANSI LAINNYA -->
+            <div class="pt-2 border-t border-slate-200">
+              <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2">Instansi Penegak Hukum & Keamanan</span>
+              <div class="space-y-2">
+
+                <!-- Satpol PP -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">Satpol PP Kota Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.21, Wara</p>
+                  </div>
+                  <a href="tel:047122671" class="bg-brand-navy text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+                <!-- BNN Kota Palopo -->
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                  <div>
+                    <strong class="text-xs text-brand-navy block">BNN Kota Palopo</strong>
+                    <p class="text-[10px] text-slate-500">Jl. Jend. Sudirman No.23, Wara</p>
+                  </div>
+                  <a href="tel:04713310675" class="bg-brand-navy text-white px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center space-x-1 shrink-0">
+                    <i class="fa-solid fa-phone"></i><span>Call</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        `;
+      } else if (type === 'OPD') {
+        title.innerText = "Direktori OPD Kota Palopo";
+        let html = '<div class="space-y-3">';
+        opdData.forEach(opd => {
+          let servicesList = opd.services.map(s => `<li class="flex items-center space-x-1"><span class="text-brand-blue font-bold">•</span> <span>${s}</span></li>`).join('');
+          html += `
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+              <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+                <strong class="text-xs font-extrabold text-brand-navy flex items-center">
+                  <i class="fa-solid fa-building-columns text-emerald-500 mr-1.5"></i> ${opd.name}
+                </strong>
+                <button onclick="askAI('Layanan ${opd.name}')" class="text-[10px] bg-brand-blue hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition">
+                  Tanya AI
+                </button>
+              </div>
+              <div class="text-[11px] text-slate-700">
+                <span class="font-bold text-slate-500 block mb-1">Daftar Layanan:</span>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] text-slate-600 pl-1">
+                  ${servicesList}
+                </ul>
+              </div>
+              <div class="pt-1 text-[10px] text-slate-400 flex items-center">
+                <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${opd.address}
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        body.innerHTML = html;
+      } else if (type === 'GIS' || type === 'FASKES') {
+        title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
+        let html = `
+          <div class="flex space-x-1 overflow-x-auto pb-2 custom-scroll mb-2 text-[11px]">
+            <button onclick="renderGisList('Semua')" id="tab-Semua" class="gis-tab bg-brand-navy text-white px-3 py-1 rounded-full font-bold whitespace-nowrap">Semua</button>
+            <button onclick="renderGisList('Fasum')" id="tab-Fasum" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏛️ Fasum</button>
+            <button onclick="renderGisList('OPD')" id="tab-OPD" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏢 OPD</button>
+            <button onclick="renderGisList('Kecamatan')" id="tab-Kecamatan" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">📍 Kecamatan</button>
+            <button onclick="renderGisList('Faskes')" id="tab-Faskes" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏥 Faskes</button>
+          </div>
+          <div id="gis-list-container" class="space-y-2"></div>
+        `;
+        body.innerHTML = html;
+        renderGisList('Semua');
+      }
+    }
+
+    function closeFeatureModal() {
+      document.getElementById('feature-modal').classList.add('hidden');
+    }
+
+    function askAI(promptText) {
+      closeFeatureModal();
+      document.getElementById('user-input').value = promptText;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    function triggerVoiceInput() {
+      const micBtn = document.getElementById('mic-btn');
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Fitur pengenal suara tidak didukung oleh browser ini.");
+        return;
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'id-ID';
+
+      recognition.onstart = function() {
+        micBtn.classList.add('text-rose-600', 'animate-pulse');
+      };
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('user-input').value = transcript;
+        micBtn.classList.remove('text-rose-600', 'animate-pulse');
+        handleChatSubmit(new Event('submit'));
+      };
+
+      recognition.onerror = function() {
+        micBtn.classList.remove('text-rose-600', 'animate-pulse');
+      };
+
+      recognition.onend = function() {
+        micBtn.classList.remove('text-rose-600', 'animate-pulse');
+      };
+
+      recognition.start();
+    }
+
+    function changeLanguage() {
+      const lang = document.getElementById('lang-select').value;
+      const sub = document.getElementById('sub-welcome');
+      if (lang === 'tae') sub.innerText = "Aga kaperluangta ri layanan Palopota AI hari ini?";
+      else if (lang === 'en') sub.innerText = "How can I assist your public service requests today?";
+      else sub.innerText = "Mau dibantu apa hari ini?";
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderGisList(filterCategory) {
+      const container = document.getElementById('gis-list-container');
+      if (!container) return;
+
+      document.querySelectorAll('.gis-tab').forEach(btn => {
+        btn.classList.remove('bg-brand-navy', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const activeTab = document.getElementById(`tab-${filterCategory}`);
+      if (activeTab) {
+        activeTab.classList.remove('bg-slate-100', 'text-slate-700');
+        activeTab.classList.add('bg-brand-navy', 'text-white');
+      }
+
+      const filtered = filterCategory === 'Semua' 
+        ? gisData 
+        : gisData.filter(item => item.category === filterCategory);
+
+      let html = '';
+      filtered.forEach(item => {
+        let icon = 'fa-location-dot';
+        let iconColor = 'text-indigo-500';
+        if (item.category === 'Fasum') { icon = 'fa-landmark'; iconColor = 'text-amber-500'; }
+        else if (item.category === 'OPD') { icon = 'fa-building'; iconColor = 'text-emerald-500'; }
+        else if (item.category === 'Kecamatan') { icon = 'fa-map'; iconColor = 'text-sky-500'; }
+        else if (item.category === 'Faskes') { icon = 'fa-hospital'; iconColor = 'text-rose-500'; }
+
+        html += `
+          <div class="p-2.5 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-between">
+            <div>
+              <strong class="text-xs text-slate-800 flex items-center">
+                <i class="fa-solid ${icon} ${iconColor} mr-1.5"></i> ${item.name}
+              </strong>
+              <p class="text-[10px] text-slate-500 mt-0.5">${item.address}</p>
+            </div>
+            <div class="flex space-x-1 shrink-0">
+              <a href="${item.mapsUrl}" target="_blank" class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg font-bold flex items-center hover:bg-indigo-100">
+                <i class="fa-solid fa-diamond-turn-right mr-1"></i> Peta
+              </a>
+              <button onclick="askAI('Info lokasi dan layanan ${item.name}')" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded-lg font-bold">
+                Tanya
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function checkEmergencyTrigger(inputText) {
+      const text = inputText.toLowerCase();
+
+      if (text.includes("telpon damkar") || text.includes("telpon pemadam") || text.includes("panggil damkar") || text.includes("hubungi damkar") || text.includes("ada kebakaran")) {
+        const emergencyHTML = `
+          <div class="space-y-2">
+            <p class="font-extrabold text-rose-600 flex items-center text-sm">
+              <i class="fa-solid fa-triangle-exclamation mr-1.5 animate-bounce"></i> PANGGILAN DARURAT DAMKAR
+            </p>
+            <p class="text-xs text-slate-700">Layanan Siap Siga Pemadam Kebakaran & Penyelamatan Kota Palopo 24/7.</p>
+            <div class="flex flex-col gap-2 pt-1">
+              <a href="https://wa.me/6285341341565?text=HALO%20DAMKAR%20PALOPO,%20SAYA%20MEMBUTUHKAN%20BANTUAN%20DARURAT!" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Chat WhatsApp Damkar Palopo</span>
+              </a>
+              <a href="tel:085341341565" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-solid fa-phone-volume text-sm"></i>
+                <span>Telepon Langsung (0471) 113</span>
+              </a>
+            </div>
+          </div>
+        `;
+        appendEmergencyMessage(emergencyHTML);
+        return true;
+      }
+
+      if (text.includes("panggil ambulans") || text.includes("panggil ambulance") || text.includes("telpon ambulans") || text.includes("ada kecelakaan")) {
+        const emergencyHTML = `
+          <div class="space-y-2">
+            <p class="font-extrabold text-rose-600 flex items-center text-sm">
+              <i class="fa-solid fa-truck-medical mr-1.5 animate-pulse"></i> PANGGILAN DARURAT AMBULANS (PSC 119)
+            </p>
+            <p class="text-xs text-slate-700">Layanan Penanganan Medis Darurat & Rujukan Ambulans Kota Palopo.</p>
+            <div class="flex flex-col gap-2 pt-1">
+              <a href="https://wa.me/628114211911?text=DARURAT%20AMBULANS%20PALOPO!%20Mohon%20bantuan%20segera." target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Chat WhatsApp PSC 119 Palopo</span>
+              </a>
+              <a href="tel:119" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-solid fa-phone-volume text-sm"></i>
+                <span>Call Center 119 (Bebas Pulsa)</span>
+              </a>
+            </div>
+          </div>
+        `;
+        appendEmergencyMessage(emergencyHTML);
+        return true;
+      }
+
+      if (text.includes("pangil bpbd") || text.includes("banjir") || text.includes("longsor") || text.includes("pohon tumbang")) {
+        const emergencyHTML = `
+          <div class="space-y-2">
+            <p class="font-extrabold text-amber-600 flex items-center text-sm">
+              <i class="fa-solid fa-house-chimney-crack mr-1.5"></i> POSKO DARURAT BENCANA (BPBD)
+            </p>
+            <p class="text-xs text-slate-700">Pelaporan Kejadian Bencana Alam & Evakuasi Tim BPBD Kota Palopo.</p>
+            <div class="flex flex-col gap-2 pt-1">
+              <a href="https://wa.me/6285117777818?text=LAPOR%20BPBD%20PALOPO,%20Terjadi%20kejadian%20darurat." target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Chat WhatsApp BPBD Palopo</span>
+              </a>
+            </div>
+          </div>
+        `;
+        appendEmergencyMessage(emergencyHTML);
+        return true;
+      }
+
+      if (text.includes("panggil polisi") || text.includes("panggil polres") || text.includes("kejahatan") || text.includes("maling")) {
+        const emergencyHTML = `
+          <div class="space-y-2">
+            <p class="font-extrabold text-blue-600 flex items-center text-sm">
+              <i class="fa-solid fa-shield-halved mr-1.5"></i> CALL CENTER POLRES PALOPO
+            </p>
+            <p class="text-xs text-slate-700">Layanan Pengaduan Gangguan Kamtibmas & Kejahatan Darurat.</p>
+            <div class="flex flex-col gap-2 pt-1">
+              <a href="tel:110" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
+                <i class="fa-solid fa-phone-volume text-sm"></i>
+                <span>Call Center 110 (Polres Palopo)</span>
+              </a>
+            </div>
+          </div>
+        `;
+        appendEmergencyMessage(emergencyHTML);
+        return true;
+      }
+
+      return false;
+    }
+
+    function appendEmergencyMessage(htmlContent) {
+      const stream = document.getElementById('chat-stream');
+      chatHistory.push({ role: "model", parts: [{ text: "Respon Darurat Ditampilkan" }] });
+
+      stream.insertAdjacentHTML('beforeend', `
+        <div class="flex items-start space-x-2.5 my-2">
+          <div class="w-8 h-8 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-md">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="bg-rose-50/80 border border-rose-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm leading-relaxed space-y-2">
+            ${htmlContent}
+          </div>
+        </div>
+      `);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    let isSpeaking = false;
+    let currentUtterance = null;
+
+    function toggleSpeech() {
+      const ttsBtn = document.getElementById('tts-btn');
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+        return;
+      }
+
+      if (!('speechSynthesis' in window)) {
+        alert("Browser Anda belum mendukung fitur pembacaan suara (Text-to-Speech).");
+        return;
+      }
+
+      const aiMessages = document.querySelectorAll('#chat-stream .chat-body');
+      if (aiMessages.length === 0) {
+        alert("Belum ada jawaban dari AI untuk dibacakan.");
+        return;
+      }
+
+      const lastAiMessage = aiMessages[aiMessages.length - 1];
+      const textToRead = lastAiMessage.innerText || lastAiMessage.textContent;
+
+      speakText(textToRead);
+    }
+
+    function speakText(text) {
+      const ttsBtn = document.getElementById('tts-btn');
+      window.speechSynthesis.cancel();
+
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      currentUtterance.lang = 'id-ID';
+      currentUtterance.rate = 1.0;
+      currentUtterance.pitch = 1.0;
+
+      currentUtterance.onstart = function () {
+        isSpeaking = true;
+        ttsBtn.classList.add('text-emerald-600', 'animate-pulse');
+      };
+
+      currentUtterance.onend = function () {
+        isSpeaking = false;
+        ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+      };
+
+      currentUtterance.onerror = function () {
+        isSpeaking = false;
+        ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+      };
+
+      window.speechSynthesis.speak(currentUtterance);
+    }
+
+    let idleTimer = null;
+    let ikmShownThisSession = false;
+
+    function startIdleTimer() {
+      if (ikmShownThisSession) return;
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        showIkmPopup();
+      }, 5 * 60 * 1000);
+    }
+
+    function showIkmPopup() {
+      if (ikmShownThisSession) return;
+      const popup = document.getElementById('ikm-popup');
+      if (popup) {
+        popup.classList.remove('hidden', 'translate-y-4');
+        ikmShownThisSession = true;
+      }
+    }
+
+    function closeIkmPopup() {
+      const popup = document.getElementById('ikm-popup');
+      if (popup) {
+        popup.classList.add('hidden');
+      }
+    }
+
+    let isAccessibilityMode = localStorage.getItem('PALOPO_ACCESSIBILITY_MODE') === 'true';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (isAccessibilityMode) {
+        applyAccessibilityMode(true);
+      }
+      loadChatFromLocalStorage();
+      startIdleTimer();
+    });
+
+    function toggleAccessibilityMode() {
+      isAccessibilityMode = !isAccessibilityMode;
+      localStorage.setItem('PALOPO_ACCESSIBILITY_MODE', isAccessibilityMode);
+      applyAccessibilityMode(isAccessibilityMode);
+    }
+
+    function applyAccessibilityMode(enable) {
+      const btn = document.getElementById('accessibility-btn');
+      if (enable) {
+        document.body.classList.add('high-contrast');
+        if (btn) btn.classList.add('text-amber-400', 'scale-110');
+      } else {
+        document.body.classList.remove('high-contrast');
+        if (btn) btn.classList.remove('text-amber-400', 'scale-110');
+      }
+    }
+
+    const CHAT_STORAGE_KEY = 'PALOPO_CHAT_HISTORY_DATA';
+
+    function saveChatToLocalStorage() {
+      const stream = document.getElementById('chat-stream');
+      if (!stream) return;
+
+      const chatData = {
+        history: chatHistory,
+        htmlContent: stream.innerHTML
+      };
+
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatData));
+    }
+
+    function loadChatFromLocalStorage() {
+      const savedData = localStorage.getItem(CHAT_STORAGE_KEY);
+      if (!savedData) return;
+
+      try {
+        const chatData = JSON.parse(savedData);
+        if (chatData.history && chatData.history.length > 0) {
+          chatHistory = chatData.history;
+          const stream = document.getElementById('chat-stream');
+          if (stream && chatData.htmlContent) {
+            stream.innerHTML = chatData.htmlContent;
+            stream.scrollTop = stream.scrollHeight;
+          }
+        }
+      } catch (e) {
+        console.error("Gagal memuat riwayat percakapan lokal:", e);
+      }
+    }
+
+    function openEligibilityModal() {
+      document.getElementById('eligibility-modal').classList.remove('hidden');
+      document.getElementById('quiz-step-container').classList.remove('hidden');
+      document.getElementById('quiz-result-container').classList.add('hidden');
+    }
+
+    function closeEligibilityModal() {
+      document.getElementById('eligibility-modal').classList.add('hidden');
+    }
+
+    function calculateEligibility() {
+      const kk = document.getElementById('q-kk').value;
+      const income = document.getElementById('q-income').value;
+      const student = document.getElementById('q-student').value;
+      const dtks = document.getElementById('q-dtks').value;
+
+      const stepContainer = document.getElementById('quiz-step-container');
+      const resultContainer = document.getElementById('quiz-result-container');
+
+      stepContainer.classList.add('hidden');
+      resultContainer.classList.remove('hidden');
+
+      let eligibilityHTML = "";
+
+      if (kk === "tidak") {
+        eligibilityHTML = `
+          <div class="p-3.5 border rounded-2xl bg-amber-50 border-amber-200 text-amber-900 space-y-2 text-xs">
+            <strong class="font-extrabold block text-sm">⚠️ Catatan Domisili KK</strong>
+            <p class="text-[11px] leading-relaxed">Bantuan Sosial daerah Kota Palopo dikhususkan bagi pemegang KK Kota Palopo. Anda disarankan melakukan Pindah Domisili terlebih dahulu.</p>
+          </div>
+        `;
+      } else {
+        eligibilityHTML = `
+          <div class="p-3.5 border rounded-2xl bg-emerald-50 border-emerald-200 text-emerald-900 space-y-2 text-xs">
+            <strong class="font-extrabold block text-sm">🟢 Berpotensi Layak Menerima Bantuan</strong>
+            <p class="text-[11px] leading-relaxed">Berdasarkan profil Anda, keluarga Anda berpotensi mendapatkan bantuan sosial/beasiswa daerah Palopo.</p>
+          </div>
+        `;
+      }
+
+      eligibilityHTML += `
+        <div class="flex space-x-2 pt-1">
+          <button onclick="askAI('Syarat pengusulan DTKS dan PKH'); closeEligibilityModal();" class="w-1/2 bg-brand-navy text-white font-bold py-2 rounded-xl text-xs">
+            Tanya AI Syarat
+          </button>
+          <button onclick="openEligibilityModal()" class="w-1/2 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">
+            Ulangi Cek
+          </button>
+        </div>
+      `;
+
+      resultContainer.innerHTML = eligibilityHTML;
+    }
+
+    function openStuntingModal() {
+      document.getElementById('stunting-modal').classList.remove('hidden');
+      document.getElementById('stunting-form-container').classList.remove('hidden');
+      document.getElementById('stunting-result-container').classList.add('hidden');
+    }
+
+    function closeStuntingModal() {
+      document.getElementById('stunting-modal').classList.add('hidden');
+    }
+
+    function calculateStunting() {
+      const age = parseFloat(document.getElementById('st-age').value);
+      const height = parseFloat(document.getElementById('st-height').value);
+      const weight = parseFloat(document.getElementById('st-weight').value);
+
+      if (isNaN(age) || isNaN(height) || isNaN(weight)) {
+        alert("Mohon isi seluruh data usia, tinggi, dan berat badan dengan benar.");
+        return;
+      }
+
+      const formContainer = document.getElementById('stunting-form-container');
+      const resultContainer = document.getElementById('stunting-result-container');
+
+      formContainer.classList.add('hidden');
+      resultContainer.classList.remove('hidden');
+
+      let expectedHeight = 50 + (age * 1.5); 
+      let heightDiff = height - expectedHeight;
+
+      let statusTitle = "";
+      let statusClass = "";
+      let description = "";
+
+      if (heightDiff < -5) {
+        statusTitle = "⚠️ Indikasi Risiko Stunting (Sangat Pendek / Pendek)";
+        statusClass = "bg-rose-50 border-rose-200 text-rose-900";
+        description = "Tinggi badan balita berada di bawah rata-rata standar pertumbuhan seusianya. Disarankan untuk segera melakukan konsultasi ke Posyandu atau Puskesmas terdekat.";
+      } else if (heightDiff >= -5 && heightDiff <= 5) {
+        statusTitle = "🟢 Pertumbuhan Normal (Gizi Baik)";
+        statusClass = "bg-emerald-50 border-emerald-200 text-emerald-900";
+        description = "Tinggi dan berat badan balita dalam rentang standar yang sesuai dengan usianya. Pertahankan pola makan bergizi seimbang dan vitamin.";
+      } else {
+        statusTitle = "🔵 Pertumbuhan Optimal (Tinggi)";
+        statusClass = "bg-sky-50 border-sky-200 text-sky-900";
+        description = "Tinggi badan balita di atas rata-rata standar pertumbuhannya. Pastikan asupan nutrisi dan pola asuh tetap terjaga.";
+      }
+
+      let resultsHTML = `
+        <div class="p-3.5 border rounded-2xl ${statusClass} space-y-2 text-xs">
+          <strong class="font-extrabold block text-sm">${statusTitle}</strong>
+          <p class="text-[11px] leading-relaxed">${description}</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-[11px] text-slate-600">
+          <div class="font-bold text-slate-800 border-b pb-1 mb-1">Rekomendasi Tindakan Lanjut:</div>
+          <p>• <strong>Layanan Posyandu & Dinkes:</strong> Kunjungi Puskesmas/Posyandu terdekat di Kota Palopo untuk penimbangan dan konsultasi gizi rutin.</p>
+          <p>• <strong>Program PMT:</strong> Ajukan bantuan Pemberian Makanan Tambahan (PMT) balita melalui petugas Puskesmas jika diperlukan.</p>
+        </div>
+
+        <div class="flex space-x-2 pt-1">
+          <button onclick="askAI('Info puskesmas terdekat dan layanan penanganan stunting dinas kesehatan'); closeStuntingModal();" class="w-1/2 bg-brand-navy text-white font-bold py-2 rounded-xl text-xs">
+            Tanya AI Syarat/Lokasi
+          </button>
+          <button onclick="openStuntingModal()" class="w-1/2 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">
+            Hitung Ulang
+          </button>
+        </div>
+      `;
+
+      resultContainer.innerHTML = resultsHTML;
+    }
+  
+  // ==========================================
+// LOGIKA CAROUSEL BANNER INFORMASI (30 DETIK & SWIPE)
+// ==========================================
+let currentBanner = 0;
+const totalBanners = 3;
+let bannerInterval = null;
+
+function updateBanner() {
+  const slider = document.getElementById('banner-slider');
+  const dots = document.querySelectorAll('.banner-dot');
+  if (!slider) return;
+
+  // Geser posisi slider secara komparatif (0%, -100%, -200%)
+  slider.style.transform = `translateX(-${currentBanner * 100}%)`;
+
+  // Update Tampilan Indikator Dots
+  dots.forEach((dot, index) => {
+    if (index === currentBanner) {
+      dot.classList.remove('bg-white/50', 'w-2');
+      dot.classList.add('bg-white', 'w-5');
+    } else {
+      dot.classList.remove('bg-white', 'w-5');
+      dot.classList.add('bg-white/50', 'w-2');
+    }
+  });
+}
+
+function goToBanner(index) {
+  currentBanner = index;
+  updateBanner();
+  resetBannerTimer();
+}
+
+function nextBanner() {
+  currentBanner = (currentBanner + 1) % totalBanners;
+  updateBanner();
+}
+
+function resetBannerTimer() {
+  clearInterval(bannerInterval);
+  bannerInterval = setInterval(nextBanner, 30000); // 30000 ms = 30 detik
+}
+
+// Mulai timer otomatis 30 detik saat aplikasi dimuat
+bannerInterval = setInterval(nextBanner, 30000);
+
+// Dukungan Gesture Geser / Touch Swipe (Mobile & Desktop)
+let touchStartX = 0;
+let touchEndX = 0;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const bannerContainer = document.getElementById('banner-container');
+  if (bannerContainer) {
+    // Touch Events (HP/Tablet)
+    bannerContainer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    bannerContainer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleBannerSwipe();
+    }, { passive: true });
+
+    // Mouse Drag (Desktop)
+    bannerContainer.addEventListener('mousedown', (e) => {
+      touchStartX = e.clientX;
+    });
+
+    bannerContainer.addEventListener('mouseup', (e) => {
+      touchEndX = e.clientX;
+      handleBannerSwipe();
+    });
+  }
+});
+
+function handleBannerSwipe() {
+  const swipeThreshold = 30; // Jarak minimal geser (pixel)
+  if (touchStartX - touchEndX > swipeThreshold) {
+    // Swipe Ke Kiri -> Slide Selanjutnya
+    currentBanner = (currentBanner + 1) % totalBanners;
+    updateBanner();
+    resetBannerTimer();
+  } else if (touchEndX - touchStartX > swipeThreshold) {
+    // Swipe Ke Kanan -> Slide Sebelumnya
+    currentBanner = (currentBanner - 1 + totalBanners) % totalBanners;
+    updateBanner();
+    resetBannerTimer();
+  }
+}
+
+  </script>
+</body>
+</html>
