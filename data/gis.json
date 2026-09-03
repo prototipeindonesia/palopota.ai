@@ -1,0 +1,10 @@
+[
+  { "name": "Kantor Wali Kota", "category": "Fasum", "address": "Jl. Andi Djemma, Palopo", "mapsUrl": "https://maps.google.com/?q=Kantor+Wali+Kota+Palopo" },
+  { "name": "Lapangan Pancasila", "category": "Fasum", "address": "Jl. Anggrek, Palopo", "mapsUrl": "https://maps.google.com/?q=Lapangan+Pancasila+Palopo" },
+  { "name": "Disdukcapil", "category": "OPD", "address": "Jl. Landak No. 1, Palopo", "mapsUrl": "https://maps.google.com/?q=Disdukcapil+Palopo" },
+  { "name": "DPMPTSP", "category": "OPD", "address": "Jl. Durian No. 5, Palopo", "mapsUrl": "https://maps.google.com/?q=DPMPTSP+Palopo" },
+  { "name": "BAPPERIDA", "category": "OPD", "address": "Jl. Andi Baso Rahim No. 2, Palopo", "mapsUrl": "https://maps.google.com/?q=Bapperida+Palopo" },
+  { "name": "Kecamatan Wara", "category": "Kecamatan", "address": "Jl. Jend. Sudirman, Palopo", "mapsUrl": "https://maps.google.com/?q=Kecamatan+Wara+Palopo" },
+  { "name": "RSUD Sawerigading", "category": "Faskes", "address": "Jl. Rampoang, Palopo", "mapsUrl": "https://maps.google.com/?q=RSUD+Sawerigading+Palopo" },
+  { "name": "Puskesmas Wara", "category": "Faskes", "address": "Jl. Wara, Palopo", "mapsUrl": "https://maps.google.com/?q=Puskesmas+Wara+Palopo" }
+]
