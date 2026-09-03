@@ -55,17 +55,27 @@ async function handleChatSubmit(e) {
   showAITypingIndicator();
 
   try {
-    let aiResponseText = "";
-    if (customApiKey) {
-      aiResponseText = await callGeminiApi(text);
-    } else {
-      aiResponseText = await fallbackLLMEngine(text);
-    }
-    removeAITypingIndicator();
-    appendAIMessage(aiResponseText, "Disdukcapil / Pemkot Palopo", "03 Sep 2026");
-  } catch (err) {
-    removeAITypingIndicator();
-    appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
+  let aiResponseText = "";
+  if (customApiKey) {
+    aiResponseText = await callGeminiApi(text);
+  } else {
+    aiResponseText = await fallbackLLMEngine(text);
+  }
+
+  // STEP 4.3: Cek apakah pertanyaan cocok dengan katalog AI Service Navigator
+  const matchedService = findMatchingService(text);
+  if (matchedService) {
+    aiResponseText += "\n\n" + renderServiceActionCard(matchedService);
+  }
+
+  removeAITypingIndicator();
+
+  // Tentukan nama OPD sumber secara dinamis jika ada pencocokan
+  const sourceOpd = matchedService ? matchedService.opd : "Pemkot Palopo";
+  appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026");
+} catch (err) {
+  removeAITypingIndicator();
+  appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
   }
 }
 
