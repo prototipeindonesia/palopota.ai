@@ -178,6 +178,29 @@
     body.high-contrast #user-input::placeholder {
       color: #a1a1aa !important;
     }
+
+/* Pengaman Tampilan Obrolan Mobile */
+#chat-stream {
+  scroll-behavior: smooth;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+.chat-body iframe, 
+.chat-body table, 
+.chat-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Kustomisasi Scrollbar Obrolan */
+#chat-stream::-webkit-scrollbar {
+  width: 4px;
+}
+#chat-stream::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
   </style>
 </head>
 
