@@ -209,7 +209,6 @@ async function fallbackLLMEngine(prompt) {
     if (matchedKb) {
       return matchedKb.answer;
     }
-  }
 
   if (text.includes("ktp") || text.includes("identitas")) {
     return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
