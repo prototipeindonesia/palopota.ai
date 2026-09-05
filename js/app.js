@@ -2,6 +2,7 @@ let chatHistory = [];
 let customApiKey = localStorage.getItem('PALOPO_GEMINI_KEY') || '';
 let opdData = [];
 let gisData = [];
+let knowledgeData = []; 
 
 // Load External Data JSON
 async function loadAppData() {
