@@ -61,16 +61,10 @@ async function handleChatSubmit(e) {
   try {
     let aiResponseText = "";
     
-    // Coba panggil Vercel Backend terlebih dahulu
-    try {
-      aiResponseText = await callGeminiApi(text);
-    } catch (apiErr) {
-      console.warn("Backend Vercel terkendala, menggunakan Fallback Engine:", apiErr);
-      // Jika Vercel error, otomatis alihkan ke Fallback Engine Lokal
-      aiResponseText = await fallbackLLMEngine(text);
-    }
+    // Alur responsif: Menggunakan Local Engine & Service Navigator
+    aiResponseText = await fallbackLLMEngine(text);
 
-    // Cek pencocokan AI Service Navigator (Action Card)
+    // Cek pencocokan Direct Action Card (AI Service Navigator)
     let matchedService = null;
     let actionCardHtml = "";
 
@@ -90,6 +84,7 @@ async function handleChatSubmit(e) {
     appendAIMessage("Mohon maaf, terjadi kendala teknis saat memproses pesan Anda. Silakan coba lagi.");
   }
 }
+
 
 function sendQuickPrompt(promptText) {
   document.getElementById('user-input').value = promptText;
