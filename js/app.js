@@ -58,19 +58,19 @@ async function handleChatSubmit(e) {
 
   showAITypingIndicator();
 
-    try {
+  try {
     let aiResponseText = "";
     
-    // Coba panggil Backend Vercel terlebih dahulu
+    // Coba panggil Vercel Backend terlebih dahulu
     try {
       aiResponseText = await callGeminiApi(text);
     } catch (apiErr) {
-      console.warn("Vercel Backend Error, beralih ke Fallback Engine:", apiErr);
-      // Jika Vercel gagal, panggil Local Engine
+      console.warn("Backend Vercel terkendala, menggunakan Fallback Engine:", apiErr);
+      // Jika Vercel error, otomatis alihkan ke Fallback Engine Lokal
       aiResponseText = await fallbackLLMEngine(text);
     }
 
-    // Cek pencocokan AI Service Navigator
+    // Cek pencocokan AI Service Navigator (Action Card)
     let matchedService = null;
     let actionCardHtml = "";
 
@@ -87,7 +87,7 @@ async function handleChatSubmit(e) {
     appendAIMessage(aiResponseText, sourceOpd, "Terbaru", actionCardHtml);
   } catch (err) {
     removeAITypingIndicator();
-    appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
+    appendAIMessage("Mohon maaf, terjadi kendala teknis saat memproses pesan Anda. Silakan coba lagi.");
   }
 }
 
@@ -184,26 +184,30 @@ function removeAITypingIndicator() {
 }
 
 async function callGeminiApi(prompt) {
-  // GANTI DENGAN URL VERCEL ANDA (LENGKAP DENGAN /api/chat)
   const BACKEND_URL = "https://palopota-api-backend.vercel.app/api/chat";
 
+  // Pastikan format contents sesuai standar Gemini API
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: chatHistory })
+    headers: { 
+      'Content-Type': 'application/json' 
+    },
+    body: JSON.stringify({ 
+      contents: chatHistory 
+    })
   });
 
   const data = await response.json();
 
   if (!response.ok) {
-    // Tangkap error langsung dari respon Vercel
     throw new Error(data.error || `HTTP Error Status: ${response.status}`);
   }
 
+  // Ambil respon teks dari struktur Gemini
   if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    throw new Error("Respon dari Vercel tidak sesuai format candidates.");
+    throw new Error("Format respons API tidak valid");
   }
 }
 
