@@ -58,15 +58,19 @@ async function handleChatSubmit(e) {
 
   showAITypingIndicator();
 
-  try {
+    try {
     let aiResponseText = "";
-    if (customApiKey) {
+    
+    // Coba panggil Backend Vercel terlebih dahulu
+    try {
       aiResponseText = await callGeminiApi(text);
-    } else {
+    } catch (apiErr) {
+      console.warn("Vercel Backend Error, beralih ke Fallback Engine:", apiErr);
+      // Jika Vercel gagal, panggil Local Engine
       aiResponseText = await fallbackLLMEngine(text);
     }
 
-    // STEP 4.3: Cek pencocokan AI Service Navigator secara terpisah
+    // Cek pencocokan AI Service Navigator
     let matchedService = null;
     let actionCardHtml = "";
 
@@ -80,8 +84,7 @@ async function handleChatSubmit(e) {
     removeAITypingIndicator();
 
     const sourceOpd = matchedService ? matchedService.opd : "Pemkot Palopo";
-    // Kirimkan actionCardHtml secara terpisah
-    appendAIMessage(aiResponseText, sourceOpd, "03 Sep 2026", actionCardHtml);
+    appendAIMessage(aiResponseText, sourceOpd, "Terbaru", actionCardHtml);
   } catch (err) {
     removeAITypingIndicator();
     appendAIMessage("Mohon maaf, terjadi kendala koneksi server. Silakan coba beberapa saat lagi.");
@@ -181,8 +184,8 @@ function removeAITypingIndicator() {
 }
 
 async function callGeminiApi(prompt) {
-  // Ganti URL ini dengan URL Vercel milik Anda
-  const BACKEND_URL = "[https://palopota-api-backend.vercel.app/api/chat](https://palopota-api-backend.vercel.app/api/chat)";
+  // GANTI DENGAN URL VERCEL ANDA (LENGKAP DENGAN /api/chat)
+  const BACKEND_URL = "https://palopota-api-backend.vercel.app/api/chat";
 
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
@@ -190,18 +193,19 @@ async function callGeminiApi(prompt) {
     body: JSON.stringify({ contents: chatHistory })
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error(`HTTP Error Status: ${response.status}`);
+    // Tangkap error langsung dari respon Vercel
+    throw new Error(data.error || `HTTP Error Status: ${response.status}`);
   }
 
-  const data = await response.json();
   if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    throw new Error("Respon dari backend Vercel tidak valid");
+    throw new Error("Respon dari Vercel tidak sesuai format candidates.");
   }
 }
-
 
 
 async function fallbackLLMEngine(prompt) {
