@@ -181,38 +181,27 @@ function removeAITypingIndicator() {
 }
 
 async function callGeminiApi(prompt) {
-  if (!customApiKey) {
-    throw new Error("API Key tidak ditemukan");
-  }
+  // Ganti URL ini dengan URL Vercel milik Anda
+  const BACKEND_URL = "[https://palopota-api-backend.vercel.app/api/chat](https://palopota-api-backend.vercel.app/api/chat)";
 
-  const systemInstruction = `Kamu adalah PALOPOTA AI 2.0, Asisten Layanan Publik Cerdas Kota Palopo.
-Tugas utama: Memberikan informasi resmi, solutif, dan ramah terkait dokumen kependudukan, perizinan UMKM, bantuan sosial, dan pelayanan publik Pemkot Palopo.
-Gunakan gaya bahasa yang sopan, jelas, dan lugas.`;
-
-  const requestBody = {
-    contents: chatHistory,
-    systemInstruction: {
-      parts: [{ text: systemInstruction }]
-    }
-  };
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${customApiKey}`, {
+  const response = await fetch(BACKEND_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody)
+    body: JSON.stringify({ contents: chatHistory })
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    throw new Error(`HTTP Error Status: ${response.status}`);
   }
 
   const data = await response.json();
   if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    throw new Error("Respon API tidak valid");
+    throw new Error("Respon dari backend Vercel tidak valid");
   }
 }
+
 
 
 async function fallbackLLMEngine(prompt) {
