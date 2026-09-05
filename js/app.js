@@ -202,6 +202,15 @@ async function fallbackLLMEngine(prompt) {
   await new Promise(r => setTimeout(r, 1000));
   const text = prompt.toLowerCase();
 
+	  if (knowledgeData && knowledgeData.length > 0) {
+    const matchedKb = knowledgeData.find(item =>
+      item.keywords.some(keyword => text.includes(keyword))
+    );
+    if (matchedKb) {
+      return matchedKb.answer;
+    }
+  }
+
   if (text.includes("ktp") || text.includes("identitas")) {
     return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
            "* **KTP Rusak/Patah:** Bawa fisik KTP lama + Fotokopi Kartu Keluarga (KK).\n" +
