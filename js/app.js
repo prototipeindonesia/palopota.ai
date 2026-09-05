@@ -181,22 +181,39 @@ function removeAITypingIndicator() {
 }
 
 async function callGeminiApi(prompt) {
-  const systemInstruction = `Kamu adalah PALOPOTA AI 2.0, Sistem Asisten Layanan Publik Cerdas Kota Palopo.
-Tugas utama: Membantu warga menemukan dan menyelesaikan layanan publik, dokumen kependudukan, perizinan UMKM, serta bantuan sosial secara solutif.`;
+  if (!customApiKey) {
+    throw new Error("API Key tidak ditemukan");
+  }
+
+  const systemInstruction = `Kamu adalah PALOPOTA AI 2.0, Asisten Layanan Publik Cerdas Kota Palopo.
+Tugas utama: Memberikan informasi resmi, solutif, dan ramah terkait dokumen kependudukan, perizinan UMKM, bantuan sosial, dan pelayanan publik Pemkot Palopo.
+Gunakan gaya bahasa yang sopan, jelas, dan lugas.`;
+
+  const requestBody = {
+    contents: chatHistory,
+    systemInstruction: {
+      parts: [{ text: systemInstruction }]
+    }
+  };
 
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${customApiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: chatHistory, systemInstruction: { parts: [{ text: systemInstruction }] } })
+    body: JSON.stringify(requestBody)
   });
 
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
   const data = await response.json();
-  if (data.candidates && data.candidates[0].content.parts[0].text) {
+  if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    throw new Error("Invalid API Response");
+    throw new Error("Respon API tidak valid");
   }
 }
+
 
 async function fallbackLLMEngine(prompt) {
   await new Promise(r => setTimeout(r, 1000));
