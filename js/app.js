@@ -186,30 +186,26 @@ function removeAITypingIndicator() {
 async function callGeminiApi(prompt) {
   const BACKEND_URL = "https://palopota-api-backend.vercel.app/api/chat";
 
-  // Pastikan format contents sesuai standar Gemini API
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json' 
-    },
-    body: JSON.stringify({ 
-      contents: chatHistory 
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: chatHistory })
   });
 
   const data = await response.json();
 
   if (!response.ok) {
+    console.error("Detail Error Vercel Backend:", data);
     throw new Error(data.error || `HTTP Error Status: ${response.status}`);
   }
 
-  // Ambil respon teks dari struktur Gemini
   if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
     return data.candidates[0].content.parts[0].text;
   } else {
-    throw new Error("Format respons API tidak valid");
+    throw new Error("Format respon API tidak memiliki teks valid.");
   }
 }
+
 
 
 async function fallbackLLMEngine(prompt) {
