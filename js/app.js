@@ -202,13 +202,29 @@ async function fallbackLLMEngine(prompt) {
   await new Promise(r => setTimeout(r, 1000));
   const text = prompt.toLowerCase();
 
-	  if (knowledgeData && knowledgeData.length > 0) {
-    const matchedKb = knowledgeData.find(item =>
-      item.keywords.some(keyword => text.includes(keyword))
-    );
-    if (matchedKb) {
-      return matchedKb.answer;
+	  const knowledgeBase = [
+    {
+      keywords: ["jam kerja", "operasional", "buka kantor", "jam pelayanan", "jam berapa"],
+      answer: "**Jam Operasional Pelayanan Publik Kota Palopo:**\n\n* **Senin – Kamis:** 08.00 – 16.00 WITA\n* **Jumat:** 08.00 – 16.30 WITA (Istirahat Shalat Jumat: 11.30 – 13.00 WITA)\n* **Sabtu, Minggu & Hari Libur Nasional:** Tutup\n\n📍 *Catatan: Layanan Darurat 112, Pemadam Kebakaran, dan IGD Rumah Sakit / Puskesmas tetap siaga 24 jam.*"
+    },
+    {
+      keywords: ["sagu", "sago", "bapperida sagu", "inovasi sagu", "lokal sagu"],
+      answer: "**Program Pengelolaan Sagu Lokal (BAPPERIDA Kota Palopo):**\n\nBAPPERIDA Kota Palopo berfokus mengembangkan riset dan inovasi keberlanjutan potensi sagu lokal (*Local Sago Management*) sebagai komoditas pangan unggulan daerah, ketahanan pangan, serta peningkatan daya saing UMKM berbasis olahan sagu (seperti Kapurung, Dange, dan tepung sagu higienis)."
+    },
+    {
+      keywords: ["sktm", "tidak mampu", "surat keterangan tidak mampu"],
+      answer: "**Persyaratan & Alur SKTM (Dinas Sosial & Kelurahan):**\n\n1. **Persyaratan:** Fotokopi KTP, KK, dan Pengantar RT/RW.\n2. **Prosedur:** Mengajukan permohonan ke Kantor Kelurahan setempat untuk verifikasi awal, lalu pengesahan rekomendasi sosial di Dinas Sosial Kota Palopo.\n3. **Biaya:** Gratis (Rp 0)."
     }
+  ];
+
+  // Cek pencocokan Knowledge Base
+  const matchedKb = knowledgeBase.find(item => 
+    item.keywords.some(keyword => text.includes(keyword))
+  );
+
+  if (matchedKb) {
+    return matchedKb.answer;
+  }
 
   if (text.includes("ktp") || text.includes("identitas")) {
     return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
