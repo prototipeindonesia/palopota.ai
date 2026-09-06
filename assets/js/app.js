@@ -329,7 +329,13 @@ async function fallbackLLMEngine(prompt) {
     return "**💳 Layanan Pembayaran Pajak Daerah (AKSARA SMART TAX)**\n\n" +
            "Untuk kemudahan pembayaran Pajak Daerah (PBB-P2, Pajak Restoran, Reklame, dll.), Anda dapat mengakses aplikasi resmi **AKSARA SMART TAX** yang dikelola oleh **BAPENDA Kota Palopo**.\n\n" +
            "Silakan klik tombol di bawah ini untuk membuka portal/aplikasi pembayaran pajak:\n\n" +
-           "<div class='pt-2 pb-1'><a href='https://pajakdaerah.palopokota.go.id' target='_blank' class='inline-flex items-center space-x-2 bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-solid fa-credit-card text-sm'></i><span>Buka AKSARA SMART TAX</span></a></div>";
+           `<div class='pt-2 pb-1'>
+              <a href='https://pajakdaerah.palopokota.go.id' target='_blank' 
+                 style='display: inline-flex; align-items: center; gap: 8px; background-color: #0f3c5f; color: white; font-weight: bold; padding: 8px 16px; border-radius: 12px; font-size: 0.75rem; text-decoration: none; box-shadow: 0 2px 6px rgba(15,60,95,0.3); transition: background 0.2s;'>
+                <i class='fa-solid fa-credit-card' style='font-size: 0.9rem;'></i>
+                <span>Buka AKSARA SMART TAX</span>
+              </a>
+            </div>`;
 
   // 4. Informasi Harga Pangan
   } else if (text.includes("harga pangan") || text.includes("harga sembako") || text.includes("harga telur") || text.includes("harga beras") || text.includes("harga cabai")) {
