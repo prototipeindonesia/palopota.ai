@@ -516,35 +516,38 @@ function openFeatureModal(type) {
       </div>
     `;
   } else if (type === 'OPD') {
-    title.innerText = "Direktori OPD Kota Palopo";
-    if (typeof opdData !== 'undefined' && Array.isArray(opdData)) {
-      let html = '<div class="space-y-3">';
-      opdData.forEach(opd => {
-        let servicesList = opd.services.map(s => `<li class="flex items-center space-x-1"><span class="text-brand-blue font-bold">•</span> <span>${s}</span></li>`).join('');
-        html += `
-          <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-            <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-              <strong class="text-xs font-extrabold text-brand-navy flex items-center">
-                <i class="fa-solid fa-building-columns text-emerald-500 mr-1.5"></i> ${opd.name}
-              </strong>
-              <button onclick="askAI('Layanan ${opd.name}')" class="text-[10px] bg-brand-blue hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition">
-                Tanya AI
-              </button>
+        title.innerText = "Direktori OPD Kota Palopo";
+        let html = '<div class="space-y-3">';
+        opdData.forEach(opd => {
+          let servicesList = opd.services.map(s => `<li class="flex items-center space-x-1"><span class="text-brand-blue font-bold">•</span> <span>${s}</span></li>`).join('');
+          html += `
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+              <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+                <strong class="text-xs font-extrabold text-brand-navy flex items-center">
+                  <i class="fa-solid fa-building-columns text-emerald-500 mr-1.5"></i> ${opd.name}
+                </strong>
+                <!-- TOMBOL TANYA AI -- PAKAI INLINE STYLE -->
+                <button onclick="askAI('Layanan ${opd.name}')" 
+                        style="background-color: #0f3c5f; color: white; font-weight: bold; font-size: 0.65rem; padding: 4px 12px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; box-shadow: 0 1px 3px rgba(15,60,95,0.2);"
+                        onmouseover="this.style.backgroundColor='#1e293b'" 
+                        onmouseout="this.style.backgroundColor='#0f3c5f'">
+                  Tanya AI
+                </button>
+              </div>
+              <div class="text-[11px] text-slate-700">
+                <span class="font-bold text-slate-500 block mb-1">Daftar Layanan:</span>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] text-slate-600 pl-1">
+                  ${servicesList}
+                </ul>
+              </div>
+              <div class="pt-1 text-[10px] text-slate-400 flex items-center">
+                <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${opd.address}
+              </div>
             </div>
-            <div class="text-[11px] text-slate-700">
-              <span class="font-bold text-slate-500 block mb-1">Daftar Layanan:</span>
-              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] text-slate-600 pl-1">
-                ${servicesList}
-              </ul>
-            </div>
-            <div class="pt-1 text-[10px] text-slate-400 flex items-center">
-              <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${opd.address}
-            </div>
-          </div>
-        `;
-      });
-      html += '</div>';
-      body.innerHTML = html;
+          `;
+        });
+        html += '</div>';
+        body.innerHTML = html;
     } else {
       body.innerHTML = `<p class="text-xs text-slate-500 p-2">Data OPD belum tersedia.</p>`;
     }
