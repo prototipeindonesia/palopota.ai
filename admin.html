@@ -123,131 +123,214 @@
   </div>
 
   <script>
-    // Escape HTML untuk mencegah Cross-Site Scripting (XSS)
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  let trendChartInstance = null;
+
+  // ------------------------------------------
+  // 1. INSIALISASI & RENDER DASHBOARD
+  // ------------------------------------------
+  function loadDashboard() {
+    const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
+    const chatHistory = JSON.parse(localStorage.getItem('PALOPO_CHAT_HISTORY_DATA') || '{"history":[]}');
+    const filterType = document.getElementById('filter-feedback')?.value || 'ALL';
+
+    const historyArray = Array.isArray(chatHistory.history) ? chatHistory.history : [];
+    
+    // Update Statistik Utama
+    document.getElementById('total-chat').textContent = historyArray.length;
+    document.getElementById('total-like').textContent = feedbacks.filter(f => f.type === '👍').length;
+    document.getElementById('total-dislike').textContent = feedbacks.filter(f => f.type === '👎').length;
+
+    const today = new Date().toDateString();
+    const activeToday = feedbacks.filter(f => f.timestamp && new Date(f.timestamp).toDateString() === today).length;
+    document.getElementById('active-today').textContent = activeToday + ' aktivitas';
+
+    // Render Sub-Komponen
+    renderFeedbackList(feedbacks, filterType);
+    renderPopularTopics(historyArray);
+    renderTrendChart(feedbacks);
+    renderKnowledgeBaseList();
+  }
+
+  // ------------------------------------------
+  // 2. GRAFIK TREN INTERAKSI (CHART.JS)
+  // ------------------------------------------
+  function renderTrendChart(feedbacks) {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    // Menyiapkan 7 Hari Terakhir
+    const days = [];
+    const counts = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toDateString();
+      days.push(d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' }));
+      
+      const count = feedbacks.filter(f => f.timestamp && new Date(f.timestamp).toDateString() === dateStr).length;
+      counts.push(count);
     }
 
-    // Load data dari localStorage
-    function loadDashboard() {
-      let feedbacks = [];
-      let chatHistory = { history: [] };
+    if (trendChartInstance) trendChartInstance.destroy();
 
-      try {
-        feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
-      } catch (e) {
-        console.error("Gagal membaca PALOPO_FEEDBACKS:", e);
-      }
-
-      try {
-        chatHistory = JSON.parse(localStorage.getItem('PALOPO_CHAT_HISTORY_DATA') || '{"history":[]}');
-      } catch (e) {
-        console.error("Gagal membaca PALOPO_CHAT_HISTORY_DATA:", e);
-      }
-
-      const totalChat = Array.isArray(chatHistory.history) ? chatHistory.history.length : 0;
-      const likes = feedbacks.filter(f => f && f.type === '👍').length;
-      const dislikes = feedbacks.filter(f => f && f.type === '👎').length;
-
-      document.getElementById('total-chat').textContent = totalChat;
-      document.getElementById('total-like').textContent = likes;
-      document.getElementById('total-dislike').textContent = dislikes;
-
-      // Hitung aktivitas feedback hari ini
-      const today = new Date().toDateString();
-      const activeToday = feedbacks.filter(f => {
-        if (!f || !f.timestamp) return false;
-        try {
-          return new Date(f.timestamp).toDateString() === today;
-        } catch (e) {
-          return false;
+    trendChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: days,
+        datasets: [{
+          label: 'Aktivitas Feedback / Interaksi',
+          data: counts,
+          borderColor: '#0f3c5f',
+          backgroundColor: 'rgba(15, 60, 95, 0.08)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } }
         }
-      }).length;
-
-      document.getElementById('active-today').textContent = activeToday + (activeToday > 0 ? ' aktivitas' : '');
-
-      // Render daftar feedback terbaru
-      const list = document.getElementById('feedback-list');
-      if (feedbacks.length === 0) {
-        list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada feedback tersimpan.</p>';
-      } else {
-        list.innerHTML = feedbacks.slice(-10).reverse().map(f => {
-          const typeClass = f.type === '👍' ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50';
-          const timeFormatted = f.timestamp ? new Date(f.timestamp).toLocaleString('id-ID') : '-';
-          const contentText = f.content ? escapeHtml(f.content) : '(Konten tidak tersedia)';
-
-          return `
-            <div class="flex items-start justify-between border-b border-slate-100 pb-2 pt-1 text-xs gap-3">
-              <div class="flex items-start gap-2 flex-1 min-w-0">
-                <span class="px-2 py-0.5 rounded-md font-bold shrink-0 ${typeClass}">${f.type}</span>
-                <span class="text-slate-600 truncate">${contentText}</span>
-              </div>
-              <span class="text-slate-400 text-[10px] shrink-0 font-mono">${timeFormatted}</span>
-            </div>
-          `;
-        }).join('');
       }
-    }
-
-    // Kirim Notifikasi Push
-    async function sendPushNotification() {
-      const titleInput = document.getElementById('notif-title');
-      const bodyInput = document.getElementById('notif-body');
-      const statusDiv = document.getElementById('push-status');
-
-      const title = titleInput.value.trim();
-      const body = bodyInput.value.trim();
-
-      if (!title || !body) {
-        alert('Mohon isi judul dan isi notifikasi!');
-        return;
-      }
-
-      let subscriptions = [];
-      try {
-        subscriptions = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
-      } catch (e) {
-        console.error("Gagal membaca data langganan push:", e);
-      }
-
-      if (subscriptions.length === 0) {
-        statusDiv.textContent = '❌ Belum ada pengguna yang mengaktifkan notifikasi.';
-        statusDiv.className = 'text-xs text-rose-500 mt-2 font-medium';
-        return;
-      }
-
-      statusDiv.textContent = `📤 Mengirim ke ${subscriptions.length} perangkat...`;
-      statusDiv.className = 'text-xs text-[#06b6d4] mt-2 font-medium';
-
-      // Simpan riwayat notifikasi ke localStorage
-      let notifs = [];
-      try {
-        notifs = JSON.parse(localStorage.getItem('PALOPO_NOTIFICATIONS') || '[]');
-      } catch (e) {}
-
-      notifs.push({ title, body, sentAt: new Date().toISOString() });
-      localStorage.setItem('PALOPO_NOTIFICATIONS', JSON.stringify(notifs));
-
-      setTimeout(() => {
-        statusDiv.textContent = '✅ Notifikasi berhasil dicatat (memerlukan backend server untuk push riil).';
-        statusDiv.className = 'text-xs text-emerald-600 mt-2 font-medium';
-        titleInput.value = '';
-        bodyInput.value = '';
-      }, 500);
-    }
-
-    // Inisialisasi dan interval auto-refresh 10 detik
-    document.addEventListener('DOMContentLoaded', function() {
-      loadDashboard();
-      setInterval(loadDashboard, 10000);
     });
-  </script>
+  }
+
+  // ------------------------------------------
+  // 3. TOPIK PALING DICARI (ANALYTICS)
+  // ------------------------------------------
+  function renderPopularTopics(history) {
+    const topicCounts = {};
+    const keywords = ['ktp', 'kk', 'nib', 'bansos', 'pkh', 'pajak', 'sagu', 'sekolah', 'ambulan', 'damkar'];
+
+    history.forEach(item => {
+      if (item.role === 'user' && item.parts?.[0]?.text) {
+        const text = item.parts[0].text.toLowerCase();
+        keywords.forEach(kw => {
+          if (text.includes(kw)) {
+            topicCounts[kw] = (topicCounts[kw] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    const sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+    const container = document.getElementById('popular-topics');
+
+    if (sortedTopics.length === 0) {
+      container.innerHTML = '<p class="text-xs text-slate-400 py-2">Belum cukup data kata kunci.</p>';
+      return;
+    }
+
+    container.innerHTML = sortedTopics.map(([topic, count]) => `
+      <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-xs">
+        <span class="font-bold text-slate-700 capitalize">Layanan ${topic}</span>
+        <span class="bg-[#0f3c5f] text-white px-2 py-0.5 rounded-md text-[10px] font-mono">${count}x dicari</span>
+      </div>
+    `).join('');
+  }
+
+  // ------------------------------------------
+  // 4. KELOLA KNOWLEDGE BASE KUSTOM (CRUD)
+  // ------------------------------------------
+  function addKnowledgeBaseItem() {
+    const kwInput = document.getElementById('kb-keyword');
+    const respInput = document.getElementById('kb-response');
+    const keyword = kwInput.value.trim().toLowerCase();
+    const response = respInput.value.trim();
+
+    if (!keyword || !response) return alert('Isi kata kunci dan respon!');
+
+    const kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
+    kbData.push({ id: Date.now(), keyword, response });
+    localStorage.setItem('PALOPO_CUSTOM_KB', JSON.stringify(kbData));
+
+    kwInput.value = '';
+    respInput.value = '';
+    renderKnowledgeBaseList();
+  }
+
+  function deleteKnowledgeBaseItem(id) {
+    let kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
+    kbData = kbData.filter(item => item.id !== id);
+    localStorage.setItem('PALOPO_CUSTOM_KB', JSON.stringify(kbData));
+    renderKnowledgeBaseList();
+  }
+
+  function renderKnowledgeBaseList() {
+    const kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
+    const container = document.getElementById('kb-list');
+
+    if (kbData.length === 0) {
+      container.innerHTML = '<p class="text-slate-400 text-[11px]">Belum ada data kustom. Tambahkan di atas.</p>';
+      return;
+    }
+
+    container.innerHTML = kbData.map(item => `
+      <div class="flex items-center justify-between border border-slate-100 p-2 rounded-xl bg-slate-50">
+        <div class="truncate max-w-[80%]">
+          <span class="font-bold text-[#0f3c5f] bg-sky-100 px-1.5 py-0.5 rounded text-[10px] uppercase mr-1.5">${item.keyword}</span>
+          <span class="text-slate-600 text-[11px]">${item.response}</span>
+        </div>
+        <button onclick="deleteKnowledgeBaseItem(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold px-2">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // ------------------------------------------
+  // 5. EXPORT DATA TO EXCEL / CSV (SHEETJS)
+  // ------------------------------------------
+  function exportToExcel() {
+    const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
+    if (feedbacks.length === 0) return alert('Belum ada data feedback untuk diexport!');
+
+    const dataToExport = feedbacks.map((f, index) => ({
+      No: index + 1,
+      Tipe: f.type === '👍' ? 'Positif' : 'Negatif',
+      Isi_Pesan: f.content || '-',
+      Waktu: f.timestamp ? new Date(f.timestamp).toLocaleString('id-ID') : '-'
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Feedback");
+
+    XLSX.writeFile(workbook, `Laporan_Feedback_PALOPOTA_AI_${new Date().toISOString().slice(0,10)}.xlsx`);
+  }
+
+  // ------------------------------------------
+  // 6. HELPER FEEDBACK LIST & INITIALIZATION
+  // ------------------------------------------
+  function renderFeedbackList(feedbacks, filter) {
+    const list = document.getElementById('feedback-list');
+    let filtered = feedbacks;
+    if (filter !== 'ALL') filtered = feedbacks.filter(f => f.type === filter);
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">Tidak ada catatan feedback.</p>';
+      return;
+    }
+
+    list.innerHTML = filtered.slice(-10).reverse().map(f => `
+      <div class="flex items-start justify-between border-b border-slate-100 pb-2 text-xs gap-2">
+        <div class="flex items-start gap-2">
+          <span class="px-2 py-0.5 rounded font-bold shrink-0 ${f.type === '👍' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">${f.type}</span>
+          <span class="text-slate-600">${f.content || '(Pesan kosong)'}</span>
+        </div>
+        <span class="text-slate-400 text-[10px] shrink-0 font-mono">${f.timestamp ? new Date(f.timestamp).toLocaleTimeString('id-ID') : '-'}</span>
+      </div>
+    `).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadDashboard();
+    setInterval(loadDashboard, 15000);
+  });
+</script>
 
 <!-- Chart.js untuk Grafik Visual -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
