@@ -122,7 +122,7 @@ function appendUserMessage(text) {
   saveChatToLocalStorage();
 }
 
-// Tampilkan Pesan AI (dengan gaya inline)
+// Tampilkan Pesan AI (dengan gaya inline penuh)
 function appendAIMessage(markdownText) {
   const stream = document.getElementById('chat-stream');
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
@@ -131,7 +131,11 @@ function appendAIMessage(markdownText) {
 
   stream.insertAdjacentHTML('beforeend', `
     <div class="flex items-start space-x-2.5 my-2">
-      <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+      <!-- Lingkaran profil AI dengan gaya inline -->
+      <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #06b6d4; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        AI
+      </div>
+      <!-- Kotak pesan AI -->
       <div style="background-color: white; border: 1px solid #e2e8f0; font-size: 0.75rem; padding: 0.75rem; border-radius: 1rem; border-top-left-radius: 0; max-width: 92%; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.05); line-height: 1.625;" class="chat-body">
         ${htmlContent}
       </div>
