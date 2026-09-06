@@ -168,19 +168,22 @@ function appendAIMessage(markdownText) {
       <div style="background-color: white; border: 1px solid #e2e8f0; font-size: 0.75rem; padding: 0.75rem; border-radius: 1rem; border-top-left-radius: 0; max-width: 92%; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.05); line-height: 1.625;" class="chat-body">
         ${htmlContent}
         
-        <!-- AREA FEEDBACK dengan teks -->
-        <div class="flex items-center gap-3 mt-2.5 pt-2 border-t border-slate-200 text-xs text-slate-500">
-          <span class="text-[10px] text-slate-400 font-medium">Apakah jawaban ini membantu?</span>
-          <button onclick="sendFeedback('${messageId}', '👍')" class="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-emerald-50 transition text-emerald-600 hover:text-emerald-700 font-medium">
-            <span>👍</span>
-            <span class="text-[11px]">Membantu</span>
-          </button>
-          <button onclick="sendFeedback('${messageId}', '👎')" class="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-rose-50 transition text-rose-500 hover:text-rose-600 font-medium">
-            <span>👎</span>
-            <span class="text-[11px]">Tidak Membantu</span>
-          </button>
-          <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-auto"></span>
-        </div>
+        // AREA FEEDBACK - Layout Rapi
+<div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-200/80 text-xs">
+  <span class="text-[11px] text-slate-400 font-medium mr-1">Apakah jawaban ini membantu?</span>
+  <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+    <button onclick="sendFeedback('${messageId}', '👍')" 
+            class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50/60 hover:bg-emerald-100 border border-emerald-200/50 transition text-emerald-700 hover:text-emerald-800 font-medium text-[11px]">
+      <span class="text-sm">👍</span>
+      <span>Membantu</span>
+    </button>
+    <button onclick="sendFeedback('${messageId}', '👎')" 
+            class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50/60 hover:bg-rose-100 border border-rose-200/50 transition text-rose-600 hover:text-rose-700 font-medium text-[11px]">
+      <span class="text-sm">👎</span>
+      <span>Tidak</span>
+    </button>
+    <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-1 min-w-[80px] text-right"></span>
+  </div>
       </div>
     </div>
   `);
