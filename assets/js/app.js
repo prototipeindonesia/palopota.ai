@@ -53,6 +53,38 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Minta izin dan simpan subscription
+async function subscribePush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Browser tidak mendukung notifikasi push.');
+    return;
+  }
+  
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    // VAPID public key (ganti dengan key Anda)
+    const vapidPublicKey = 'BL6k...'; // nanti diganti
+  
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: vapidPublicKey
+    });
+  
+    // Simpan subscription ke localStorage (atau kirim ke server)
+    const subscriptions = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+    subscriptions.push(subscription);
+    localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subscriptions));
+  
+    alert('✅ Notifikasi diaktifkan!');
+  } catch (e) {
+    console.error('Gagal subscribe:', e);
+    alert('Gagal mengaktifkan notifikasi: ' + e.message);
+  }
+}
+
+// Tombol di menu atau footer untuk subscribe
+// Tambahkan di side menu atau footer
+
 // ==========================================
 // FUNGSI CHAT
 // ==========================================
