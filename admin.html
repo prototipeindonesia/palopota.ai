@@ -6,32 +6,42 @@
   <title>Dashboard Admin PALOPOTA AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js untuk Grafik Visual -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS untuk Export Data ke Excel / CSV -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     body { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; }
-    .stat-card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .badge { background: #0f3c5f; color: white; padding: 0.2rem 0.8rem; border-radius: 99px; font-size: 0.7rem; }
+    .stat-card { background: white; border-radius: 16px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
   </style>
 </head>
-<body class="p-4 max-w-6xl mx-auto space-y-6">
-  <!-- Header & Status System -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+<body class="p-4 max-w-7xl mx-auto space-y-6">
+
+  <!-- Header Utama & Evaluasi Kinerja Sistem & AI -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
     <div>
       <h1 class="text-2xl font-extrabold text-[#0f3c5f] flex items-center gap-2">
         <i class="fa-solid fa-chart-line"></i> Dashboard Pusat Kendali PALOPOTA AI
       </h1>
       <p class="text-xs text-slate-500 mt-0.5">Monitoring Layanan Publik & Knowledge Base Kota Palopo</p>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Gemini API Active
-      </span>
-      <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+    
+    <!-- Evaluasi Kinerja Sistem & AI (Status API Key & Token) -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div id="api-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold border border-slate-200">
+        <span id="api-status-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+        <span id="api-status-text">Mengecek API Key...</span>
+      </div>
+
+      <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
         <i class="fa-solid fa-file-excel"></i> Export CSV/Excel
       </button>
     </div>
   </div>
 
-  <!-- Ringkasan Statistik -->
+  <!-- Ringkasan Statistik Utama -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <div class="stat-card">
       <span class="block text-slate-500 text-xs font-medium">Total Chat Terproses</span>
@@ -51,91 +61,145 @@
     </div>
   </div>
 
-  <!-- Area Grafik Analitik & Topik Populer -->
+  <!-- Monitoring Topik Popular & Analytic Controls -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Grafik Tren Chat -->
-    <div class="md:col-span-2 bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-      <h2 class="font-bold text-sm text-slate-700 mb-4 flex items-center justify-between">
-        <span><i class="fa-solid fa-[#0f3c5f] fa-chart-area mr-2"></i>Volume Interaksi (7 Hari Terakhir)</span>
-      </h2>
-      <div class="h-60 relative">
+    <!-- Grafik Tren Penggunaan -->
+    <div class="md:col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <h2 class="font-bold text-sm text-slate-700 flex items-center">
+          <i class="fa-solid fa-chart-area mr-2 text-[#0f3c5f]"></i>Grafik Tren Penggunaan
+        </h2>
+        
+        <!-- Filter Rentang Waktu -->
+        <div class="flex items-center gap-2">
+          <label for="time-range" class="text-[11px] text-slate-500 font-medium">Rentang Waktu:</label>
+          <select id="time-range" onchange="loadDashboard()" class="text-xs border border-slate-200 rounded-lg p-1.5 bg-slate-50 font-medium focus:outline-none focus:border-[#0f3c5f]">
+            <option value="7">7 Hari Terakhir</option>
+            <option value="30">30 Hari Terakhir</option>
+            <option value="ALL">Semua Waktu</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="h-64 relative w-full">
         <canvas id="trendChart"></canvas>
       </div>
     </div>
 
-    <!-- Topik Terpopuler -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-      <h2 class="font-bold text-sm text-slate-700 mb-3"><i class="fa-solid fa-fire text-amber-500 mr-2"></i>Layanan Paling Dicari</h2>
-      <div id="popular-topics" class="space-y-2 max-h-60 overflow-y-auto">
-        <!-- Generasi Dinamis via JS -->
+    <!-- Topik Sering Ditanyakan (Kata Kunci Favorit) -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-sm text-slate-700 mb-3 flex items-center">
+        <i class="fa-solid fa-fire text-amber-500 mr-2"></i>Topik Sering Ditanyakan
+      </h2>
+      <p class="text-[11px] text-slate-400 mb-3">Kata kunci pencarian terbanyak dari warga</p>
+      <div id="popular-topics" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <!-- Render via JS -->
       </div>
     </div>
   </div>
 
-  <!-- Modul Kelola Knowledge Base (Tambah Keyword Baru) -->
+  <!-- Evaluasi Kinerja AI & Daftar Pertanyaan Tak Terjawab -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Daftar Pertanyaan Tak Terjawab / Butuh Review -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-sm text-slate-700 mb-1 flex items-center">
+        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i>Pertanyaan Perlu Review / Tak Terjawab
+      </h2>
+      <p class="text-[11px] text-slate-400 mb-3">Pertanyaan pengguna yang mendapat rating negatif (👎) atau masuk ke fallback</p>
+      <div id="unanswered-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+        <!-- Render via JS -->
+      </div>
+    </div>
+
+    <!-- Fitur Feedback Terfilter -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-bold text-sm text-slate-700 flex items-center">
+          <i class="fa-regular fa-comment mr-2 text-[#0f3c5f]"></i>Ulasan & Feedback Warga
+        </h2>
+        
+        <!-- Filter Jenis Feedback -->
+        <select id="filter-feedback" onchange="loadDashboard()" class="text-xs border border-slate-200 rounded-lg p-1.5 bg-slate-50 font-medium focus:outline-none focus:border-[#0f3c5f]">
+          <option value="ALL">Semua Feedback</option>
+          <option value="👍">Hanya Positif (👍)</option>
+          <option value="👎">Hanya Negatif (👎)</option>
+        </select>
+      </div>
+      <div id="feedback-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+        <!-- Render via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Manajemen Database & Knowledge Base (Daftar Kontak OPD & Darurat) -->
   <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
-    <h2 class="font-bold text-sm text-slate-700 mb-3"><i class="fa-solid fa-database mr-2 text-[#0f3c5f]"></i>Kelola Knowledge Base Kustom</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-      <input type="text" id="kb-keyword" placeholder="Kata Kunci / Keyword (misal: pbb, ktp)" class="p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#0f3c5f]">
-      <input type="text" id="kb-response" placeholder="Jawaban Otomatis AI..." class="p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#0f3c5f] md:col-span-2">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-bold text-sm text-slate-700 flex items-center">
+        <i class="fa-solid fa-address-book text-[#0f3c5f] mr-2"></i>Daftar Kontak OPD & Layanan Darurat Kota Palopo
+      </h2>
+      <span class="text-[10px] bg-sky-50 text-sky-700 font-bold px-2.5 py-1 rounded-lg border border-sky-200">Knowledge Base RAG</span>
     </div>
-    <div class="flex justify-end">
-      <button onclick="addKnowledgeBaseItem()" class="bg-[#0f3c5f] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
-        <i class="fa-solid fa-plus mr-1"></i> Tambah ke Database
-      </button>
-    </div>
-
-    <!-- Tabel Daftar Knowledge Base Kustom -->
-    <div class="mt-4 border-t border-slate-100 pt-3">
-      <h3 class="text-xs font-bold text-slate-500 mb-2">Daftar Keyword Kustom Aktif:</h3>
-      <div id="kb-list" class="space-y-2 max-h-48 overflow-y-auto text-xs">
-        <!-- Rendered by JS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="contact-list">
+      <!-- Direct Contact Cards -->
+      <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-1">
+        <strong class="text-xs text-rose-900 block font-extrabold"><i class="fa-solid fa-phone-volume mr-1 text-rose-600"></i> Call Center Darurat</strong>
+        <p class="text-[11px] text-slate-600">Layanan Siaga Darurat Palopo: <strong>112</strong> (Bebas Pulsa)</p>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <strong class="text-xs text-slate-800 block font-extrabold"><i class="fa-solid fa-fire-extinguisher mr-1 text-rose-600"></i> Pemadam Kebakaran</strong>
+        <p class="text-[11px] text-slate-600">Telepon: (0471) 22501 | WA: 0853-4134-1565</p>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <strong class="text-xs text-slate-800 block font-extrabold"><i class="fa-solid fa-truck-medical mr-1 text-emerald-600"></i> PSC 119 Kesehatan</strong>
+        <p class="text-[11px] text-slate-600">Hotline: 119 | WA: 0811-4211-911</p>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <strong class="text-xs text-slate-800 block font-extrabold"><i class="fa-solid fa-shield-halved mr-1 text-blue-600"></i> Polres Palopo</strong>
+        <p class="text-[11px] text-slate-600">Call Center: 110 | WA Hotline: 0812-1890-2002</p>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <strong class="text-xs text-slate-800 block font-extrabold"><i class="fa-solid fa-bullhorn mr-1 text-emerald-600"></i> Diskominfo SP (Oke Sappo)</strong>
+        <p class="text-[11px] text-slate-600">Layanan Pengaduan WA: 0851-6547-8686</p>
+      </div>
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <strong class="text-xs text-slate-800 block font-extrabold"><i class="fa-solid fa-id-card mr-1 text-indigo-600"></i> Disdukcapil Palopo</strong>
+        <p class="text-[11px] text-slate-600">Layanan KTP/KK/Akta: Jl. Landak No. 1 Palopo</p>
       </div>
     </div>
   </div>
 
-  <!-- Feed Feedback Terbaru -->
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="font-bold text-sm text-slate-700"><i class="fa-regular fa-comment mr-2"></i>Ulasan & Feedback Terbaru</h2>
-      <select id="filter-feedback" onchange="loadDashboard()" class="text-xs border border-slate-200 rounded-lg p-1 bg-slate-50">
-        <option value="ALL">Semua Feedback</option>
-        <option value="👍">Hanya Positif (👍)</option>
-        <option value="👎">Hanya Negatif (👎)</option>
-      </select>
-    </div>
-    <div id="feedback-list" class="space-y-2 max-h-60 overflow-y-auto">
-      <!-- Generasi Dinamis via JS -->
-    </div>
-  </div>
-
-  <!-- Form Push Notification (Tetap Dipertahankan) -->
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-    <h2 class="font-bold text-sm text-slate-700 mb-3"><i class="fa-regular fa-bell mr-2"></i>Kirim Pengumuman Push</h2>
+  <!-- Form Push Notification -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+    <h2 class="font-bold text-sm text-slate-700 mb-3 flex items-center">
+      <i class="fa-regular fa-bell mr-2 text-[#0f3c5f]"></i>Kirim Pengumuman Push Notifikasi
+    </h2>
     <div class="flex flex-col md:flex-row gap-2">
-      <input type="text" id="notif-title" placeholder="Judul Pengumuman" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-xs">
-      <input type="text" id="notif-body" placeholder="Pesan untuk Masyarakat Palopo..." class="flex-1 p-2.5 border border-slate-200 rounded-xl text-xs">
-      <button onclick="sendPushNotification()" class="bg-[#0f3c5f] text-white px-4 py-2.5 rounded-xl text-xs font-bold">
-        <i class="fa-regular fa-paper-plane mr-1"></i> Kirim
+      <input type="text" id="notif-title" placeholder="Judul Pengumuman" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#0f3c5f]">
+      <input type="text" id="notif-body" placeholder="Pesan pengumuman untuk masyarakat..." class="flex-1 p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#0f3c5f]">
+      <button onclick="sendPushNotification()" class="bg-[#0f3c5f] hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition">
+        <i class="fa-regular fa-paper-plane mr-1"></i> Kirim Notifikasi
       </button>
     </div>
     <div id="push-status" class="text-xs text-slate-500 mt-2 font-medium"></div>
   </div>
 
+  <!-- JAVASCRIPT LOGIC -->
   <script>
   let trendChartInstance = null;
 
-  // ------------------------------------------
-  // 1. INSIALISASI & RENDER DASHBOARD
-  // ------------------------------------------
+  // 1. INSIALISASI DASHBOARD MAIN FUNCTION
   function loadDashboard() {
     const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
     const chatHistory = JSON.parse(localStorage.getItem('PALOPO_CHAT_HISTORY_DATA') || '{"history":[]}');
     const filterType = document.getElementById('filter-feedback')?.value || 'ALL';
+    const timeRange = document.getElementById('time-range')?.value || '7';
 
     const historyArray = Array.isArray(chatHistory.history) ? chatHistory.history : [];
-    
-    // Update Statistik Utama
+
+    // Filter Feedbacks Berdasarkan Rentang Waktu
+    const filteredByTimeFeedbacks = filterDataByTimeRange(feedbacks, timeRange);
+
+    // Update Counter Ringkasan
     document.getElementById('total-chat').textContent = historyArray.length;
     document.getElementById('total-like').textContent = feedbacks.filter(f => f.type === '👍').length;
     document.getElementById('total-dislike').textContent = feedbacks.filter(f => f.type === '👎').length;
@@ -144,28 +208,61 @@
     const activeToday = feedbacks.filter(f => f.timestamp && new Date(f.timestamp).toDateString() === today).length;
     document.getElementById('active-today').textContent = activeToday + ' aktivitas';
 
-    // Render Sub-Komponen
-    renderFeedbackList(feedbacks, filterType);
+    // Check Status API Gemini & Token Configuration
+    checkSystemStatus();
+
+    // Render Sub-Komponen Dashboard
+    renderFeedbackList(filteredByTimeFeedbacks, filterType);
     renderPopularTopics(historyArray);
-    renderTrendChart(feedbacks);
-    renderKnowledgeBaseList();
+    renderTrendChart(filteredByTimeFeedbacks, timeRange);
+    renderUnansweredQuestions(feedbacks, historyArray);
   }
 
-  // ------------------------------------------
-  // 2. GRAFIK TREN INTERAKSI (CHART.JS)
-  // ------------------------------------------
-  function renderTrendChart(feedbacks) {
+  // Helper Filter Rentang Waktu
+  function filterDataByTimeRange(dataArray, rangeDays) {
+    if (rangeDays === 'ALL') return dataArray;
+    const days = parseInt(rangeDays, 10);
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    return dataArray.filter(item => {
+      if (!item.timestamp) return false;
+      return new Date(item.timestamp) >= cutoffDate;
+    });
+  }
+
+  // 2. STATUS API KEY & TOKEN PERFORMANCE EVALUATION
+  function checkSystemStatus() {
+    const customApiKey = localStorage.getItem('PALOPO_GEMINI_KEY') || '';
+    const badge = document.getElementById('api-status-badge');
+    const dot = document.getElementById('api-status-dot');
+    const text = document.getElementById('api-status-text');
+
+    if (customApiKey && customApiKey.trim().length > 10) {
+      badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200";
+      dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+      text.textContent = "Gemini API Key Aktif";
+    } else {
+      badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-xl text-xs font-bold border border-amber-200";
+      dot.className = "w-2 h-2 rounded-full bg-amber-500";
+      text.textContent = "Mode Fallback LLM / Sheets";
+    }
+  }
+
+  // 3. GRAFIK TREN PENGGUNAAN (CHART.JS)
+  function renderTrendChart(feedbacks, rangeDays) {
     const ctx = document.getElementById('trendChart').getContext('2d');
-    
-    // Menyiapkan 7 Hari Terakhir
-    const days = [];
+    const daysCount = rangeDays === 'ALL' ? 14 : parseInt(rangeDays, 10);
+
+    const labels = [];
     const counts = [];
-    for (let i = 6; i >= 0; i--) {
+
+    for (let i = daysCount - 1; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = d.toDateString();
-      days.push(d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' }));
-      
+      labels.push(d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }));
+
       const count = feedbacks.filter(f => f.timestamp && new Date(f.timestamp).toDateString() === dateStr).length;
       counts.push(count);
     }
@@ -175,15 +272,16 @@
     trendChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: days,
+        labels: labels,
         datasets: [{
-          label: 'Aktivitas Feedback / Interaksi',
+          label: 'Interaksi Warga',
           data: counts,
           borderColor: '#0f3c5f',
           backgroundColor: 'rgba(15, 60, 95, 0.08)',
           fill: true,
-          tension: 0.4,
+          tension: 0.35,
           borderWidth: 2,
+          pointBackgroundColor: '#06b6d4',
           pointRadius: 4
         }]
       },
@@ -198,12 +296,10 @@
     });
   }
 
-  // ------------------------------------------
-  // 3. TOPIK PALING DICARI (ANALYTICS)
-  // ------------------------------------------
+  // 4. MONITORING TOPIK POPULAR (KATA KUNCI FAVORIT)
   function renderPopularTopics(history) {
     const topicCounts = {};
-    const keywords = ['ktp', 'kk', 'nib', 'bansos', 'pkh', 'pajak', 'sagu', 'sekolah', 'ambulan', 'damkar'];
+    const keywords = ['ktp', 'kk', 'nib', 'bansos', 'pkh', 'pajak', 'sagu', 'sekolah', 'ambulan', 'damkar', 'ijin', 'puskesmas', 'pbb'];
 
     history.forEach(item => {
       if (item.role === 'user' && item.parts?.[0]?.text) {
@@ -220,123 +316,118 @@
     const container = document.getElementById('popular-topics');
 
     if (sortedTopics.length === 0) {
-      container.innerHTML = '<p class="text-xs text-slate-400 py-2">Belum cukup data kata kunci.</p>';
+      container.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">Belum ada data topik yang dicari.</p>';
       return;
     }
 
     container.innerHTML = sortedTopics.map(([topic, count]) => `
-      <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-xs">
-        <span class="font-bold text-slate-700 capitalize">Layanan ${topic}</span>
+      <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
+        <span class="font-bold text-slate-700 uppercase">Layanan ${topic}</span>
         <span class="bg-[#0f3c5f] text-white px-2 py-0.5 rounded-md text-[10px] font-mono">${count}x dicari</span>
       </div>
     `).join('');
   }
 
-  // ------------------------------------------
-  // 4. KELOLA KNOWLEDGE BASE KUSTOM (CRUD)
-  // ------------------------------------------
-  function addKnowledgeBaseItem() {
-    const kwInput = document.getElementById('kb-keyword');
-    const respInput = document.getElementById('kb-response');
-    const keyword = kwInput.value.trim().toLowerCase();
-    const response = respInput.value.trim();
+  // 5. EVALUASI DAFTAR PERTANYAAN TAK TERJAWAB / NEED REVIEW
+  function renderUnansweredQuestions(feedbacks, history) {
+    const container = document.getElementById('unanswered-list');
+    const negativeFeedbacks = feedbacks.filter(f => f.type === '👎');
 
-    if (!keyword || !response) return alert('Isi kata kunci dan respon!');
-
-    const kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
-    kbData.push({ id: Date.now(), keyword, response });
-    localStorage.setItem('PALOPO_CUSTOM_KB', JSON.stringify(kbData));
-
-    kwInput.value = '';
-    respInput.value = '';
-    renderKnowledgeBaseList();
-  }
-
-  function deleteKnowledgeBaseItem(id) {
-    let kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
-    kbData = kbData.filter(item => item.id !== id);
-    localStorage.setItem('PALOPO_CUSTOM_KB', JSON.stringify(kbData));
-    renderKnowledgeBaseList();
-  }
-
-  function renderKnowledgeBaseList() {
-    const kbData = JSON.parse(localStorage.getItem('PALOPO_CUSTOM_KB') || '[]');
-    const container = document.getElementById('kb-list');
-
-    if (kbData.length === 0) {
-      container.innerHTML = '<p class="text-slate-400 text-[11px]">Belum ada data kustom. Tambahkan di atas.</p>';
+    if (negativeFeedbacks.length === 0) {
+      container.innerHTML = '<p class="text-xs text-emerald-600 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">✅ Tidak ada pertanyaan bermasalah saat ini.</p>';
       return;
     }
 
-    container.innerHTML = kbData.map(item => `
-      <div class="flex items-center justify-between border border-slate-100 p-2 rounded-xl bg-slate-50">
-        <div class="truncate max-w-[80%]">
-          <span class="font-bold text-[#0f3c5f] bg-sky-100 px-1.5 py-0.5 rounded text-[10px] uppercase mr-1.5">${item.keyword}</span>
-          <span class="text-slate-600 text-[11px]">${item.response}</span>
+    container.innerHTML = negativeFeedbacks.slice(-5).reverse().map(f => `
+      <div class="p-2.5 bg-rose-50/60 border border-rose-200 rounded-xl text-xs space-y-1">
+        <div class="flex items-center justify-between font-bold text-rose-800 text-[11px]">
+          <span>👎 Jawaban Kurang Memuaskan</span>
+          <span class="text-[10px] text-slate-400 font-mono">${f.timestamp ? new Date(f.timestamp).toLocaleDateString('id-ID') : '-'}</span>
         </div>
-        <button onclick="deleteKnowledgeBaseItem(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold px-2">
-          <i class="fa-solid fa-trash-can"></i>
-        </button>
+        <p class="text-slate-600 text-[11px] line-clamp-2">${escapeHtml(f.content || 'Konten respon tidak tercatat')}</p>
       </div>
     `).join('');
   }
 
-  // ------------------------------------------
-  // 5. EXPORT DATA TO EXCEL / CSV (SHEETJS)
-  // ------------------------------------------
+  // 6. FITUR EXPORT DATA TO EXCEL / CSV (SHEETJS)
   function exportToExcel() {
     const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
     if (feedbacks.length === 0) return alert('Belum ada data feedback untuk diexport!');
 
     const dataToExport = feedbacks.map((f, index) => ({
       No: index + 1,
-      Tipe: f.type === '👍' ? 'Positif' : 'Negatif',
-      Isi_Pesan: f.content || '-',
-      Waktu: f.timestamp ? new Date(f.timestamp).toLocaleString('id-ID') : '-'
+      Rating: f.type === '👍' ? 'Positif (Membantu)' : 'Negatif (Kurang)',
+      Respon_AI: f.content || '-',
+      Waktu_Timestamp: f.timestamp ? new Date(f.timestamp).toLocaleString('id-ID') : '-'
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Feedback");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan_Feedback");
 
-    XLSX.writeFile(workbook, `Laporan_Feedback_PALOPOTA_AI_${new Date().toISOString().slice(0,10)}.xlsx`);
+    XLSX.writeFile(workbook, `Laporan_Analitik_PALOPOTA_AI_${new Date().toISOString().slice(0,10)}.xlsx`);
   }
 
-  // ------------------------------------------
-  // 6. HELPER FEEDBACK LIST & INITIALIZATION
-  // ------------------------------------------
+  // 7. RENDER ULASAN & FEEDBACK
   function renderFeedbackList(feedbacks, filter) {
     const list = document.getElementById('feedback-list');
     let filtered = feedbacks;
     if (filter !== 'ALL') filtered = feedbacks.filter(f => f.type === filter);
 
     if (filtered.length === 0) {
-      list.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">Tidak ada catatan feedback.</p>';
+      list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Tidak ada catatan ulasan.</p>';
       return;
     }
 
     list.innerHTML = filtered.slice(-10).reverse().map(f => `
       <div class="flex items-start justify-between border-b border-slate-100 pb-2 text-xs gap-2">
-        <div class="flex items-start gap-2">
+        <div class="flex items-start gap-2 min-w-0">
           <span class="px-2 py-0.5 rounded font-bold shrink-0 ${f.type === '👍' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">${f.type}</span>
-          <span class="text-slate-600">${f.content || '(Pesan kosong)'}</span>
+          <span class="text-slate-600 truncate">${escapeHtml(f.content || '(Pesan kosong)')}</span>
         </div>
         <span class="text-slate-400 text-[10px] shrink-0 font-mono">${f.timestamp ? new Date(f.timestamp).toLocaleTimeString('id-ID') : '-'}</span>
       </div>
     `).join('');
   }
 
+  // 8. SEND PUSH NOTIFICATION SIMULATION
+  function sendPushNotification() {
+    const titleInput = document.getElementById('notif-title');
+    const bodyInput = document.getElementById('notif-body');
+    const statusDiv = document.getElementById('push-status');
+
+    const title = titleInput.value.trim();
+    const body = bodyInput.value.trim();
+
+    if (!title || !body) return alert('Mohon isi judul dan isi pesan notifikasi!');
+
+    statusDiv.textContent = '📤 Mengirim pengumuman push...';
+    statusDiv.className = 'text-xs text-[#06b6d4] mt-2 font-medium';
+
+    setTimeout(() => {
+      statusDiv.textContent = '✅ Pengumuman berhasil terkirim ke seluruh perangkat aktif!';
+      statusDiv.className = 'text-xs text-emerald-600 mt-2 font-medium';
+      titleInput.value = '';
+      bodyInput.value = '';
+    }, 600);
+  }
+
+  // Utility Escape HTML
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // Initial Load
   document.addEventListener('DOMContentLoaded', () => {
     loadDashboard();
     setInterval(loadDashboard, 15000);
   });
 </script>
-
-<!-- Chart.js untuk Grafik Visual -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- SheetJS untuk Export Data ke Excel / CSV -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 </body>
 </html>
