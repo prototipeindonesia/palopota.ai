@@ -600,17 +600,30 @@ function renderGisList(filterCategory) {
   const container = document.getElementById('gis-list-container');
   if (!container) return;
 
-  // Update tampilan tombol filter
-  document.querySelectorAll('.gis-tab').forEach(btn => {
-    btn.style.backgroundColor = '#e2e8f0';
-    btn.style.color = '#475569';
+  // Daftar semua ID tombol filter
+  const tabIds = ['Semua', 'Fasum', 'OPD', 'Kecamatan', 'Faskes'];
+  
+  // Reset semua tombol ke gaya tidak aktif (transparan)
+  tabIds.forEach(id => {
+    const btn = document.getElementById(`tab-${id}`);
+    if (btn) {
+      btn.style.backgroundColor = 'transparent';
+      btn.style.color = '#475569';
+      btn.style.border = '1px solid #e2e8f0';
+      btn.style.fontWeight = '500';
+    }
   });
-  const activeTab = document.getElementById(`tab-${filterCategory}`);
-  if (activeTab) {
-    activeTab.style.backgroundColor = '#0f3c5f';
-    activeTab.style.color = 'white';
+
+  // Set tombol yang aktif menjadi biru
+  const activeBtn = document.getElementById(`tab-${filterCategory}`);
+  if (activeBtn) {
+    activeBtn.style.backgroundColor = '#0f3c5f';
+    activeBtn.style.color = 'white';
+    activeBtn.style.border = '1px solid #0f3c5f';
+    activeBtn.style.fontWeight = 'bold';
   }
 
+  // Filter data
   const filtered = filterCategory === 'Semua' 
     ? gisData 
     : gisData.filter(item => item.category === filterCategory);
@@ -633,12 +646,10 @@ function renderGisList(filterCategory) {
           <p class="text-[10px] text-slate-500 mt-0.5">${item.address}</p>
         </div>
         <div class="flex space-x-1 shrink-0">
-          <!-- Tombol Peta -->
           <a href="${item.mapsUrl}" target="_blank" 
              style="background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-weight: bold; font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: background 0.2s;">
             <i class="fa-solid fa-diamond-turn-right"></i> Peta
           </a>
-          <!-- Tombol Tanya AI -->
           <button onclick="askAI('Info lokasi dan layanan ${item.name}')" 
                   style="background-color: #0f3c5f; color: white; font-weight: bold; font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s;"
                   onmouseover="this.style.backgroundColor='#1e293b'" 
