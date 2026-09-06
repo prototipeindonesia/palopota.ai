@@ -1131,5 +1131,126 @@ document.addEventListener('DOMContentLoaded', function() {
         resetBannerTimer();
       }
     });
+
+// ==========================================
+// NOTIFIKASI PUSH - SUBSCRIBE / UNSUBSCRIBE
+// ==========================================
+
+// Cek status subscription saat load
+async function checkPushSubscriptionStatus() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    document.getElementById('push-subscribe-label').textContent = 'Notifikasi (Tidak Didukung)';
+    document.getElementById('push-subscribe-btn').disabled = true;
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      // Sudah subscribe
+      document.getElementById('push-subscribe-label').textContent = 'Nonaktifkan Notifikasi';
+      document.getElementById('push-subscribe-btn').querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
+    } else {
+      document.getElementById('push-subscribe-label').textContent = 'Aktifkan Notifikasi';
+      document.getElementById('push-subscribe-btn').querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
+    }
+  } catch (e) {
+    console.warn('Gagal cek status push:', e);
+  }
+}
+
+// Toggle subscribe / unsubscribe
+async function togglePushSubscription() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Browser Anda tidak mendukung notifikasi push. Gunakan Chrome atau Edge terbaru.');
+    return;
+  }
+
+  const btn = document.getElementById('push-subscribe-btn');
+  const label = document.getElementById('push-subscribe-label');
+  
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      // UNSUBSCRIBE
+      await subscription.unsubscribe();
+      label.textContent = 'Aktifkan Notifikasi';
+      btn.querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
+      // Hapus dari daftar subscription yang tersimpan
+      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+      subs = subs.filter(s => s.endpoint !== subscription.endpoint);
+      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
+      alert('Notifikasi dinonaktifkan.');
+    } else {
+      // SUBSCRIBE - butuh VAPID public key
+      // Untuk demo, kita gunakan key yang valid (anda bisa dapatkan dari web-push library)
+      // Jika tidak punya, kita hanya mensimulasikan (tanpa server key)
+      // Sebaiknya anda buat VAPID key sendiri atau gunakan Firebase
+      const vapidPublicKey = 'BL6k...'; // Ganti dengan public key Anda
+      
+      // Periksa apakah key valid (minimal 65 karakter)
+      if (vapidPublicKey.length < 65) {
+        alert('⚠️ VAPID Public Key belum diatur. Untuk demo, notifikasi akan disimpan di localStorage.\n\n' +
+              'Cara dapatkan key:\n' +
+              '1. Kunjungi https://web-push-codelab.glitch.me/\n' +
+              '2. Copy VAPID Public Key\n' +
+              '3. Ganti const vapidPublicKey di kode ini');
+        // Simulasi subscribe (tanpa push nyata)
+        label.textContent = 'Notifikasi (Simulasi)';
+        btn.querySelector('i').className = 'fa-regular fa-bell-check text-emerald-500';
+        localStorage.setItem('PALOPO_PUSH_ACTIVE', 'simulasi');
+        alert('✅ Notifikasi diaktifkan (mode simulasi).\n\n' +
+              'Untuk push nyata, atur VAPID key dan backend.');
+        return;
+      }
+
+      const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+      });
+
+      // Simpan subscription
+      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+      subs.push(subscription);
+      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
+      
+      label.textContent = 'Nonaktifkan Notifikasi';
+      btn.querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
+      alert('✅ Notifikasi diaktifkan! Anda akan menerima pemberitahuan dari PALOPOTA AI.');
+    }
+  } catch (e) {
+    console.error('Error toggle push:', e);
+    alert('Gagal mengubah status notifikasi: ' + e.message);
+  }
+}
+
+// Helper: ubah base64 ke Uint8Array (untuk VAPID)
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// Panggil saat halaman dimuat untuk cek status
+document.addEventListener('DOMContentLoaded', function() {
+  // ... kode yang sudah ada ...
+  if (document.getElementById('push-subscribe-btn')) {
+    checkPushSubscriptionStatus();
+  }
+});
+
   }
 });
