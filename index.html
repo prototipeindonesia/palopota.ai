@@ -250,11 +250,12 @@
           <!-- Tombol Mikrofon -->
           <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
             <i class="fa-solid fa-microphone"></i>
-          </button>
-
-          <button type="submit" class="w-8 h-8 bg-brand-navy hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md shrink-0">
-            <i class="fa-solid fa-arrow-up text-xs"></i>
-          </button>
+          <button type="submit" 
+        style="width: 32px; height: 32px; background-color: #0f3c5f; color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; box-shadow: 0 2px 6px rgba(15,60,95,0.3); border: none; cursor: pointer; flex-shrink: 0;"
+        onmouseover="this.style.backgroundColor='#1e293b'" 
+        onmouseout="this.style.backgroundColor='#0f3c5f'">
+  <i class="fa-solid fa-arrow-up" style="font-size: 0.7rem;"></i>
+</button>
         </div>
       </div>
     </form>
