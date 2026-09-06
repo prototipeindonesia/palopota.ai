@@ -128,16 +128,18 @@ function appendAIMessage(markdownText) {
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
   const htmlContent = marked.parse(markdownText);
+  const messageId = 'msg-' + Date.now(); // ID unik per pesan
 
   stream.insertAdjacentHTML('beforeend', `
-    <div class="flex items-start space-x-2.5 my-2">
-      <!-- Lingkaran profil AI dengan gaya inline -->
-      <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #06b6d4; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-        AI
-      </div>
-      <!-- Kotak pesan AI -->
+    <div class="flex items-start space-x-2.5 my-2" id="${messageId}">
+      <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #06b6d4; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">AI</div>
       <div style="background-color: white; border: 1px solid #e2e8f0; font-size: 0.75rem; padding: 0.75rem; border-radius: 1rem; border-top-left-radius: 0; max-width: 92%; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.05); line-height: 1.625;" class="chat-body">
         ${htmlContent}
+        <div class="flex items-center space-x-3 mt-2 pt-2 border-t border-slate-200 text-xs text-slate-400">
+          <button onclick="sendFeedback('${messageId}', '👍')" class="hover:text-emerald-600 transition" title="Membantu">👍</button>
+          <button onclick="sendFeedback('${messageId}', '👎')" class="hover:text-rose-600 transition" title="Tidak Membantu">👎</button>
+          <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-1"></span>
+        </div>
       </div>
     </div>
   `);
