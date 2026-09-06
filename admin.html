@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin PALOPOTA AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Outfit', sans-serif; background: #f1f5f9; }
+    .stat-card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .badge { background: #0f3c5f; color: white; padding: 0.2rem 0.8rem; border-radius: 99px; font-size: 0.7rem; }
+  </style>
+</head>
+<body class="p-4 max-w-5xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-brand-navy flex items-center gap-2">
+      <i class="fa-solid fa-chart-simple"></i> Dashboard Admin
+    </h1>
+    <span class="text-xs text-slate-400">PALOPOTA AI v1.0</span>
+  </div>
+
+  <!-- Statistik Ringkas -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="stats-container">
+    <div class="stat-card"><span class="block text-slate-500 text-xs">Total Chat</span><span class="text-2xl font-bold" id="total-chat">0</span></div>
+    <div class="stat-card"><span class="block text-slate-500 text-xs">👍 Positif</span><span class="text-2xl font-bold text-emerald-600" id="total-like">0</span></div>
+    <div class="stat-card"><span class="block text-slate-500 text-xs">👎 Negatif</span><span class="text-2xl font-bold text-rose-600" id="total-dislike">0</span></div>
+    <div class="stat-card"><span class="block text-slate-500 text-xs">Aktif Hari Ini</span><span class="text-2xl font-bold text-brand-cyan" id="active-today">0</span></div>
+  </div>
+
+  <!-- Daftar Feedback -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+    <h2 class="font-bold text-sm text-slate-700 mb-3"><i class="fa-regular fa-comment mr-2"></i>Feedback Terbaru</h2>
+    <div id="feedback-list" class="space-y-2 max-h-96 overflow-y-auto">
+      <p class="text-xs text-slate-400 text-center">Memuat data...</p>
+    </div>
+  </div>
+
+  <!-- Form Notifikasi Push (untuk admin kirim notifikasi) -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-6">
+    <h2 class="font-bold text-sm text-slate-700 mb-3"><i class="fa-regular fa-bell mr-2"></i>Kirim Notifikasi Push</h2>
+    <div class="flex flex-col md:flex-row gap-2">
+      <input type="text" id="notif-title" placeholder="Judul Notifikasi" class="flex-1 p-2 border border-slate-200 rounded-xl text-sm">
+      <input type="text" id="notif-body" placeholder="Isi Notifikasi" class="flex-1 p-2 border border-slate-200 rounded-xl text-sm">
+      <button onclick="sendPushNotification()" class="bg-brand-navy text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition">
+        <i class="fa-regular fa-paper-plane mr-1"></i> Kirim
+      </button>
+    </div>
+    <div id="push-status" class="text-xs text-slate-500 mt-2"></div>
+  </div>
+
+  <script>
+    // Load data dari localStorage
+    function loadDashboard() {
+      const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
+      const chatHistory = JSON.parse(localStorage.getItem('PALOPO_CHAT_HISTORY_DATA') || '{"history":[]}');
+      
+      const totalChat = chatHistory.history ? chatHistory.history.length : 0;
+      const likes = feedbacks.filter(f => f.type === '👍').length;
+      const dislikes = feedbacks.filter(f => f.type === '👎').length;
+      
+      document.getElementById('total-chat').textContent = totalChat;
+      document.getElementById('total-like').textContent = likes;
+      document.getElementById('total-dislike').textContent = dislikes;
+      
+      // Aktif hari ini
+      const today = new Date().toDateString();
+      const activeToday = feedbacks.filter(f => new Date(f.timestamp).toDateString() === today).length;
+      document.getElementById('active-today').textContent = activeToday + (activeToday > 0 ? ' aktivitas' : '');
+      
+      // Render feedback terbaru
+      const list = document.getElementById('feedback-list');
+      if (feedbacks.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-400 text-center">Belum ada feedback</p>';
+      } else {
+        list.innerHTML = feedbacks.slice(-10).reverse().map(f => `
+          <div class="flex items-start justify-between border-b border-slate-100 py-2 text-xs">
+            <div>
+              <span class="font-bold ${f.type === '👍' ? 'text-emerald-600' : 'text-rose-600'}">${f.type}</span>
+              <span class="text-slate-600 ml-1">${f.content || '(kosong)'}</span>
+            </div>
+            <span class="text-slate-400 text-[10px]">${new Date(f.timestamp).toLocaleString()}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Kirim notifikasi push (akan diimplementasikan di service worker)
+    async function sendPushNotification() {
+      const title = document.getElementById('notif-title').value.trim();
+      const body = document.getElementById('notif-body').value.trim();
+      if (!title || !body) return alert('Isi judul dan pesan!');
+      
+      // Dapatkan semua subscription dari localStorage (disimpan saat user subscribe)
+      const subscriptions = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+      if (subscriptions.length === 0) {
+        document.getElementById('push-status').textContent = '❌ Belum ada pengguna yang subscribe notifikasi.';
+        return;
+      }
+      
+      // Kirim ke endpoint masing-masing (butuh backend, untuk demo kita simpan saja)
+      document.getElementById('push-status').textContent = `📤 Mengirim ke ${subscriptions.length} perangkat...`;
+      
+      // Simulasi kirim (karena tidak ada backend, kita catat di konsol)
+      console.log('Mengirim notifikasi:', { title, body, subscriptions });
+      
+      // Jika Anda punya backend, lakukan fetch POST ke endpoint /send-notification
+      // Untuk sekarang, kita simpan notifikasi di localStorage
+      const notifs = JSON.parse(localStorage.getItem('PALOPO_NOTIFICATIONS') || '[]');
+      notifs.push({ title, body, sentAt: new Date().toISOString() });
+      localStorage.setItem('PALOPO_NOTIFICATIONS', JSON.stringify(notifs));
+      
+      document.getElementById('push-status').textContent = '✅ Notifikasi tercatat (backend diperlukan untuk push nyata)';
+      document.getElementById('notif-title').value = '';
+      document.getElementById('notif-body').value = '';
+    }
+
+    // Refresh setiap 10 detik
+    loadDashboard();
+    setInterval(loadDashboard, 10000);
+  </script>
+</body>
+</html>
