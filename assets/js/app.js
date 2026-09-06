@@ -550,7 +550,6 @@ function openFeatureModal(type) {
         body.innerHTML = html;
     } else {
       body.innerHTML = `<p class="text-xs text-slate-500 p-2">Data OPD belum tersedia.</p>`;
-    }
   } else if (type === 'GIS' || type === 'FASKES') {
     title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
     body.innerHTML = `
