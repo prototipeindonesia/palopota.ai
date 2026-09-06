@@ -2,13 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Kalender Layanan Publik - PALOPOTA AI</title>
-
-  <!-- FullCalendar CSS & JS (CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/locales/id.js"></script>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,107 +12,155 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- FullCalendar v6 (CDN Bundled Fix) -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.9/locales/id.global.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0f3c5f',
+              blue: '#0284c7',
+              cyan: '#06b6d4',
+              green: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
     body {
       font-family: 'Outfit', sans-serif;
       background: #f8fafc;
       min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
       padding: 16px;
+      -webkit-tap-highlight-color: transparent;
     }
+    
+    /* Custom FullCalendar Styling */
+    .fc {
+      --fc-border-color: #e2e8f0;
+      --fc-button-bg-color: #0f3c5f;
+      --fc-button-border-color: #0f3c5f;
+      --fc-button-hover-bg-color: #1e293b;
+      --fc-button-hover-border-color: #1e293b;
+      --fc-button-active-bg-color: #0284c7;
+      --fc-button-active-border-color: #0284c7;
+    }
+    
     .fc .fc-toolbar-title {
       font-size: 1.1rem !important;
       font-weight: 700 !important;
+      color: #0f3c5f;
     }
+    
     .fc .fc-button {
-      background-color: #0f3c5f !important;
-      border-color: #0f3c5f !important;
       font-size: 0.75rem !important;
-      padding: 0.3rem 0.8rem !important;
+      padding: 0.35rem 0.75rem !important;
       border-radius: 12px !important;
       text-transform: capitalize !important;
+      font-weight: 600 !important;
     }
-    .fc .fc-button:hover {
-      background-color: #1e293b !important;
-    }
+    
     .fc-daygrid-day {
       cursor: pointer;
-      transition: background 0.1s ease;
+      transition: background 0.15 ease;
     }
+    
     .fc-daygrid-day:hover {
       background: #f1f5f9;
     }
+    
     .fc-daygrid-day-number {
       font-size: 0.8rem !important;
       font-weight: 600 !important;
+      color: #334155;
     }
+    
+    .fc-event {
+      border-radius: 6px !important;
+      border: none !important;
+      cursor: pointer;
+      padding: 2px 4px !important;
+    }
+    
     .fc-event-title {
       font-weight: 600 !important;
       font-size: 0.7rem !important;
-      padding: 1px 4px !important;
     }
+    
     .back-btn {
       background: #0f3c5f;
       color: white;
-      padding: 10px 20px;
-      border-radius: 14px;
+      padding: 8px 16px;
+      border-radius: 12px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(15, 60, 95, 0.2);
       text-decoration: none;
-      border: none;
-      cursor: pointer;
     }
+    
     .back-btn:hover {
       background: #1e293b;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(15, 60, 95, 0.25);
+      transform: translateY(-1px);
     }
+    
     .legend-item {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: #475569;
+      font-weight: 500;
     }
+    
     .legend-dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       display: inline-block;
       flex-shrink: 0;
     }
+    
     #calendar-container {
       background: white;
-      border-radius: 24px;
-      padding: 20px 12px 12px 12px;
+      border-radius: 20px;
+      padding: 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.04);
       border: 1px solid #e2e8f0;
     }
-    @media (max-width: 480px) {
+
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
       .fc .fc-toolbar {
-        flex-wrap: wrap;
-        gap: 6px;
+        flex-direction: column;
+        gap: 8px;
       }
       .fc .fc-toolbar-title {
-        font-size: 0.95rem !important;
-      }
-      .fc .fc-button {
-        font-size: 0.65rem !important;
-        padding: 0.2rem 0.6rem !important;
+        font-size: 1rem !important;
       }
     }
   </style>
 </head>
-<body>
+<body class="antialiased">
 
   <!-- HEADER + TOMBOL KEMBALI -->
   <div class="flex items-center justify-between mb-4 max-w-5xl mx-auto">
-    <h1 class="text-xl md:text-2xl font-extrabold text-brand-navy flex items-center gap-2">
-      <i class="fa-regular fa-calendar text-brand-cyan"></i>
+    <h1 class="text-lg md:text-2xl font-extrabold text-brand-navy flex items-center gap-2">
+      <i class="fa-regular fa-calendar-check text-brand-cyan"></i>
       Kalender Layanan Publik
     </h1>
     <a href="index.html" class="back-btn">
@@ -125,8 +168,8 @@
     </a>
   </div>
 
-  <!-- LEGENDA -->
-  <div class="flex flex-wrap gap-3 justify-center mb-4 max-w-5xl mx-auto bg-white/80 rounded-2xl p-3 border border-slate-200/70">
+  <!-- LEGENDA KATEGORI -->
+  <div class="flex flex-wrap gap-3 justify-center mb-4 max-w-5xl mx-auto bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm">
     <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> Posyandu</span>
     <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Pelayanan Dinas</span>
     <span class="legend-item"><span class="legend-dot" style="background:#ef4444;"></span> Bansos / Sosial</span>
@@ -135,54 +178,51 @@
     <span class="legend-item"><span class="legend-dot" style="background:#f97316;"></span> Perizinan / UMKM</span>
   </div>
 
-  <!-- KALENDER -->
+  <!-- KALENDER CONTAINER -->
   <div id="calendar-container" class="max-w-5xl mx-auto">
     <div id="calendar"></div>
   </div>
 
-  <!-- INFORMASI TAMBAHAN (opsional) -->
-  <div class="max-w-5xl mx-auto mt-4 text-xs text-slate-400 text-center">
-    <i class="fa-regular fa-circle-info mr-1"></i>
-    Klik tanggal untuk melihat detail kegiatan. Data diperbarui secara berkala.
+  <!-- INFORMASI FOOTER -->
+  <div class="max-w-5xl mx-auto mt-4 text-[11px] text-slate-400 text-center">
+    <i class="fa-solid fa-circle-info mr-1"></i>
+    Klik kegiatan pada tanggal untuk melihat detail lokasi dan kontak penyelenggara.
   </div>
 
+  <!-- SCRIPT LOGIKA KALENDER -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const calendarEl = document.getElementById('calendar');
 
-      // --- DATA EVENT (bisa diambil dari Google Sheets nanti) ---
-      // Untuk demo, kita pakai data statis yang sudah dikelompokkan per kategori
+      // Data Kegiatan Layanan Publik Kota Palopo
       const events = [
-        // Posyandu (kuning)
-        { title: 'Posyandu Balita - Wara', start: '2026-09-07', color: '#f59e0b', extendedProps: { lokasi: 'Kecamatan Wara', kontak: '0812-3456-7890' } },
-        { title: 'Posyandu Lansia - Mungkajang', start: '2026-09-08', color: '#f59e0b', extendedProps: { lokasi: 'Kecamatan Mungkajang' } },
-        { title: 'Posyandu Balita - Sendana', start: '2026-09-14', color: '#f59e0b' },
-        { title: 'Posyandu Remaja - Bara', start: '2026-09-21', color: '#f59e0b' },
-        
-        // Pelayanan Dinas (hijau)
-        { title: 'KTP Keliling - Kec. Bara', start: '2026-09-09', color: '#10b981' },
-        { title: 'Sosialisasi NIB UMKM - DPMPTSP', start: '2026-09-12', color: '#10b981' },
-        { title: 'Layanan Adminduk - Kec. Wara Utara', start: '2026-09-16', color: '#10b981' },
-        { title: 'Bimtek Pengelolaan Keuangan Desa', start: '2026-09-23', color: '#10b981' },
-        
-        // Bansos / Sosial (merah)
-        { title: 'Pencairan Bansos PKH', start: '2026-09-10', color: '#ef4444' },
-        { title: 'Pencairan BPNT', start: '2026-09-17', color: '#ef4444' },
-        { title: 'Verifikasi DTKS - Kel. Pontap', start: '2026-09-24', color: '#ef4444' },
-        
-        // Kesehatan (biru)
-        { title: 'Vaksinasi Rabies - Puskesmas Pontap', start: '2026-09-11', color: '#0ea5e9' },
-        { title: 'Pemeriksaan Kesehatan Gratis - RSUD Sawerigading', start: '2026-09-15', color: '#0ea5e9' },
-        { title: 'KIE Stunting - Puskesmas Wara', start: '2026-09-18', color: '#0ea5e9' },
-        { title: 'Donor Darah - Palang Merah Palopo', start: '2026-09-25', color: '#0ea5e9' },
-        
-        // Pendidikan (ungu)
-        { title: 'Pendaftaran Beasiswa Palopo Pintar', start: '2026-09-13', color: '#8b5cf6' },
-        { title: 'Rapat Koordinasi PPDB', start: '2026-09-20', color: '#8b5cf6' },
-        
-        // Perizinan / UMKM (oranye)
-        { title: 'Konsultasi NIB - MPP Palopo', start: '2026-09-19', color: '#f97316' },
-        { title: 'Pelatihan UMKM - Diskopdagrin', start: '2026-09-22', color: '#f97316' },
+        // Posyandu (Kuning - #f59e0b)
+        { title: 'Posyandu Balita - Kec. Wara', start: '2026-09-07', color: '#f59e0b', extendedProps: { lokasi: 'Kantor Camat Wara', kontak: '0812-3456-7890' } },
+        { title: 'Posyandu Lansia - Mungkajang', start: '2026-09-08', color: '#f59e0b', extendedProps: { lokasi: 'Puskesmas Mungkajang', kontak: '0813-9876-5432' } },
+        { title: 'Posyandu Balita - Sendana', start: '2026-09-14', color: '#f59e0b', extendedProps: { lokasi: 'Aula Kelurahan Sendana' } },
+        { title: 'Posyandu Remaja - Bara', start: '2026-09-21', color: '#f59e0b', extendedProps: { lokasi: 'Kecamatan Bara' } },
+
+        // Pelayanan Dinas (Hijau - #10b981)
+        { title: 'KTP Keliling - Kec. Bara', start: '2026-09-09', color: '#10b981', extendedProps: { lokasi: 'Halaman Kantor Camat Bara', penyelenggara: 'Disdukcapil Palopo' } },
+        { title: 'Sosialisasi NIB UMKM - DPMPTSP', start: '2026-09-12', color: '#10b981', extendedProps: { lokasi: 'Mall Pelayanan Publik (MPP)' } },
+        { title: 'Layanan Adminduk - Kec. Wara Utara', start: '2026-09-16', color: '#10b981', extendedProps: { lokasi: 'Kantor Camat Wara Utara' } },
+        { title: 'Bimtek Pengelolaan Keuangan Desa', start: '2026-09-23', color: '#10b981', extendedProps: { lokasi: 'Balai Kota Palopo' } },
+
+        // Bansos / Sosial (Merah - #ef4444)
+        { title: 'Pencairan Bansos PKH', start: '2026-09-10', color: '#ef4444', extendedProps: { lokasi: 'Bank Himbara / Kantor Pos Palopo' } },
+        { title: 'Pencairan BPNT Sembako', start: '2026-09-17', color: '#ef4444', extendedProps: { lokasi: 'E-Warong / Kantor Pos' } },
+        { title: 'Verifikasi DTKS - Kel. Pontap', start: '2026-09-24', color: '#ef4444', extendedProps: { lokasi: 'Kantor Kelurahan Pontap' } },
+
+        // Kesehatan (Biru - #0ea5e9)
+        { title: 'Vaksinasi Rabies - Puskesmas Pontap', start: '2026-09-11', color: '#0ea5e9', extendedProps: { lokasi: 'Puskesmas Pontap' } },
+        { title: 'Pemeriksaan Kesehatan Gratis', start: '2026-09-15', color: '#0ea5e9', extendedProps: { lokasi: 'Pelataran RSUD Sawerigading' } },
+        { title: 'KIE Stunting - Puskesmas Wara', start: '2026-09-18', color: '#0ea5e9', extendedProps: { lokasi: 'Aula Puskesmas Wara' } },
+
+        // Pendidikan (Ungu - #8b5cf6)
+        { title: 'Pendaftaran Beasiswa Palopo Pintar', start: '2026-09-13', color: '#8b5cf6', extendedProps: { lokasi: 'Dinas Pendidikan Kota Palopo' } },
+
+        // Perizinan / UMKM (Oranye - #f97316)
+        { title: 'Pelatihan UMKM - Diskopdagrin', start: '2026-09-22', color: '#f97316', extendedProps: { lokasi: 'Pusat Kuliner Lagota' } },
       ];
 
       // Inisialisasi FullCalendar
@@ -193,42 +233,29 @@
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek'
+          right: 'dayGridMonth,listWeek'
         },
         buttonText: {
           today: 'Hari Ini',
           month: 'Bulan',
-          week: 'Minggu'
+          listWeek: 'Daftar'
         },
         events: events,
         eventClick: function(info) {
           const event = info.event;
-          const lokasi = event.extendedProps?.lokasi || 'Tidak tersedia';
-          const kontak = event.extendedProps?.kontak || '-';
+          const lokasi = event.extendedProps?.lokasi || 'Kantor OPD Terkait';
+          const kontak = event.extendedProps?.kontak || 'Hubungi Call Center 112';
+
           alert(
-            `📅 ${event.title}\n` +
-            `📌 Tanggal: ${event.startStr}\n` +
-            `📍 Lokasi: ${lokasi}\n` +
-            `📞 Kontak: ${kontak}\n\n` +
-            `Klik OK untuk kembali ke kalender.`
+            `📌 KETIAGAN: ${event.title}\n` +
+            `📅 TANGGAL: ${event.startStr}\n` +
+            `📍 LOKASI: ${lokasi}\n` +
+            `📞 KONTAK: ${kontak}`
           );
-        },
-        dayCellDidMount: function(info) {
-          // Tambahkan tooltip pada tanggal
-          const dateStr = info.date.toISOString().split('T')[0];
-          const dayEvents = events.filter(e => e.start === dateStr);
-          if (dayEvents.length > 0) {
-            info.el.style.backgroundColor = '#f8fafc';
-            info.el.title = dayEvents.map(e => e.title).join('\n');
-          }
         }
       });
 
       calendar.render();
-
-      // --- OPSIONAL: Ambil data dari Google Sheets ---
-      // Bisa ditambahkan fetch ke GOOGLE_SHEET_API_URL
-      // Lalu tambahkan events dengan calendar.addEvent()
     });
   </script>
 
