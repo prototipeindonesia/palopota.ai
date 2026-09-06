@@ -598,17 +598,17 @@ function askAI(promptText) {
 
 function renderGisList(filterCategory) {
   const container = document.getElementById('gis-list-container');
-  if (!container || typeof gisData === 'undefined' || !Array.isArray(gisData)) return;
+  if (!container) return;
 
+  // Update tampilan tombol filter
   document.querySelectorAll('.gis-tab').forEach(btn => {
-    btn.classList.remove('bg-brand-navy', 'text-white');
-    btn.classList.add('bg-slate-100', 'text-slate-700');
+    btn.style.backgroundColor = '#e2e8f0';
+    btn.style.color = '#475569';
   });
-
   const activeTab = document.getElementById(`tab-${filterCategory}`);
   if (activeTab) {
-    activeTab.classList.remove('bg-slate-100', 'text-slate-700');
-    activeTab.classList.add('bg-brand-navy', 'text-white');
+    activeTab.style.backgroundColor = '#0f3c5f';
+    activeTab.style.color = 'white';
   }
 
   const filtered = filterCategory === 'Semua' 
@@ -633,10 +633,16 @@ function renderGisList(filterCategory) {
           <p class="text-[10px] text-slate-500 mt-0.5">${item.address}</p>
         </div>
         <div class="flex space-x-1 shrink-0">
-          <a href="${item.mapsUrl}" target="_blank" class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg font-bold flex items-center hover:bg-indigo-100">
-            <i class="fa-solid fa-diamond-turn-right mr-1"></i> Peta
+          <!-- Tombol Peta -->
+          <a href="${item.mapsUrl}" target="_blank" 
+             style="background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-weight: bold; font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: background 0.2s;">
+            <i class="fa-solid fa-diamond-turn-right"></i> Peta
           </a>
-          <button onclick="askAI('Info lokasi dan layanan ${item.name}')" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded-lg font-bold">
+          <!-- Tombol Tanya AI -->
+          <button onclick="askAI('Info lokasi dan layanan ${item.name}')" 
+                  style="background-color: #0f3c5f; color: white; font-weight: bold; font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s;"
+                  onmouseover="this.style.backgroundColor='#1e293b'" 
+                  onmouseout="this.style.backgroundColor='#0f3c5f'">
             Tanya
           </button>
         </div>
