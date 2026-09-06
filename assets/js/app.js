@@ -552,18 +552,34 @@ function openFeatureModal(type) {
       body.innerHTML = `<p class="text-xs text-slate-500 p-2">Data OPD belum tersedia.</p>`;
     }
   } else if (type === 'GIS' || type === 'FASKES') {
-    title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
-    body.innerHTML = `
-      <div class="flex space-x-1 overflow-x-auto pb-2 custom-scroll mb-2 text-[11px]">
-        <button onclick="renderGisList('Semua')" id="tab-Semua" class="gis-tab bg-brand-navy text-white px-3 py-1 rounded-full font-bold whitespace-nowrap">Semua</button>
-        <button onclick="renderGisList('Fasum')" id="tab-Fasum" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏛️ Fasum</button>
-        <button onclick="renderGisList('OPD')" id="tab-OPD" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏢 OPD</button>
-        <button onclick="renderGisList('Kecamatan')" id="tab-Kecamatan" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">📍 Kecamatan</button>
-        <button onclick="renderGisList('Faskes')" id="tab-Faskes" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏥 Faskes</button>
-      </div>
-      <div id="gis-list-container" class="space-y-2"></div>
-    `;
-    renderGisList('Semua');
+        title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
+        let html = `
+          <div class="flex space-x-1 overflow-x-auto pb-2 custom-scroll mb-2 text-[11px]">
+            <button onclick="renderGisList('Semua')" id="tab-Semua" 
+                    style="background-color: #0f3c5f; color: white; font-weight: bold; padding: 4px 14px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.7rem; white-space: nowrap; transition: background 0.2s;">
+              Semua
+            </button>
+            <button onclick="renderGisList('Fasum')" id="tab-Fasum" 
+                    style="background-color: #e2e8f0; color: #475569; font-weight: bold; padding: 4px 14px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.7rem; white-space: nowrap; transition: background 0.2s;">
+              🏛️ Fasum
+            </button>
+            <button onclick="renderGisList('OPD')" id="tab-OPD" 
+                    style="background-color: #e2e8f0; color: #475569; font-weight: bold; padding: 4px 14px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.7rem; white-space: nowrap; transition: background 0.2s;">
+              🏢 OPD
+            </button>
+            <button onclick="renderGisList('Kecamatan')" id="tab-Kecamatan" 
+                    style="background-color: #e2e8f0; color: #475569; font-weight: bold; padding: 4px 14px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.7rem; white-space: nowrap; transition: background 0.2s;">
+              📍 Kecamatan
+            </button>
+            <button onclick="renderGisList('Faskes')" id="tab-Faskes" 
+                    style="background-color: #e2e8f0; color: #475569; font-weight: bold; padding: 4px 14px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.7rem; white-space: nowrap; transition: background 0.2s;">
+              🏥 Faskes
+            </button>
+          </div>
+          <div id="gis-list-container" class="space-y-2"></div>
+        `;
+        body.innerHTML = html;
+        renderGisList('Semua');
   }
 }
 
