@@ -147,6 +147,47 @@ function appendAIMessage(markdownText) {
   saveChatToLocalStorage();
 }
 
+function sendFeedback(messageId, type) {
+  const feedbackSpan = document.getElementById(`feedback-${messageId}`);
+  if (!feedbackSpan) return;
+  
+  // Cegah double feedback
+  if (feedbackSpan.dataset.sent) return;
+  
+  // Ambil isi pesan AI
+  const parentDiv = document.getElementById(messageId);
+  const aiMessage = parentDiv.querySelector('.chat-body').innerText || 'Konten tidak terbaca';
+  
+  // Simpan ke localStorage
+  const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
+  feedbacks.push({
+    messageId,
+    type,
+    content: aiMessage.slice(0, 200),
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem('PALOPO_FEEDBACKS', JSON.stringify(feedbacks));
+  
+  feedbackSpan.textContent = type === '👍' ? '✅ Terima kasih!' : '🙏 Kami catat masukan Anda';
+  feedbackSpan.dataset.sent = 'true';
+  
+  // Opsional: kirim ke Google Sheets
+  sendFeedbackToSheet(aiMessage, type);
+}
+
+async function sendFeedbackToSheet(content, type) {
+  try {
+    const response = await fetch(GOOGLE_SHEET_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'feedback', content, type, timestamp: new Date().toISOString() })
+    });
+    console.log('Feedback terkirim ke Google Sheets');
+  } catch (e) {
+    console.warn('Gagal kirim feedback ke Google Sheets:', e);
+  }
+}
+
 // Tampilkan Indikator Mengetik AI
 function showAITypingIndicator() {
   const stream = document.getElementById('chat-stream');
