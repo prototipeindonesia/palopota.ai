@@ -1,5 +1,5 @@
 // ==========================================
-// VARIABEL GLOBAL
+// VARIABEL GLOBAL & KONFIGURASI
 // ==========================================
 let chatHistory = [];
 let customApiKey = localStorage.getItem('PALOPO_GEMINI_KEY') || '';
@@ -12,8 +12,13 @@ let ikmShownThisSession = false;
 let isAccessibilityMode = localStorage.getItem('PALOPO_ACCESSIBILITY_MODE') === 'true';
 const CHAT_STORAGE_KEY = 'PALOPO_CHAT_HISTORY_DATA';
 
+// Carousel State
+let currentBanner = 0;
+const totalBanners = 3;
+let bannerInterval = null;
+
 // ==========================================
-// FUNGSI UTAMA
+// FUNGSI UTAMA & UTILITY
 // ==========================================
 
 // Load Knowledge Base dari Google Sheets
@@ -31,67 +36,45 @@ async function loadKnowledgeBaseFromSheet() {
 
 // Toggle Side Menu
 function toggleSideMenu() {
-  document.getElementById('side-drawer').classList.toggle('hidden');
+  const sideDrawer = document.getElementById('side-drawer');
+  if (sideDrawer) sideDrawer.classList.toggle('hidden');
 }
 
-// Tampilkan Halaman Beranda
+// Navigasi Tampilan Screen
 function showHomeScreen() {
-  document.getElementById('home-screen').classList.remove('hidden');
-  document.getElementById('chat-screen').classList.add('hidden');
-  document.getElementById('chat-screen').classList.remove('flex');
+  document.getElementById('home-screen')?.classList.remove('hidden');
+  const chatScreen = document.getElementById('chat-screen');
+  if (chatScreen) {
+    chatScreen.classList.add('hidden');
+    chatScreen.classList.remove('flex');
+  }
 }
 
-// Tampilkan Halaman Chat
 function showChatScreen() {
-  document.getElementById('home-screen').classList.add('hidden');
-  document.getElementById('chat-screen').classList.remove('hidden');
-  document.getElementById('chat-screen').classList.add('flex');
+  document.getElementById('home-screen')?.classList.add('hidden');
+  const chatScreen = document.getElementById('chat-screen');
+  if (chatScreen) {
+    chatScreen.classList.remove('hidden');
+    chatScreen.classList.add('flex');
+  }
 }
 
-// Escape HTML untuk keamanan
+// Helper: Escape HTML untuk Keamanan (XSS Prevention)
 function escapeHtml(text) {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
-// Minta izin dan simpan subscription
-async function subscribePush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Browser tidak mendukung notifikasi push.');
-    return;
-  }
-  
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    // VAPID public key (ganti dengan key Anda)
-    const vapidPublicKey = 'BL6k...'; // nanti diganti
-  
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: vapidPublicKey
-    });
-  
-    // Simpan subscription ke localStorage (atau kirim ke server)
-    const subscriptions = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
-    subscriptions.push(subscription);
-    localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subscriptions));
-  
-    alert('✅ Notifikasi diaktifkan!');
-  } catch (e) {
-    console.error('Gagal subscribe:', e);
-    alert('Gagal mengaktifkan notifikasi: ' + e.message);
-  }
-}
-
-// Tombol di menu atau footer untuk subscribe
-// Tambahkan di side menu atau footer
-
 // ==========================================
-// FUNGSI CHAT
+// FUNGSI CHAT & FEEDBACK
 // ==========================================
 
-// Kirim Pesan Chat
 async function handleChatSubmit(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   const input = document.getElementById('user-input');
   const text = input.value.trim();
   if (!text) return;
@@ -111,9 +94,7 @@ async function handleChatSubmit(e) {
   startIdleTimer();
           
   const isEmergency = checkEmergencyTrigger(text);
-  if (isEmergency) {
-    return;
-  }
+  if (isEmergency) return;
 
   showAITypingIndicator();
 
@@ -132,15 +113,18 @@ async function handleChatSubmit(e) {
   }
 }
 
-// Kirim Prompt Cepat
 function sendQuickPrompt(promptText) {
-  document.getElementById('user-input').value = promptText;
-  handleChatSubmit(new Event('submit'));
+  const input = document.getElementById('user-input');
+  if (input) {
+    input.value = promptText;
+    handleChatSubmit(new Event('submit'));
+  }
 }
 
-// Tampilkan Pesan User (dengan gaya inline)
 function appendUserMessage(text) {
   const stream = document.getElementById('chat-stream');
+  if (!stream) return;
+
   chatHistory.push({ role: "user", parts: [{ text: text }] });
 
   stream.insertAdjacentHTML('beforeend', `
@@ -154,12 +138,13 @@ function appendUserMessage(text) {
   saveChatToLocalStorage();
 }
 
-// Tampilkan Pesan AI (dengan gaya inline penuh)
 function appendAIMessage(markdownText) {
   const stream = document.getElementById('chat-stream');
+  if (!stream) return;
+
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
-  const htmlContent = marked.parse(markdownText);
+  const htmlContent = (typeof marked !== 'undefined') ? marked.parse(markdownText) : markdownText;
   const messageId = 'msg-' + Date.now();
 
   stream.insertAdjacentHTML('beforeend', `
@@ -168,22 +153,23 @@ function appendAIMessage(markdownText) {
       <div style="background-color: white; border: 1px solid #e2e8f0; font-size: 0.75rem; padding: 0.75rem; border-radius: 1rem; border-top-left-radius: 0; max-width: 92%; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.05); line-height: 1.625;" class="chat-body">
         ${htmlContent}
         
-        // AREA FEEDBACK - Layout Rapi
-<div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-200/80 text-xs">
-  <span class="text-[11px] text-slate-400 font-medium mr-1">Apakah jawaban ini membantu?</span>
-  <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
-    <button onclick="sendFeedback('${messageId}', '👍')" 
-            class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50/60 hover:bg-emerald-100 border border-emerald-200/50 transition text-emerald-700 hover:text-emerald-800 font-medium text-[11px]">
-      <span class="text-sm">👍</span>
-      <span>Membantu</span>
-    </button>
-    <button onclick="sendFeedback('${messageId}', '👎')" 
-            class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50/60 hover:bg-rose-100 border border-rose-200/50 transition text-rose-600 hover:text-rose-700 font-medium text-[11px]">
-      <span class="text-sm">👎</span>
-      <span>Tidak</span>
-    </button>
-    <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-1 min-w-[80px] text-right"></span>
-  </div>
+        <!-- Area Feedback -->
+        <div class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-slate-200/80 text-xs">
+          <span class="text-[11px] text-slate-400 font-medium mr-1">Apakah jawaban ini membantu?</span>
+          <div class="flex items-center gap-1.5 ml-auto sm:ml-0">
+            <button onclick="sendFeedback('${messageId}', '👍')" 
+                    class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50/60 hover:bg-emerald-100 border border-emerald-200/50 transition text-emerald-700 hover:text-emerald-800 font-medium text-[11px]">
+              <span class="text-sm">👍</span>
+              <span>Membantu</span>
+            </button>
+            <button onclick="sendFeedback('${messageId}', '👎')" 
+                    class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50/60 hover:bg-rose-100 border border-rose-200/50 transition text-rose-600 hover:text-rose-700 font-medium text-[11px]">
+              <span class="text-sm">👎</span>
+              <span>Tidak</span>
+            </button>
+            <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-1 min-w-[80px] text-right"></span>
+          </div>
+        </div>
       </div>
     </div>
   `);
@@ -193,16 +179,11 @@ function appendAIMessage(markdownText) {
 
 function sendFeedback(messageId, type) {
   const feedbackSpan = document.getElementById(`feedback-${messageId}`);
-  if (!feedbackSpan) return;
-  
-  // Cegah double feedback
-  if (feedbackSpan.dataset.sent) return;
-  
-  // Ambil isi pesan AI
+  if (!feedbackSpan || feedbackSpan.dataset.sent) return;
+
   const parentDiv = document.getElementById(messageId);
-  const aiMessage = parentDiv.querySelector('.chat-body').innerText || 'Konten tidak terbaca';
-  
-  // Simpan ke localStorage
+  const aiMessage = parentDiv ? (parentDiv.querySelector('.chat-body')?.innerText || 'Konten tidak terbaca') : '';
+
   const feedbacks = JSON.parse(localStorage.getItem('PALOPO_FEEDBACKS') || '[]');
   feedbacks.push({
     messageId,
@@ -211,17 +192,16 @@ function sendFeedback(messageId, type) {
     timestamp: new Date().toISOString()
   });
   localStorage.setItem('PALOPO_FEEDBACKS', JSON.stringify(feedbacks));
-  
+
   feedbackSpan.textContent = type === '👍' ? '✅ Terima kasih!' : '🙏 Kami catat masukan Anda';
   feedbackSpan.dataset.sent = 'true';
-  
-  // Opsional: kirim ke Google Sheets
+
   sendFeedbackToSheet(aiMessage, type);
 }
 
 async function sendFeedbackToSheet(content, type) {
   try {
-    const response = await fetch(GOOGLE_SHEET_API_URL, {
+    await fetch(GOOGLE_SHEET_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'feedback', content, type, timestamp: new Date().toISOString() })
@@ -232,9 +212,10 @@ async function sendFeedbackToSheet(content, type) {
   }
 }
 
-// Tampilkan Indikator Mengetik AI
 function showAITypingIndicator() {
   const stream = document.getElementById('chat-stream');
+  if (!stream) return;
+
   stream.insertAdjacentHTML('beforeend', `
     <div id="ai-typing" class="flex items-start space-x-2.5 my-2">
       <div class="w-8 h-8 rounded-full bg-brand-cyan text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
@@ -247,33 +228,32 @@ function showAITypingIndicator() {
   stream.scrollTop = stream.scrollHeight;
 }
 
-// Hapus Indikator Mengetik AI
 function removeAITypingIndicator() {
   const el = document.getElementById('ai-typing');
   if (el) el.remove();
 }
 
-// Bersihkan Riwayat Chat
 function clearChat() {
   chatHistory = [];
   localStorage.removeItem(CHAT_STORAGE_KEY);
-  
+
   const stream = document.getElementById('chat-stream');
-  stream.innerHTML = `
-    <div class="flex items-start space-x-2.5 my-1">
-      <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
-      <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-slate-700 shadow-sm">
-        Riwayat percakapan telah dibersihkan. Silakan tanyakan informasi layanan publik lainnya!
+  if (stream) {
+    stream.innerHTML = `
+      <div class="flex items-start space-x-2.5 my-1">
+        <div class="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-xs shrink-0 font-bold shadow-sm">AI</div>
+        <div class="bg-white border border-slate-200 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-slate-700 shadow-sm">
+          Riwayat percakapan telah dibersihkan. Silakan tanyakan informasi layanan publik lainnya!
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
 }
 
 // ==========================================
 // API & FALLBACK ENGINE
 // ==========================================
 
-// Panggil Gemini API
 async function callGeminiApi(prompt) {
   const systemInstruction = `Kamu adalah Palopota AI, asisten virtual resmi Pemerintah Kota Palopo, Sulawesi Selatan.
 Tugas utama: Memberikan informasi akurat mengenai layanan publik, izin usaha (NIB), dokumen kependudukan (KTP, KK, Akta), bantuan sosial, dan direktori OPD Kota Palopo.
@@ -297,21 +277,20 @@ Format Jawaban: Gunakan poin-poin bertingkat, format bold untuk penekanan, serta
   }
 }
 
-// Fallback Engine (tanpa API Key)
 async function fallbackLLMEngine(prompt) {
-  await new Promise(r => setTimeout(r, 1200));
+  await new Promise(r => setTimeout(r, 1000));
   const text = prompt.toLowerCase();
 
-  // Cek dari Google Sheets terlebih dahulu
+  // 1. Cek Knowledge Base Google Sheets
   if (sheetKnowledgeBase && sheetKnowledgeBase.length > 0) {
     for (let item of sheetKnowledgeBase) {
-      if (item.keyword && text.includes(item.keyword)) {
+      if (item.keyword && text.includes(item.keyword.toLowerCase())) {
         return item.response;
       }
     }
   }
 
-  // DOKUMEN KEPENDUDUKAN & KARTU
+  // 2. Layanan Kependudukan
   if (text.includes("ktp") || text.includes("identitas")) {
     return "**Persyaratan Pengurusan KTP-el (Disdukcapil Palopo):**\n\n" +
            "* **KTP Rusak/Patah:** Bawa fisik KTP lama + Fotokopi Kartu Keluarga (KK).\n" +
@@ -334,7 +313,7 @@ async function fallbackLLMEngine(prompt) {
            "* **Persyaratan:** KTP/KK Palopo, Surat Keterangan Aktif Sekolah/Kuliah, dan SKTM dari Kelurahan atau Sertifikat Prestasi.\n\n" +
            "📍 **Lokasi:** Dinas Pendidikan Kota Palopo, Jl. Ahmad Yani No. 25.";
   
-  // LAYANAN PENGADUAN & PAJAK
+  // 3. Layanan Pengaduan & Pajak
   } else if (text.includes("lapor") || text.includes("melapor") || text.includes("pengaduan") || text.includes("oke sappo")) {
     return "**📢 Layanan Pengaduan Masyarakat (Oke Sappo!)**\n\n" +
            "Anda dapat menyampaikan laporan, keluhan, maupun aspirasi terkait pelayanan publik di Kota Palopo secara langsung melalui **OKE SAPPO!** yang dikelola oleh **Diskominfo SP Kota Palopo**.\n\n" +
@@ -346,7 +325,7 @@ async function fallbackLLMEngine(prompt) {
            "Silakan klik tombol di bawah ini untuk membuka portal/aplikasi pembayaran pajak:\n\n" +
            "<div class='pt-2 pb-1'><a href='https://pajakdaerah.palopokota.go.id' target='_blank' class='inline-flex items-center space-x-2 bg-brand-navy hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-xs shadow transition'><i class='fa-solid fa-credit-card text-sm'></i><span>Buka AKSARA SMART TAX</span></a></div>";
 
-  // INFORMASI HARGA PANGAN & SEMBAKO
+  // 4. Informasi Harga Pangan
   } else if (text.includes("harga pangan") || text.includes("harga sembako") || text.includes("harga telur") || text.includes("harga beras") || text.includes("harga cabai")) {
     return "**📊 Daftar Informasi Harga Pangan & Sembako Kota Palopo**\n\n" +
            "*Berikut adalah data perkiraan harga rata-rata 25 komoditas pangan utama di Pasar Sentral & Pasar Andi Tadda Palopo:*\n\n" +
@@ -377,38 +356,30 @@ async function fallbackLLMEngine(prompt) {
            "25. **Gula Merah / Aren:** Rp 22.000 / kg\n\n" +
            "📍 *Sumber Data: Pemantauan Dinas Koperasi, Perdagangan, dan Perindustrian (DISKOPDAGRIN) Kota Palopo.*";
 
-  // PROFIL, SEJARAH, WISATA & PEMERINTAHAN KOTA PALOPO
+  // 5. Profil, Sejarah & Wisata
   } else if (text.includes("profil palopo") || text.includes("tentang palopo") || text.includes("dimana kota palopo")) {
-    return "🌆 **Profil Singkat Kota Palopo:**\n\n" +
-           "Palopo adalah kota otonom di Sulawesi Selatan yang dikenal sebagai pusat sejarah Kedatuan Luwu serta berkembang pesat sebagai kota jasa, perdagangan, dan pendidikan di kawasan Luwu Raya.";
+    return "🌆 **Profil Singkat Kota Palopo:**\n\nPalopo adalah kota otonom di Sulawesi Selatan yang dikenal sebagai pusat sejarah Kedatuan Luwu serta berkembang pesat sebagai kota jasa, perdagangan, dan pendidikan di kawasan Luwu Raya.";
   } else if (text.includes("hari jadi kota palopo") || text.includes("ulang tahun palopo") || text.includes("hut palopo")) {
-    return "🎉 **Hari Jadi Kota Palopo** diperingati setiap tanggal **2 Juli**.\n\n" +
-           "Kota Palopo resmi terbentuk sebagai daerah otonom berdasarkan Undang-Undang Nomor 11 Tahun 2002.";
+    return "🎉 **Hari Jadi Kota Palopo** diperingati setiap tanggal **2 Juli**.\n\nKota Palopo resmi terbentuk sebagai daerah otonom berdasarkan Undang-Undang Nomor 11 Tahun 2002.";
   } else if (text.includes("kantor wali kota") || text.includes("kantor walikota") || text.includes("pemerintahan")) {
-    return "🏛️ **Pemerintahan Kota Palopo** berpusat di Balai Kota Palopo (Jl. Andi Djemma).\n\n" +
-           "Informasi resmi terkait jajaran pimpinan dan struktur organisasi daerah dapat diakses melalui portal resmi Pemkot Palopo (palopokota.go.id).";
+    return "🏛️ **Pemerintahan Kota Palopo** berpusat di Balai Kota Palopo (Jl. Andi Djemma).\n\nInformasi resmi terkait jajaran pimpinan dan struktur organisasi daerah dapat diakses melalui portal resmi Pemkot Palopo (palopokota.go.id).";
   } else if (text.includes("wisata") || text.includes("destinasi") || text.includes("liburan") || text.includes("jalan-jalan")) {
     return "🌴 **Destinasi Wisata Unggulan Kota Palopo:**\n\n" +
            "• **Wisata Sejarah & Budaya:** Istana Datu Luwu, Masjid Jami Tua Palopo\n" +
            "• **Wisata Alam & Rekreasi:** Permandian Alam Latuppa, Kambo Highland (Bukit Kambo), Pantai Labombo, Gua Kancing\n" +
            "• **Kuliner:** Pusat Kuliner Lagota (Kapurung, Dange, Pacco)";
 
-  // SAPAAN, SALAM, PERKENALAN
+  // 6. Sapaan & Salam
   } else if (text.includes("assalamualaikum") || text.includes("salam")) {
-    return "Wa'alaikumsalam Warahmatullahi Wabarakatuh! 🌿\n\n" +
-           "Selamat datang di Layanan **Palopota AI**. Saya siap membantu Anda seputar pengurusan dokumen, izin UMKM, atau informasi layanan publik Kota Palopo. Ada yang bisa saya bantu hari ini?";
+    return "Wa'alaikumsalam Warahmatullahi Wabarakatuh! 🌿\n\nSelamat datang di Layanan **Palopota AI**. Saya siap membantu Anda seputar pengurusan dokumen, izin UMKM, atau informasi layanan publik Kota Palopo. Ada yang bisa saya bantu hari ini?";
   } else if (text.includes("halo") || text.includes("hai") || text.includes("hello")) {
-    return "Halo! 👋 Selamat datang di **Palopota AI**.\n\n" +
-           "Saya asisten digital resmi Kota Palopo. Silakan tanyakan syarat pembuatan KTP, KK, Akta Kelahiran, NIB UMKM, Beasiswa, Bansos, atau layanan OPD lainnya!";
+    return "Halo! 👋 Selamat datang di **Palopota AI**.\n\nSaya asisten digital resmi Kota Palopo. Silakan tanyakan syarat pembuatan KTP, KK, Akta Kelahiran, NIB UMKM, Beasiswa, Bansos, atau layanan OPD lainnya!";
   } else if (text.includes("tabe") || text.includes("salama")) {
-    return "Salama’ki tapada salama! Tabe', aga kaperluangta ri layanan **Palopota AI** hari ini?\n\n" +
-           "Saya siap membantu pengurusan berkas kependudukan, perizinan, dan informasi layanan publik di Kota Palopo.";
+    return "Salama’ki tapada salama! Tabe', aga kaperluangta ri layanan **Palopota AI** hari ini?\n\nSaya siap membantu pengurusan berkas kependudukan, perizinan, dan informasi layanan publik di Kota Palopo.";
   } else if (text.includes("terima kasih") || text.includes("makasih") || text.includes("thanks") || text.includes("makkasora")) {
-    return "Sama-sama! 😊 Senang sekali bisa membantu Anda.\n\n" +
-           "Jika masih ada dokumen atau layanan publik Kota Palopo yang ingin ditanyakan, jangan ragu untuk menyapa saya kembali. Palopota AI selalu siap 24/7 untuk Anda!";
+    return "Sama-sama! 😊 Senang sekali bisa membantu Anda.\n\nJika masih ada dokumen atau layanan publik Kota Palopo yang ingin ditanyakan, jangan ragu untuk menyapa saya kembali. Palopota AI selalu siap 24/7 untuk Anda!";
   } else if (text.includes("siapa kamu") || text.includes("perkenalan") || text.includes("tentang aplikasi")) {
-    return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\n" +
-           "Saya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
+    return "Saya adalah **Palopota AI**, asisten digital resmi Pemerintah Kota Palopo. 🤖\n\nSaya dirancang untuk memberikan informasi cepat, akurat, dan transparan terkait syarat dokumen, alur perizinan, fasilitas kesehatan, serta lokasi kantor dinas di Kota Palopo.";
   } else {
     return `Terima kasih atas pertanyaan Anda mengenai **"${escapeHtml(prompt)}"**.\n\n` +
            `Sebagai Asisten AI Kota Palopo, saya dapat membimbing Anda mengenai:\n` +
@@ -419,14 +390,15 @@ async function fallbackLLMEngine(prompt) {
 }
 
 // ==========================================
-// FITUR MODAL
+// FITUR MODAL & DIREKTORI
 // ==========================================
 
-// Buka Modal Fitur
 function openFeatureModal(type) {
   const modal = document.getElementById('feature-modal');
   const title = document.getElementById('modal-title');
   const body = document.getElementById('modal-body');
+  if (!modal || !title || !body) return;
+
   modal.classList.remove('hidden');
 
   if (type === 'LIFE_EVENT') {
@@ -533,36 +505,40 @@ function openFeatureModal(type) {
     `;
   } else if (type === 'OPD') {
     title.innerText = "Direktori OPD Kota Palopo";
-    let html = '<div class="space-y-3">';
-    opdData.forEach(opd => {
-      let servicesList = opd.services.map(s => `<li class="flex items-center space-x-1"><span class="text-brand-blue font-bold">•</span> <span>${s}</span></li>`).join('');
-      html += `
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-          <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
-            <strong class="text-xs font-extrabold text-brand-navy flex items-center">
-              <i class="fa-solid fa-building-columns text-emerald-500 mr-1.5"></i> ${opd.name}
-            </strong>
-            <button onclick="askAI('Layanan ${opd.name}')" class="text-[10px] bg-brand-blue hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition">
-              Tanya AI
-            </button>
+    if (typeof opdData !== 'undefined' && Array.isArray(opdData)) {
+      let html = '<div class="space-y-3">';
+      opdData.forEach(opd => {
+        let servicesList = opd.services.map(s => `<li class="flex items-center space-x-1"><span class="text-brand-blue font-bold">•</span> <span>${s}</span></li>`).join('');
+        html += `
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-1.5">
+              <strong class="text-xs font-extrabold text-brand-navy flex items-center">
+                <i class="fa-solid fa-building-columns text-emerald-500 mr-1.5"></i> ${opd.name}
+              </strong>
+              <button onclick="askAI('Layanan ${opd.name}')" class="text-[10px] bg-brand-blue hover:bg-slate-800 text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition">
+                Tanya AI
+              </button>
+            </div>
+            <div class="text-[11px] text-slate-700">
+              <span class="font-bold text-slate-500 block mb-1">Daftar Layanan:</span>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] text-slate-600 pl-1">
+                ${servicesList}
+              </ul>
+            </div>
+            <div class="pt-1 text-[10px] text-slate-400 flex items-center">
+              <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${opd.address}
+            </div>
           </div>
-          <div class="text-[11px] text-slate-700">
-            <span class="font-bold text-slate-500 block mb-1">Daftar Layanan:</span>
-            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5 text-[11px] text-slate-600 pl-1">
-              ${servicesList}
-            </ul>
-          </div>
-          <div class="pt-1 text-[10px] text-slate-400 flex items-center">
-            <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${opd.address}
-          </div>
-        </div>
-      `;
-    });
-    html += '</div>';
-    body.innerHTML = html;
+        `;
+      });
+      html += '</div>';
+      body.innerHTML = html;
+    } else {
+      body.innerHTML = `<p class="text-xs text-slate-500 p-2">Data OPD belum tersedia.</p>`;
+    }
   } else if (type === 'GIS' || type === 'FASKES') {
     title.innerText = "Peta GIS & Lokasi Pelayanan Kota Palopo";
-    let html = `
+    body.innerHTML = `
       <div class="flex space-x-1 overflow-x-auto pb-2 custom-scroll mb-2 text-[11px]">
         <button onclick="renderGisList('Semua')" id="tab-Semua" class="gis-tab bg-brand-navy text-white px-3 py-1 rounded-full font-bold whitespace-nowrap">Semua</button>
         <button onclick="renderGisList('Fasum')" id="tab-Fasum" class="gis-tab bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-bold whitespace-nowrap">🏛️ Fasum</button>
@@ -572,32 +548,32 @@ function openFeatureModal(type) {
       </div>
       <div id="gis-list-container" class="space-y-2"></div>
     `;
-    body.innerHTML = html;
     renderGisList('Semua');
   }
 }
 
-// Tutup Modal Fitur
 function closeFeatureModal() {
-  document.getElementById('feature-modal').classList.add('hidden');
+  document.getElementById('feature-modal')?.classList.add('hidden');
 }
 
-// Tanya AI dari Modal
 function askAI(promptText) {
   closeFeatureModal();
-  document.getElementById('user-input').value = promptText;
-  handleChatSubmit(new Event('submit'));
+  const input = document.getElementById('user-input');
+  if (input) {
+    input.value = promptText;
+    handleChatSubmit(new Event('submit'));
+  }
 }
 
-// Render GIS List
 function renderGisList(filterCategory) {
   const container = document.getElementById('gis-list-container');
-  if (!container) return;
+  if (!container || typeof gisData === 'undefined' || !Array.isArray(gisData)) return;
 
   document.querySelectorAll('.gis-tab').forEach(btn => {
     btn.classList.remove('bg-brand-navy', 'text-white');
     btn.classList.add('bg-slate-100', 'text-slate-700');
   });
+
   const activeTab = document.getElementById(`tab-${filterCategory}`);
   if (activeTab) {
     activeTab.classList.remove('bg-slate-100', 'text-slate-700');
@@ -653,7 +629,7 @@ function checkEmergencyTrigger(inputText) {
         <p class="font-extrabold text-rose-600 flex items-center text-sm">
           <i class="fa-solid fa-triangle-exclamation mr-1.5 animate-bounce"></i> PANGGILAN DARURAT DAMKAR
         </p>
-        <p class="text-xs text-slate-700">Layanan Siap Siga Pemadam Kebakaran & Penyelamatan Kota Palopo 24/7.</p>
+        <p class="text-xs text-slate-700">Layanan Siap Siaga Pemadam Kebakaran & Penyelamatan Kota Palopo 24/7.</p>
         <div class="flex flex-col gap-2 pt-1">
           <a href="https://wa.me/6285341341565?text=HALO%20DAMKAR%20PALOPO,%20SAYA%20MEMBUTUHKAN%20BANTUAN%20DARURAT!" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center space-x-2 shadow">
             <i class="fa-brands fa-whatsapp text-sm"></i>
@@ -698,6 +674,8 @@ function checkEmergencyTrigger(inputText) {
 
 function appendEmergencyMessage(htmlContent) {
   const stream = document.getElementById('chat-stream');
+  if (!stream) return;
+
   chatHistory.push({ role: "model", parts: [{ text: "Respon Darurat Ditampilkan" }] });
 
   stream.insertAdjacentHTML('beforeend', `
@@ -714,7 +692,7 @@ function appendEmergencyMessage(htmlContent) {
 }
 
 // ==========================================
-// FITUR VOICE INPUT
+// VOICE INPUT & TEXT-TO-SPEECH
 // ==========================================
 
 function triggerVoiceInput() {
@@ -729,30 +707,27 @@ function triggerVoiceInput() {
   recognition.lang = 'id-ID';
 
   recognition.onstart = function() {
-    micBtn.classList.add('text-rose-600', 'animate-pulse');
+    if (micBtn) micBtn.classList.add('text-rose-600', 'animate-pulse');
   };
 
   recognition.onresult = function(event) {
     const transcript = event.results[0][0].transcript;
-    document.getElementById('user-input').value = transcript;
-    micBtn.classList.remove('text-rose-600', 'animate-pulse');
+    const input = document.getElementById('user-input');
+    if (input) input.value = transcript;
+    if (micBtn) micBtn.classList.remove('text-rose-600', 'animate-pulse');
     handleChatSubmit(new Event('submit'));
   };
 
   recognition.onerror = function() {
-    micBtn.classList.remove('text-rose-600', 'animate-pulse');
+    if (micBtn) micBtn.classList.remove('text-rose-600', 'animate-pulse');
   };
 
   recognition.onend = function() {
-    micBtn.classList.remove('text-rose-600', 'animate-pulse');
+    if (micBtn) micBtn.classList.remove('text-rose-600', 'animate-pulse');
   };
 
   recognition.start();
 }
-
-// ==========================================
-// FITUR TEXT-TO-SPEECH
-// ==========================================
 
 function toggleSpeech() {
   const ttsBtn = document.getElementById('tts-btn');
@@ -760,7 +735,7 @@ function toggleSpeech() {
   if (isSpeaking) {
     window.speechSynthesis.cancel();
     isSpeaking = false;
-    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+    if (ttsBtn) ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
     return;
   }
 
@@ -792,37 +767,36 @@ function speakText(text) {
 
   currentUtterance.onstart = function () {
     isSpeaking = true;
-    ttsBtn.classList.add('text-emerald-600', 'animate-pulse');
+    if (ttsBtn) ttsBtn.classList.add('text-emerald-600', 'animate-pulse');
   };
 
   currentUtterance.onend = function () {
     isSpeaking = false;
-    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+    if (ttsBtn) ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
   };
 
   currentUtterance.onerror = function () {
     isSpeaking = false;
-    ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
+    if (ttsBtn) ttsBtn.classList.remove('text-emerald-600', 'animate-pulse');
   };
 
   window.speechSynthesis.speak(currentUtterance);
 }
 
 // ==========================================
-// FITUR BAHASA
+// PENGATURAN BAHASA & AKSESIBILITAS
 // ==========================================
 
 function changeLanguage() {
-  const lang = document.getElementById('lang-select').value;
+  const langSelect = document.getElementById('lang-select');
   const sub = document.getElementById('sub-welcome');
+  if (!langSelect || !sub) return;
+
+  const lang = langSelect.value;
   if (lang === 'tae') sub.innerText = "Aga kaperluangta ri layanan Palopota AI hari ini?";
   else if (lang === 'en') sub.innerText = "How can I assist your public service requests today?";
   else sub.innerText = "Mau dibantu apa hari ini?";
 }
-
-// ==========================================
-// FITUR AKSESIBILITAS
-// ==========================================
 
 function toggleAccessibilityMode() {
   isAccessibilityMode = !isAccessibilityMode;
@@ -842,7 +816,7 @@ function applyAccessibilityMode(enable) {
 }
 
 // ==========================================
-// FITUR POPUP IKM
+// POPUP IKM, BANSOS & STUNTING
 // ==========================================
 
 function startIdleTimer() {
@@ -864,39 +838,30 @@ function showIkmPopup() {
 
 function closeIkmPopup() {
   const popup = document.getElementById('ikm-popup');
-  if (popup) {
-    popup.classList.add('hidden');
-  }
+  if (popup) popup.classList.add('hidden');
 }
 
-// ==========================================
-// FITUR CEK HAK BANTUAN
-// ==========================================
-
 function openEligibilityModal() {
-  document.getElementById('eligibility-modal').classList.remove('hidden');
-  document.getElementById('quiz-step-container').classList.remove('hidden');
-  document.getElementById('quiz-result-container').classList.add('hidden');
+  document.getElementById('eligibility-modal')?.classList.remove('hidden');
+  document.getElementById('quiz-step-container')?.classList.remove('hidden');
+  document.getElementById('quiz-result-container')?.classList.add('hidden');
 }
 
 function closeEligibilityModal() {
-  document.getElementById('eligibility-modal').classList.add('hidden');
+  document.getElementById('eligibility-modal')?.classList.add('hidden');
 }
 
 function calculateEligibility() {
-  const kk = document.getElementById('q-kk').value;
-  const income = document.getElementById('q-income').value;
-  const student = document.getElementById('q-student').value;
-  const dtks = document.getElementById('q-dtks').value;
-
+  const kk = document.getElementById('q-kk')?.value;
   const stepContainer = document.getElementById('quiz-step-container');
   const resultContainer = document.getElementById('quiz-result-container');
+
+  if (!stepContainer || !resultContainer) return;
 
   stepContainer.classList.add('hidden');
   resultContainer.classList.remove('hidden');
 
   let eligibilityHTML = "";
-
   if (kk === "tidak") {
     eligibilityHTML = `
       <div class="p-3.5 border rounded-2xl bg-amber-50 border-amber-200 text-amber-900 space-y-2 text-xs">
@@ -927,24 +892,20 @@ function calculateEligibility() {
   resultContainer.innerHTML = eligibilityHTML;
 }
 
-// ==========================================
-// FITUR CEK GIZI STUNTING
-// ==========================================
-
 function openStuntingModal() {
-  document.getElementById('stunting-modal').classList.remove('hidden');
-  document.getElementById('stunting-form-container').classList.remove('hidden');
-  document.getElementById('stunting-result-container').classList.add('hidden');
+  document.getElementById('stunting-modal')?.classList.remove('hidden');
+  document.getElementById('stunting-form-container')?.classList.remove('hidden');
+  document.getElementById('stunting-result-container')?.classList.add('hidden');
 }
 
 function closeStuntingModal() {
-  document.getElementById('stunting-modal').classList.add('hidden');
+  document.getElementById('stunting-modal')?.classList.add('hidden');
 }
 
 function calculateStunting() {
-  const age = parseFloat(document.getElementById('st-age').value);
-  const height = parseFloat(document.getElementById('st-height').value);
-  const weight = parseFloat(document.getElementById('st-weight').value);
+  const age = parseFloat(document.getElementById('st-age')?.value);
+  const height = parseFloat(document.getElementById('st-height')?.value);
+  const weight = parseFloat(document.getElementById('st-weight')?.value);
 
   if (isNaN(age) || isNaN(height) || isNaN(weight)) {
     alert("Mohon isi seluruh data usia, tinggi, dan berat badan dengan benar.");
@@ -954,11 +915,13 @@ function calculateStunting() {
   const formContainer = document.getElementById('stunting-form-container');
   const resultContainer = document.getElementById('stunting-result-container');
 
+  if (!formContainer || !resultContainer) return;
+
   formContainer.classList.add('hidden');
   resultContainer.classList.remove('hidden');
 
-  let expectedHeight = 50 + (age * 1.5); 
-  let heightDiff = height - expectedHeight;
+  const expectedHeight = 50 + (age * 1.5); 
+  const heightDiff = height - expectedHeight;
 
   let statusTitle = "";
   let statusClass = "";
@@ -1004,7 +967,7 @@ function calculateStunting() {
 }
 
 // ==========================================
-// FITUR LOCAL STORAGE
+// LOCAL STORAGE CHAT MANAGEMENT
 // ==========================================
 
 function saveChatToLocalStorage() {
@@ -1042,10 +1005,6 @@ function loadChatFromLocalStorage() {
 // CAROUSEL BANNER
 // ==========================================
 
-let currentBanner = 0;
-const totalBanners = 3;
-let bannerInterval = null;
-
 function updateBanner() {
   const slider = document.getElementById('banner-slider');
   const dots = document.querySelectorAll('.banner-dot');
@@ -1081,28 +1040,123 @@ function resetBannerTimer() {
 }
 
 // ==========================================
+// NOTIFIKASI PUSH
+// ==========================================
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function checkPushSubscriptionStatus() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    const label = document.getElementById('push-subscribe-label');
+    const btn = document.getElementById('push-subscribe-btn');
+    if (label) label.textContent = 'Notifikasi (Tidak Didukung)';
+    if (btn) btn.disabled = true;
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    const label = document.getElementById('push-subscribe-label');
+    const btn = document.getElementById('push-subscribe-btn');
+
+    if (subscription) {
+      if (label) label.textContent = 'Nonaktifkan Notifikasi';
+      if (btn) btn.querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
+    } else {
+      if (label) label.textContent = 'Aktifkan Notifikasi';
+      if (btn) btn.querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
+    }
+  } catch (e) {
+    console.warn('Gagal cek status push:', e);
+  }
+}
+
+async function togglePushSubscription() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Browser Anda tidak mendukung notifikasi push. Gunakan Chrome atau Edge terbaru.');
+    return;
+  }
+
+  const btn = document.getElementById('push-subscribe-btn');
+  const label = document.getElementById('push-subscribe-label');
+  
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      await subscription.unsubscribe();
+      if (label) label.textContent = 'Aktifkan Notifikasi';
+      if (btn) btn.querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
+
+      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+      subs = subs.filter(s => s.endpoint !== subscription.endpoint);
+      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
+      alert('Notifikasi dinonaktifkan.');
+    } else {
+      const vapidPublicKey = 'BL6k...'; 
+      if (vapidPublicKey.length < 65) {
+        if (label) label.textContent = 'Notifikasi (Simulasi)';
+        if (btn) btn.querySelector('i').className = 'fa-regular fa-bell-check text-emerald-500';
+        localStorage.setItem('PALOPO_PUSH_ACTIVE', 'simulasi');
+        alert('✅ Notifikasi diaktifkan (mode simulasi).\n\nUntuk push nyata, atur VAPID key dan backend.');
+        return;
+      }
+
+      const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+      });
+
+      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
+      subs.push(subscription);
+      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
+      
+      if (label) label.textContent = 'Nonaktifkan Notifikasi';
+      if (btn) btn.querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
+      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
+      alert('✅ Notifikasi diaktifkan! Anda akan menerima pemberitahuan dari PALOPOTA AI.');
+    }
+  } catch (e) {
+    console.error('Error toggle push:', e);
+    alert('Gagal mengubah status notifikasi: ' + e.message);
+  }
+}
+
+// ==========================================
 // INITIALIZATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Load Knowledge Base
   loadKnowledgeBaseFromSheet();
-  
-  // Load Chat History
   loadChatFromLocalStorage();
   
-  // Load Accessibility Mode
   if (isAccessibilityMode) {
     applyAccessibilityMode(true);
   }
   
-  // Start Banner Timer
   bannerInterval = setInterval(nextBanner, 30000);
-  
-  // Start Idle Timer
   startIdleTimer();
 
-  // Banner Swipe Support
+  if (document.getElementById('push-subscribe-btn')) {
+    checkPushSubscriptionStatus();
+  }
+
+  // Banner Touch / Mouse Swipe Support
   const bannerContainer = document.getElementById('banner-container');
   if (bannerContainer) {
     let touchStartX = 0;
@@ -1116,8 +1170,7 @@ document.addEventListener('DOMContentLoaded', function() {
       touchEndX = e.changedTouches[0].screenX;
       const swipeThreshold = 30;
       if (touchStartX - touchEndX > swipeThreshold) {
-        currentBanner = (currentBanner + 1) % totalBanners;
-        updateBanner();
+        nextBanner();
         resetBannerTimer();
       } else if (touchEndX - touchStartX > swipeThreshold) {
         currentBanner = (currentBanner - 1 + totalBanners) % totalBanners;
@@ -1134,8 +1187,7 @@ document.addEventListener('DOMContentLoaded', function() {
       touchEndX = e.clientX;
       const swipeThreshold = 30;
       if (touchStartX - touchEndX > swipeThreshold) {
-        currentBanner = (currentBanner + 1) % totalBanners;
-        updateBanner();
+        nextBanner();
         resetBannerTimer();
       } else if (touchEndX - touchStartX > swipeThreshold) {
         currentBanner = (currentBanner - 1 + totalBanners) % totalBanners;
@@ -1143,126 +1195,5 @@ document.addEventListener('DOMContentLoaded', function() {
         resetBannerTimer();
       }
     });
-
-// ==========================================
-// NOTIFIKASI PUSH - SUBSCRIBE / UNSUBSCRIBE
-// ==========================================
-
-// Cek status subscription saat load
-async function checkPushSubscriptionStatus() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    document.getElementById('push-subscribe-label').textContent = 'Notifikasi (Tidak Didukung)';
-    document.getElementById('push-subscribe-btn').disabled = true;
-    return;
-  }
-
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    if (subscription) {
-      // Sudah subscribe
-      document.getElementById('push-subscribe-label').textContent = 'Nonaktifkan Notifikasi';
-      document.getElementById('push-subscribe-btn').querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
-      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
-    } else {
-      document.getElementById('push-subscribe-label').textContent = 'Aktifkan Notifikasi';
-      document.getElementById('push-subscribe-btn').querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
-      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
-    }
-  } catch (e) {
-    console.warn('Gagal cek status push:', e);
-  }
-}
-
-// Toggle subscribe / unsubscribe
-async function togglePushSubscription() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Browser Anda tidak mendukung notifikasi push. Gunakan Chrome atau Edge terbaru.');
-    return;
-  }
-
-  const btn = document.getElementById('push-subscribe-btn');
-  const label = document.getElementById('push-subscribe-label');
-  
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (subscription) {
-      // UNSUBSCRIBE
-      await subscription.unsubscribe();
-      label.textContent = 'Aktifkan Notifikasi';
-      btn.querySelector('i').className = 'fa-regular fa-bell text-brand-cyan';
-      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'false');
-      // Hapus dari daftar subscription yang tersimpan
-      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
-      subs = subs.filter(s => s.endpoint !== subscription.endpoint);
-      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
-      alert('Notifikasi dinonaktifkan.');
-    } else {
-      // SUBSCRIBE - butuh VAPID public key
-      // Untuk demo, kita gunakan key yang valid (anda bisa dapatkan dari web-push library)
-      // Jika tidak punya, kita hanya mensimulasikan (tanpa server key)
-      // Sebaiknya anda buat VAPID key sendiri atau gunakan Firebase
-      const vapidPublicKey = 'BL6k...'; // Ganti dengan public key Anda
-      
-      // Periksa apakah key valid (minimal 65 karakter)
-      if (vapidPublicKey.length < 65) {
-        alert('⚠️ VAPID Public Key belum diatur. Untuk demo, notifikasi akan disimpan di localStorage.\n\n' +
-              'Cara dapatkan key:\n' +
-              '1. Kunjungi https://web-push-codelab.glitch.me/\n' +
-              '2. Copy VAPID Public Key\n' +
-              '3. Ganti const vapidPublicKey di kode ini');
-        // Simulasi subscribe (tanpa push nyata)
-        label.textContent = 'Notifikasi (Simulasi)';
-        btn.querySelector('i').className = 'fa-regular fa-bell-check text-emerald-500';
-        localStorage.setItem('PALOPO_PUSH_ACTIVE', 'simulasi');
-        alert('✅ Notifikasi diaktifkan (mode simulasi).\n\n' +
-              'Untuk push nyata, atur VAPID key dan backend.');
-        return;
-      }
-
-      const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey
-      });
-
-      // Simpan subscription
-      let subs = JSON.parse(localStorage.getItem('PALOPO_PUSH_SUBSCRIPTIONS') || '[]');
-      subs.push(subscription);
-      localStorage.setItem('PALOPO_PUSH_SUBSCRIPTIONS', JSON.stringify(subs));
-      
-      label.textContent = 'Nonaktifkan Notifikasi';
-      btn.querySelector('i').className = 'fa-regular fa-bell-slash text-rose-500';
-      localStorage.setItem('PALOPO_PUSH_ACTIVE', 'true');
-      alert('✅ Notifikasi diaktifkan! Anda akan menerima pemberitahuan dari PALOPOTA AI.');
-    }
-  } catch (e) {
-    console.error('Error toggle push:', e);
-    alert('Gagal mengubah status notifikasi: ' + e.message);
-  }
-}
-
-// Helper: ubah base64 ke Uint8Array (untuk VAPID)
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-// Panggil saat halaman dimuat untuk cek status
-document.addEventListener('DOMContentLoaded', function() {
-  // ... kode yang sudah ada ...
-  if (document.getElementById('push-subscribe-btn')) {
-    checkPushSubscriptionStatus();
-  }
-});
-
   }
 });
