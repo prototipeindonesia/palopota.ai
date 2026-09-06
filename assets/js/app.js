@@ -160,17 +160,26 @@ function appendAIMessage(markdownText) {
   chatHistory.push({ role: "model", parts: [{ text: markdownText }] });
 
   const htmlContent = marked.parse(markdownText);
-  const messageId = 'msg-' + Date.now(); // ID unik per pesan
+  const messageId = 'msg-' + Date.now();
 
   stream.insertAdjacentHTML('beforeend', `
     <div class="flex items-start space-x-2.5 my-2" id="${messageId}">
       <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #06b6d4; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">AI</div>
       <div style="background-color: white; border: 1px solid #e2e8f0; font-size: 0.75rem; padding: 0.75rem; border-radius: 1rem; border-top-left-radius: 0; max-width: 92%; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.05); line-height: 1.625;" class="chat-body">
         ${htmlContent}
-        <div class="flex items-center space-x-3 mt-2 pt-2 border-t border-slate-200 text-xs text-slate-400">
-          <button onclick="sendFeedback('${messageId}', '👍')" class="hover:text-emerald-600 transition" title="Membantu">👍</button>
-          <button onclick="sendFeedback('${messageId}', '👎')" class="hover:text-rose-600 transition" title="Tidak Membantu">👎</button>
-          <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-1"></span>
+        
+        <!-- AREA FEEDBACK dengan teks -->
+        <div class="flex items-center gap-3 mt-2.5 pt-2 border-t border-slate-200 text-xs text-slate-500">
+          <span class="text-[10px] text-slate-400 font-medium">Apakah jawaban ini membantu?</span>
+          <button onclick="sendFeedback('${messageId}', '👍')" class="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-emerald-50 transition text-emerald-600 hover:text-emerald-700 font-medium">
+            <span>👍</span>
+            <span class="text-[11px]">Membantu</span>
+          </button>
+          <button onclick="sendFeedback('${messageId}', '👎')" class="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-rose-50 transition text-rose-500 hover:text-rose-600 font-medium">
+            <span>👎</span>
+            <span class="text-[11px]">Tidak Membantu</span>
+          </button>
+          <span id="feedback-${messageId}" class="text-[10px] text-slate-400 ml-auto"></span>
         </div>
       </div>
     </div>
