@@ -167,72 +167,70 @@ body.high-contrast #user-input::placeholder {
   border-radius: 4px;
 }
 
+
 /* ==========================================================================
-   DESKTOP FULLSCREEN DUAL COLUMN (Layar >= 1024px)
+   DESKTOP FULLSCREEN MODE (Khusus Layar >= 1024px)
    ========================================================================== */
 
-/* Batasan Ukuran Khusus Layar HP/Mobile */
+/* 1. Pengaturan khusus HP/Mobile (< 1024px) agar tetap seperti tampilan asli */
 @media (max-width: 1023px) {
   body {
-    max-width: 28rem !important; /* Dibatasi seukuran HP */
+    max-width: 28rem !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 }
 
-/* Tampilan Fullscreen Khusus Layar Laptop/Desktop */
+/* 2. Pengaturan Fullscreen khusus Komputer/Laptop (>= 1024px) */
 @media (min-width: 1024px) {
   html, body {
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
     height: 100vh !important;
     margin: 0 !important;
-    padding: 1rem 2rem !important;
+    padding: 1.25rem 2.5rem !important;
     border-radius: 0 !important;
     border: none !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
   }
 
-  /* Header memenuhi lebar layar */
+  /* Header memenuhi lebar monitor */
   header {
     width: 100% !important;
+    max-width: 100% !important;
     padding-bottom: 0.75rem !important;
   }
 
-  /* Layout Konten Utama Memenuhi Seluruh Layar */
+  /* Pembungkus utama dibuat penuh */
   div.desktop-layout-wrapper {
     display: flex !important;
     flex-direction: row !important;
-    gap: 2rem !important;
-    height: calc(100vh - 80px) !important;
+    gap: 2.5rem !important;
+    height: calc(100vh - 90px) !important;
     width: 100% !important;
+    max-width: 100% !important;
   }
 
-  /* Kolom Kiri: Menu & Banner (Lebar Proporsional) */
+  /* Kolom Kiri: Beranda & Menu */
   #home-screen {
     flex: 1 !important;
     display: flex !important;
+    height: 100% !important;
     overflow-y: auto !important;
     padding-right: 1rem !important;
   }
 
-  /* Kolom Kanan: Chat Screen Full Height */
+  /* Kolom Kanan: Obrolan Chat AI */
   #chat-screen {
     flex: 1.2 !important;
     display: flex !important;
+    height: 100% !important;
     border-left: 1px solid #cbd5e1 !important;
     padding-left: 2rem !important;
-    height: 100% !important;
   }
 
-  /* Penyesuaian Obrolan agar menggunakan sisa ruang vertical */
-  #chat-stream {
-    flex: 1 !important;
-    height: 100% !important;
-  }
-
-  /* Sembunyikan tombol 'Kembali ke Beranda' di layar Chat saat di Desktop */
+  /* Sembunyikan tombol Kembali ke Beranda jika di Desktop */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
