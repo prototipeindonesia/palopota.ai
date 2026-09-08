@@ -167,51 +167,6 @@ body.high-contrast #user-input::placeholder {
   border-radius: 4px;
 }
 
-/* ==========================================================================
-   DESKTOP & TABLET MODE (Aktif jika lebar layar >= 768px atau Desktop Site)
-   ========================================================================== */
-
-@media screen and (min-width: 768px) {
-  /* Ubah background luar desktop agar tampak lebih bersih */
-  html {
-    background-color: #f1f5f9 !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-
-  /* Buat Frame Aplikasi Desktop Rapi di Tengah Layar */
-  body {
-    width: 100% !important;
-    max-width: 480px !important; /* Lebar frame aplikasi yang ideal */
-    height: 92vh !important;
-    max-height: 850px !important;
-    margin: auto !important;
-    border-radius: 28px !important;
-    box-shadow: 0 20px 40px -15px rgba(15, 60, 95, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.9) !important;
-    border: 1px solid #cbd5e1 !important;
-    position: relative !important;
-    overflow: hidden !important;
-  }
-
-  /* Penyesuaian Modal pada Mode Desktop */
-  #feature-modal, #eligibility-modal, #stunting-modal {
-    align-items: center !important;
-  }
-
-  #feature-modal > div, 
-  #eligibility-modal > div, 
-  #stunting-modal > div {
-    border-radius: 24px !important;
-    max-width: 420px !important;
-  }
-
-  /* Penyesuaian Menu Drawer pada Mode Desktop */
-  #side-drawer > div {
-    max-width: 320px !important;
-  }
-}
 
 /* ==========================================================================
    DESKTOP DUAL COLUMN LAYOUT (Khusus Layar Desktop/Laptop >= 1024px)
