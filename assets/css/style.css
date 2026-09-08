@@ -166,10 +166,10 @@ body.high-contrast #user-input::placeholder {
 }
 
 /* ==========================================================================
-   DESKTOP FULLSCREEN MODE (Layar >= 1024px)
+   DESKTOP FULLSCREEN MODE (Layar >= 1024px) - LAYOUT CLEAN & RAPI
    ========================================================================== */
 
-/* 1. Pengaturan Tampilan Mobile (< 1024px) */
+/* 1. Aturan Khusus Mobile/HP (< 1024px) */
 @media (max-width: 1023px) {
   body {
     max-width: 28rem !important;
@@ -178,52 +178,94 @@ body.high-contrast #user-input::placeholder {
   }
 }
 
-/* 2. Pengaturan Fullscreen Komputer/Laptop (>= 1024px) */
+/* 2. Aturan Desktop Rapi Fullscreen (>= 1024px) */
 @media (min-width: 1024px) {
   html, body {
     width: 100vw !important;
     max-width: 100vw !important;
     height: 100vh !important;
     margin: 0 !important;
-    padding: 1.25rem 2.5rem !important;
+    padding: 1rem 2rem !important;
     border-radius: 0 !important;
     border: none !important;
     box-shadow: none !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
+  /* Header Atas */
   header {
     width: 100% !important;
     max-width: 100% !important;
     padding-bottom: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
+  /* Layout 2 Kolom Seimbang */
   div.desktop-layout-wrapper {
     display: flex !important;
     flex-direction: row !important;
-    gap: 2.5rem !important;
-    height: calc(100vh - 90px) !important;
+    gap: 2rem !important;
+    height: calc(100vh - 85px) !important;
     width: 100% !important;
-    max-width: 100% !important;
   }
 
+  /* --- KOLOM KIRI: BERANDA & MENU --- */
   #home-screen {
     flex: 1 !important;
     display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
     height: 100% !important;
     overflow-y: auto !important;
     padding-right: 1rem !important;
   }
 
+  /* Banner Proporsional */
+  #banner-container {
+    max-height: 180px !important;
+  }
+  #banner-slider img {
+    height: 180px !important;
+    object-fit: cover !important;
+  }
+
+  /* Kartu Menu Grid lebih Tinggi & Rapi */
+  .grid.grid-cols-2 {
+    gap: 1.25rem !important;
+  }
+
+  .menu-card {
+    height: 120px !important;
+    padding: 1.25rem !important;
+  }
+
+  /* --- KOLOM KANAN: CHAT ASSISTANT --- */
   #chat-screen {
     flex: 1.2 !important;
     display: flex !important;
+    flex-direction: column !important;
     height: 100% !important;
-    border-left: 1px solid #cbd5e1 !important;
+    border-left: 1px solid #e2e8f0 !important;
     padding-left: 2rem !important;
   }
 
+  /* Area Bubble Chat */
+  #chat-stream {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Sembunyikan Tombol Kembali di Desktop */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
+  }
+
+  /* Footer Chat Input hanya ada di bawah Kolom Chat Kanan */
+  footer {
+    position: relative !important;
+    width: 100% !important;
+    padding-top: 0.5rem !important;
   }
 }
