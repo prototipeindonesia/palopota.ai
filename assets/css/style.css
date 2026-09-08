@@ -1,4 +1,4 @@
-/* Fix untuk Layout Mobile Browser (Address Bar & Keyboard dynamic height) */
+/* Fix untuk Layout Mobile Browser */
 html, body {
   height: 100dvh;
   margin: 0;
@@ -96,7 +96,7 @@ body {
 .chat-body ul, .chat-body ol { margin-left: 1.2rem; margin-bottom: 0.4rem; list-style-type: disc; }
 .chat-body strong { color: #0f3c5f; font-weight: 700; }
 
-/* Styling Mode Aksesibilitas (Teks Besar & High-Contrast) */
+/* High Contrast Mode */
 body.high-contrast {
   background: #000000 !important;
   color: #ffffff !important;
@@ -144,7 +144,6 @@ body.high-contrast #user-input::placeholder {
   color: #a1a1aa !important;
 }
 
-/* Pengaman Tampilan Obrolan Mobile */
 #chat-stream {
   scroll-behavior: smooth;
   word-break: break-word;
@@ -158,7 +157,6 @@ body.high-contrast #user-input::placeholder {
   height: auto;
 }
 
-/* Kustomisasi Scrollbar Obrolan */
 #chat-stream::-webkit-scrollbar {
   width: 4px;
 }
@@ -167,12 +165,11 @@ body.high-contrast #user-input::placeholder {
   border-radius: 4px;
 }
 
-
 /* ==========================================================================
-   DESKTOP FULLSCREEN MODE (Khusus Layar >= 1024px)
+   DESKTOP FULLSCREEN MODE (Layar >= 1024px)
    ========================================================================== */
 
-/* 1. Pengaturan khusus HP/Mobile (< 1024px) agar tetap seperti tampilan asli */
+/* 1. Pengaturan Tampilan Mobile (< 1024px) */
 @media (max-width: 1023px) {
   body {
     max-width: 28rem !important;
@@ -181,7 +178,7 @@ body.high-contrast #user-input::placeholder {
   }
 }
 
-/* 2. Pengaturan Fullscreen khusus Komputer/Laptop (>= 1024px) */
+/* 2. Pengaturan Fullscreen Komputer/Laptop (>= 1024px) */
 @media (min-width: 1024px) {
   html, body {
     width: 100vw !important;
@@ -195,14 +192,12 @@ body.high-contrast #user-input::placeholder {
     box-sizing: border-box !important;
   }
 
-  /* Header memenuhi lebar monitor */
   header {
     width: 100% !important;
     max-width: 100% !important;
     padding-bottom: 0.75rem !important;
   }
 
-  /* Pembungkus utama dibuat penuh */
   div.desktop-layout-wrapper {
     display: flex !important;
     flex-direction: row !important;
@@ -212,7 +207,6 @@ body.high-contrast #user-input::placeholder {
     max-width: 100% !important;
   }
 
-  /* Kolom Kiri: Beranda & Menu */
   #home-screen {
     flex: 1 !important;
     display: flex !important;
@@ -221,7 +215,6 @@ body.high-contrast #user-input::placeholder {
     padding-right: 1rem !important;
   }
 
-  /* Kolom Kanan: Obrolan Chat AI */
   #chat-screen {
     flex: 1.2 !important;
     display: flex !important;
@@ -230,7 +223,6 @@ body.high-contrast #user-input::placeholder {
     padding-left: 2rem !important;
   }
 
-  /* Sembunyikan tombol Kembali ke Beranda jika di Desktop */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
