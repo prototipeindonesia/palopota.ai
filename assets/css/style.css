@@ -166,3 +166,89 @@ body.high-contrast #user-input::placeholder {
   background: #cbd5e1;
   border-radius: 4px;
 }
+
+/* ==========================================================================
+   DESKTOP RESPONSIVE MODE (Hanya Aktif di Layar Lebar >= 1024px)
+   Tampilan Mobile Tetap Utuh Tanpa Perubahan!
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  /* Pembungkus Utama di Desktop */
+  body {
+    max-width: 1100px !important;
+    height: 90vh !important;
+    margin: 2rem auto !important;
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(15, 60, 95, 0.15);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    overflow: hidden !important;
+    position: relative;
+    padding: 1.5rem 2rem !important;
+  }
+
+  /* Header Desktop */
+  header {
+    padding-bottom: 1rem !important;
+    margin-bottom: 1rem;
+  }
+
+  /* Layout Konten Utama Desktop (Dua Kolom) */
+  .desktop-layout-wrapper {
+    display: flex !important;
+    gap: 1.5rem;
+    height: calc(100% - 70px);
+    overflow: hidden;
+  }
+
+  /* Kolom Kiri: Menu Grid / Banner / Beranda */
+  #home-screen {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start !important;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  /* Adjust Kartu Menu di Desktop agar lebih presisi */
+  .grid.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  .menu-card {
+    height: 140px !important;
+  }
+
+  /* Kolom Kanan: Obrolan AI (Selalu Tampil / Split View di Desktop) */
+  #chat-screen {
+    flex: 1.1;
+    display: flex !important;
+    border-left: 1px solid rgba(226, 232, 240, 0.8);
+    padding-left: 1.5rem;
+  }
+
+  /* Hilangkan Tombol Kembali ke Beranda di Chat jika di Desktop */
+  #chat-screen button[onclick="showHomeScreen()"] {
+    display: none !important;
+  }
+
+  /* Footer / Chat Input Bar Desktop */
+  footer {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    padding-top: 0.5rem !important;
+  }
+
+  /* Styling Modal agar muncul pas di Tengah Layar Desktop */
+  #feature-modal, #eligibility-modal, #stunting-modal {
+    align-items: center !important;
+  }
+
+  #feature-modal > div, #eligibility-modal > div, #stunting-modal > div {
+    border-radius: 24px !important;
+    max-width: 480px !important;
+  }
+}
