@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BASE
+   BASE & RESET LAYOUT
    ========================================================================== */
 html, body {
   height: 100dvh;
@@ -12,6 +12,8 @@ html, body {
 body {
   background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%, #e8fadf 100%);
   font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Kartu menu */
@@ -160,51 +162,55 @@ body.high-contrast #user-input::placeholder {
 }
 
 /* ==========================================================================
-   MOBILE: FOOTER CHAT SELALU DI BAWAH
+   MOBILE (< 1024px): FOOTER MENEMPEL DI DASAR LAYAR
    ========================================================================== */
 @media (max-width: 1023px) {
 
-  /* Body: beri ruang bawah agar konten tidak tertutup footer */
+  /* Matikan padding-bottom di body agar footer benar-benar menempel */
   body {
-    padding-bottom: 5.5rem !important;
+    padding-bottom: 0 !important;
   }
 
-  /* Footer: kunci di bawah */
+  /* Container utama mengambil sisa tinggi minus footer */
+  .desktop-layout-wrapper {
+    flex: 1;
+    overflow: hidden;
+    margin-bottom: 0 !important;
+  }
+
+  /* Footer rapat ke dasar layar dengan dukungan Safe Area (Home Indicator HP) */
   footer,
   footer.chat-footer {
-    position: fixed !important;
+    position: relative !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    padding: 0.5rem 0.75rem 0.75rem 0.75rem !important;
-    background: linear-gradient(180deg, rgba(248,250,252,0) 0%, rgba(248,250,252,0.9) 30%, #f8fafc 100%) !important;
+    margin-top: auto !important;
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px)) 0.5rem !important;
+    background: transparent !important;
     z-index: 40 !important;
     box-sizing: border-box !important;
   }
 
-  /* Form di dalam footer */
+  /* Form Input Chat */
   footer form.chat-container,
   footer.chat-footer form.chat-container {
-    max-width: 480px !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08) !important;
-    background: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
   }
 
-  /* Konten utama: beri jarak bawah ekstra */
-  #home-screen {
-    padding-bottom: 1rem !important;
-  }
-
-  /* Saat chat aktif, beri jarak bawah pada stream */
+  /* Atur jarak isi chat agar tidak tertutup */
+  #home-screen,
   #chat-stream {
-    padding-bottom: 1rem !important;
+    padding-bottom: 0.5rem !important;
   }
 }
 
 /* ==========================================================================
-   DESKTOP (≥ 1024px) — HANYA 3 ATURAN INTI
+   DESKTOP (≥ 1024px)
    ========================================================================== */
 @media (min-width: 1024px) {
 
@@ -249,5 +255,11 @@ body.high-contrast #user-input::placeholder {
     overflow-y: auto;
     min-height: 0;
   }
-}
 
+  /* Footer di mode desktop */
+  footer {
+    position: relative !important;
+    padding-top: 0.5rem !important;
+    margin-top: auto !important;
+  }
+}
