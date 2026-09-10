@@ -166,6 +166,11 @@ body.high-contrast #user-input::placeholder {
    ========================================================================== */
 @media (max-width: 1023px) {
 
+   /* Tambahkan ruang (margin-top) di atas judul Selamat Datang */
+  #home-screen h1 {
+    margin-top: 1rem !important; /* Ubah angka ini (misal: 0.75rem / 1.5rem) sesuai selera */
+  }
+   
   /* Matikan padding-bottom di body agar footer benar-benar menempel */
   body {
     padding-bottom: 0 !important;
