@@ -5,412 +5,382 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PALOPOTA AI — Layanan Publik Berbasis AI Kota Palopo</title>
 
-  <!-- Panggil file manifest di sini -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
   <link rel="apple-touch-icon" href="iconpalopota192.png">
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Marked JS untuk Markdown Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  
-  <!-- CSS Eksternal -->
+
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body class="text-slate-800 antialiased flex flex-col h-[100dvh] w-full relative p-3 md:p-5">
   <div class="app-shell flex flex-col h-full w-full">
 
-  <!-- HEADER -->
-  <header class="flex justify-between items-center py-2 w-full shrink-0 z-20 border-b border-slate-200/60 pb-2.5">
-    <div class="flex items-center space-x-2.5 cursor-pointer" onclick="showHomeScreen()">
-      <div class="logo-container">
-        <img src="assets/images/logopalopo.png" alt="Logo Palopo" class="h-9 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/40';">
-        <img src="assets/images/palopotaai.png" alt="Palopota AI" class="h-7 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x32';">
+    <!-- HEADER -->
+    <header class="flex justify-between items-center py-2 w-full shrink-0 z-20 border-b border-slate-200/60 pb-2.5">
+      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="showHomeScreen()">
+        <div class="logo-container">
+          <img src="assets/images/logopalopo.png" alt="Logo Palopo" class="h-9 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/40';">
+          <img src="assets/images/palopotaai.png" alt="Palopota AI" class="h-7 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x32';">
+        </div>
+      </div>
+
+      <button onclick="toggleSideMenu()" class="text-slate-600 hover:text-slate-900 p-2 text-xl focus:outline-none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- SIDE MENU / DRAWER -->
+    <div id="side-drawer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden transition-opacity">
+      <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-white p-5 shadow-2xl flex flex-col justify-between overflow-y-auto custom-scroll">
+        <div>
+          <div class="flex justify-between items-center border-b pb-4 mb-4">
+            <span class="font-extrabold text-brand-navy">Menu & Pengaturan</span>
+            <button onclick="toggleSideMenu()" class="text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div class="space-y-3 mb-5">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bahasa Antarmuka</div>
+            <select id="lang-select" onchange="changeLanguage()" class="w-full bg-slate-50 text-slate-700 text-xs rounded-xl p-2.5 border border-slate-200">
+              <option value="id">🇮🇩 Bahasa Indonesia</option>
+              <option value="tae">📍 Tae' / Luwu</option>
+              <option value="en">🇬🇧 English</option>
+            </select>
+          </div>
+
+          <nav class="space-y-1 text-sm font-semibold text-slate-700">
+            <button onclick="showHomeScreen(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-house text-brand-blue"></i><span>Beranda Utama</span>
+            </button>
+            <button onclick="openFeatureModal('LIFE_EVENT'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-compass text-amber-500"></i><span>Life Event Mode</span>
+            </button>
+            <button onclick="openFeatureModal('OPD'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-building text-emerald-500"></i><span>Direktori OPD</span>
+            </button>
+            <button onclick="openFeatureModal('GIS'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-map-location-dot text-indigo-500"></i><span>Peta Layanan</span>
+            </button>
+
+            <hr class="my-2 border-slate-200">
+
+            <button onclick="openEligibilityModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-hand-holding-hand text-rose-500"></i><span>Cek Hak Bantuan</span>
+            </button>
+            <button onclick="openStuntingModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-baby text-pink-500"></i><span>Cek Gizi Stunting</span>
+            </button>
+            <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-wheat-awn text-amber-600"></i><span>Daftar Harga Pangan</span>
+            </button>
+            <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-bullhorn text-teal-500"></i><span>Layanan Pengaduan</span>
+            </button>
+            <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-credit-card text-sky-600"></i><span>Pembayaran Pajak</span>
+            </button>
+            <button onclick="window.location.href='kalender.html'" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-regular fa-calendar text-sky-500"></i><span>Kalender Layanan</span>
+            </button>
+
+            <button onclick="openFeatureModal('EMERGENCY'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-rose-50 flex items-center space-x-3 text-rose-600 font-bold">
+              <i class="fa-solid fa-triangle-exclamation text-rose-500"></i><span>Layanan Cepat Darurat</span>
+            </button>
+
+            <button onclick="togglePushSubscription()" id="push-subscribe-btn" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-regular fa-bell text-brand-cyan"></i>
+              <span id="push-subscribe-label">Aktifkan Notifikasi</span>
+            </button>
+
+            <hr class="my-2 border-slate-200">
+
+            <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-star text-amber-500"></i><span>Survei IKM</span>
+            </a>
+            <a href="https://bit.ly/saranpalopota" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
+              <i class="fa-solid fa-comment-dots text-purple-500"></i><span>Saran & Masukan</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="border-t pt-4 text-[11px] text-slate-400 text-center font-mono">
+          PALOPOTA AI v1.0 • Pemkot Palopo
+        </div>
       </div>
     </div>
 
-    <!-- Menu Hamburger -->
-    <button onclick="toggleSideMenu()" class="text-slate-600 hover:text-slate-900 p-2 text-xl focus:outline-none">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </header>
+    <!-- CONTAINER UTAMA (2 KOLOM DI DESKTOP) -->
+    <div class="flex-1 flex flex-col overflow-hidden relative my-1 desktop-layout-wrapper">
 
-  <!-- SIDE MENU / DRAWER -->
-  <div id="side-drawer" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden transition-opacity">
-    <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-white p-5 shadow-2xl flex flex-col justify-between overflow-y-auto custom-scroll">
-      <div>
-        <div class="flex justify-between items-center border-b pb-4 mb-4">
-          <span class="font-extrabold text-brand-navy">Menu & Pengaturan</span>
-          <button onclick="toggleSideMenu()" class="text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        
-        <!-- Opsi Bahasa -->
-        <div class="space-y-3 mb-5">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bahasa Antarmuka</div>
-          <select id="lang-select" onchange="changeLanguage()" class="w-full bg-slate-50 text-slate-700 text-xs rounded-xl p-2.5 border border-slate-200">
-            <option value="id">🇮🇩 Bahasa Indonesia</option>
-            <option value="tae">📍 Tae' / Luwu</option>
-            <option value="en">🇬🇧 English</option>
-          </select>
+      <!-- KOLOM KIRI: BERANDA -->
+      <main id="home-screen" class="flex-1 flex flex-col justify-center my-auto custom-scroll">
+        <div class="mb-5">
+          <h1 class="text-3xl md:text-4xl font-extrabold text-brand-navy tracking-tight leading-none mb-2">
+            Selamat Datang!
+          </h1>
+          <p class="text-brand-cyan font-semibold text-base md:text-lg" id="sub-welcome">
+            Apa yang ingin Anda selesaikan hari ini?
+          </p>
         </div>
 
-        <nav class="space-y-1 text-sm font-semibold text-slate-700">
-          <button onclick="showHomeScreen(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-house text-brand-blue"></i><span>Beranda Utama</span>
-          </button>
-          <button onclick="openFeatureModal('LIFE_EVENT'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-compass text-amber-500"></i><span>Life Event Mode</span>
-          </button>
-          <button onclick="openFeatureModal('OPD'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-building text-emerald-500"></i><span>Direktori OPD</span>
-          </button>
-          <button onclick="openFeatureModal('GIS'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-map-location-dot text-indigo-500"></i><span>Peta Layanan</span>
-          </button>
-
-          <!-- Garis Pisah 1 -->
-          <hr class="my-2 border-slate-200">
-
-          <button onclick="openEligibilityModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-hand-holding-hand text-rose-500"></i><span>Cek Hak Bantuan</span>
-          </button>
-          <button onclick="openStuntingModal(); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-baby text-pink-500"></i><span>Cek Gizi Stunting</span>
-          </button>
-          <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-wheat-awn text-amber-600"></i><span>Daftar Harga Pangan</span>
-          </button>
-          <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-bullhorn text-teal-500"></i><span>Layanan Pengaduan</span>
-          </button>
-          <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-credit-card text-sky-600"></i><span>Pembayaran Pajak</span>
-          </button>
-<button onclick="window.location.href='kalender.html'" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-  <i class="fa-regular fa-calendar text-sky-500"></i><span>Kalender Layanan</span>
-</button>
-
-          <!-- Fitur Tambahan: Layanan Cepat Darurat -->
-          <button onclick="openFeatureModal('EMERGENCY'); toggleSideMenu();" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-rose-50 flex items-center space-x-3 text-rose-600 font-bold">
-            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i><span>Layanan Cepat Darurat</span>
-          </button>
-<!-- Tambahan: Subscribe Notifikasi Push -->
-<button onclick="togglePushSubscription()" id="push-subscribe-btn" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-  <i class="fa-regular fa-bell text-brand-cyan"></i>
-  <span id="push-subscribe-label">Aktifkan Notifikasi</span>
-</button>
-
-          <!-- Garis Pisah 2 -->
-          <hr class="my-2 border-slate-200">
-
-          <!-- Fitur Survei IKM -->
-          <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-star text-amber-500"></i><span>Survei IKM</span>
-          </a>
-
-          <!-- Fitur Saran & Masukan -->
-          <a href="https://bit.ly/saranpalopota" target="_blank" onclick="toggleSideMenu()" class="w-full text-left py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center space-x-3">
-            <i class="fa-solid fa-comment-dots text-purple-500"></i><span>Saran & Masukan</span>
-          </a>
-        </nav>
-      </div>
-
-      <div class="border-t pt-4 text-[11px] text-slate-400 text-center font-mono">
-        PALOPOTA AI v1.0 • Pemkot Palopo
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTAINER UTAMA -->
-  <div class="flex-1 flex flex-col overflow-hidden relative my-1 desktop-layout-wrapper">
-    
-    <!-- BERANDA UTAMA (GRID 4 KARTU SIMETRIS) -->
-    <main id="home-screen" class="flex-1 flex flex-col justify-center my-auto custom-scroll">
-      <div class="mb-5">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-brand-navy tracking-tight leading-none mb-2">
-          Selamat Datang!
-        </h1>
-        <p class="text-brand-cyan font-semibold text-base md:text-lg" id="sub-welcome">
-          Apa yang ingin Anda selesaikan hari ini?
-        </p>
-      </div>
-      
-      <!-- BANNER INFORMASI CAROUSEL -->
-      <div id="banner-container" class="relative w-full mb-4 overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 bg-slate-100 group select-none">
-        <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out w-full">
-          <div class="w-full flex-shrink-0">
-            <img src="assets/images/banner1.png" alt="Banner Informasi 1" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0f3c5f/ffffff?text=Banner+Informasi+1';">
-          </div>
-          <div class="w-full flex-shrink-0">
-            <img src="assets/images/banner2.png" alt="Banner Informasi 2" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/0284c7/ffffff?text=Banner+Informasi+2';">
-          </div>
-          <div class="w-full flex-shrink-0">
-            <img src="assets/images/banner3.png" alt="Banner Informasi 3" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x140/06b6d4/ffffff?text=Banner+Informasi+3';">
-          </div>
-        </div>
-
-        <!-- Indikator Dots -->
-        <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-1.5 z-10">
-          <button onclick="goToBanner(0)" class="banner-dot w-5 h-2 rounded-full bg-white transition-all duration-300 shadow-sm" aria-label="Slide 1"></button>
-          <button onclick="goToBanner(1)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 2"></button>
-          <button onclick="goToBanner(2)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 3"></button>
-        </div>
-      </div>
-
-      <!-- MENU GRID 4 KARTU -->
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="openFeatureModal('LIFE_EVENT')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
-          <div class="text-amber-500 text-2xl"><i class="fa-solid fa-route"></i></div>
-          <span class="text-slate-700 font-bold text-sm leading-snug">Life Event<br>Mode</span>
-        </button>
-
-        <button onclick="openFeatureModal('OPD')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
-          <div class="text-emerald-500 text-2xl"><i class="fa-solid fa-building-columns"></i></div>
-          <span class="text-slate-700 font-bold text-sm leading-snug">Layanan<br>Pemerintah</span>
-        </button>
-
-        <button onclick="openFeatureModal('GIS')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
-          <div class="text-indigo-500 text-2xl"><i class="fa-solid fa-map-location-dot"></i></div>
-          <span class="text-slate-700 font-bold text-sm leading-snug">Cari Lokasi<br>Layanan</span>
-        </button>
-
-        <button onclick="showChatScreen()" class="menu-card p-4 text-left flex flex-col justify-between h-36 border-brand-cyan/40 bg-sky-50/60">
-          <div class="text-brand-blue text-2xl"><i class="fa-solid fa-robot"></i></div>
-          <span class="text-brand-navy font-bold text-sm leading-snug">Tanya Palopota<br>Langsung</span>
-        </button>
-      </div>
-    </main>
-
-    <!-- INTERFACE CHAT FULL SCREEN -->
-    <section id="chat-screen" class="flex-1 flex flex-col h-full overflow-hidden hidden">
-      <!-- Chat Sub-Header -->
-      <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 shrink-0 mb-1">
-        <button onclick="showHomeScreen()" class="text-xs font-bold text-brand-blue flex items-center hover:underline">
-          <i class="fa-solid fa-arrow-left mr-1.5"></i> Beranda
-        </button>
-        <span class="text-xs font-extrabold text-brand-navy flex items-center">
-          <i class="fa-solid fa-robot text-brand-cyan mr-1.5"></i> Palopota AI Assistant
-        </span>
-        <button onclick="clearChat()" class="text-xs text-rose-500 font-bold hover:underline">
-          <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan
-        </button>
-      </div>
-
-      <!-- Chat Scroll Area -->
-      <div id="chat-stream" class="custom-scroll flex-1 overflow-y-auto space-y-3 pr-1 py-2">
-        <!-- Pesan Selamat Datang -->
-        <div class="flex items-start space-x-2.5 my-1">
-          <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #0f3c5f; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">AI</div>
-          <div class="bg-white border border-slate-200/90 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm space-y-2 chat-body">
-            <p class="font-bold text-brand-navy text-sm">Salama’ki tapada salama! 👋</p>
-            <p>Saya Asisten AI Palopota. Saya selalu siap membantu pengurusan dokumen & layanan publik Kota Palopo secara akurat.</p>
-            
-            <div class="text-[11px] font-bold text-slate-500 pt-1">Rekomendasi Pertanyaan:</div>
-            <div class="flex flex-wrap gap-1.5 pt-1">
-              <button onclick="sendQuickPrompt('Bagaimana syarat cetak KTP rusak?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🆔 KTP Rusak</button>
-              <button onclick="sendQuickPrompt('Bagaimana cara daftar NIB UMKM online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🏪 NIB UMKM</button>
-              <button onclick="sendQuickPrompt('Syarat pendaftaran Bansos PKH dan DTKS')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🤲 Bansos PKH</button>
-              <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🌾 Harga Pangan</button>
-              <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">📢 Lapor Pengaduan</button>
-              <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">💳 Bayar Pajak (AKSARA)</button>
+        <!-- BANNER -->
+        <div id="banner-container" class="relative w-full mb-4 overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 bg-slate-100 group select-none">
+          <div id="banner-slider" class="flex transition-transform duration-500 ease-in-out w-full">
+            <div class="w-full flex-shrink-0">
+              <img src="assets/images/banner1.png" alt="Banner Informasi 1" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x280/0f3c5f/ffffff?text=Banner+Informasi+1';">
+            </div>
+            <div class="w-full flex-shrink-0">
+              <img src="assets/images/banner2.png" alt="Banner Informasi 2" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x280/0284c7/ffffff?text=Banner+Informasi+2';">
+            </div>
+            <div class="w-full flex-shrink-0">
+              <img src="assets/images/banner3.png" alt="Banner Informasi 3" class="w-full h-28 md:h-36 object-cover rounded-2xl" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x280/06b6d4/ffffff?text=Banner+Informasi+3';">
             </div>
           </div>
+
+          <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-1.5 z-10">
+            <button onclick="goToBanner(0)" class="banner-dot w-5 h-2 rounded-full bg-white transition-all duration-300 shadow-sm" aria-label="Slide 1"></button>
+            <button onclick="goToBanner(1)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 2"></button>
+            <button onclick="goToBanner(2)" class="banner-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300 shadow-sm" aria-label="Slide 3"></button>
+          </div>
         </div>
+
+        <!-- MENU GRID 4 KARTU -->
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="openFeatureModal('LIFE_EVENT')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+            <div class="text-amber-500 text-2xl"><i class="fa-solid fa-route"></i></div>
+            <span class="text-slate-700 font-bold text-sm leading-snug">Life Event<br>Mode</span>
+          </button>
+
+          <button onclick="openFeatureModal('OPD')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+            <div class="text-emerald-500 text-2xl"><i class="fa-solid fa-building-columns"></i></div>
+            <span class="text-slate-700 font-bold text-sm leading-snug">Layanan<br>Pemerintah</span>
+          </button>
+
+          <button onclick="openFeatureModal('GIS')" class="menu-card p-4 text-left flex flex-col justify-between h-36">
+            <div class="text-indigo-500 text-2xl"><i class="fa-solid fa-map-location-dot"></i></div>
+            <span class="text-slate-700 font-bold text-sm leading-snug">Cari Lokasi<br>Layanan</span>
+          </button>
+
+          <button onclick="showChatScreen()" class="menu-card p-4 text-left flex flex-col justify-between h-36 border-brand-cyan/40 bg-sky-50/60">
+            <div class="text-brand-blue text-2xl"><i class="fa-solid fa-robot"></i></div>
+            <span class="text-brand-navy font-bold text-sm leading-snug">Tanya Palopota<br>Langsung</span>
+          </button>
+        </div>
+      </main>
+
+      <!-- KOLOM KANAN: CHAT + FOOTER -->
+      <div class="chat-column flex flex-col h-full overflow-hidden">
+        <section id="chat-screen" class="flex-1 flex flex-col overflow-hidden hidden min-h-0">
+          <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 shrink-0 mb-1">
+            <button onclick="showHomeScreen()" class="text-xs font-bold text-brand-blue flex items-center hover:underline">
+              <i class="fa-solid fa-arrow-left mr-1.5"></i> Beranda
+            </button>
+            <span class="text-xs font-extrabold text-brand-navy flex items-center">
+              <i class="fa-solid fa-robot text-brand-cyan mr-1.5"></i> Palopota AI Assistant
+            </span>
+            <button onclick="clearChat()" class="text-xs text-rose-500 font-bold hover:underline">
+              <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan
+            </button>
+          </div>
+
+          <div id="chat-stream" class="custom-scroll flex-1 overflow-y-auto space-y-3 pr-1 py-2 min-h-0">
+            <div class="flex items-start space-x-2.5 my-1">
+              <div style="width: 32px; height: 32px; border-radius: 9999px; background-color: #0f3c5f; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">AI</div>
+              <div class="bg-white border border-slate-200/90 text-xs p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-slate-700 shadow-sm space-y-2 chat-body">
+                <p class="font-bold text-brand-navy text-sm">Salama’ki tapada salama! 👋</p>
+                <p>Saya Asisten AI Palopota. Saya selalu siap membantu pengurusan dokumen & layanan publik Kota Palopo secara akurat.</p>
+
+                <div class="text-[11px] font-bold text-slate-500 pt-1">Rekomendasi Pertanyaan:</div>
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  <button onclick="sendQuickPrompt('Bagaimana syarat cetak KTP rusak?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🆔 KTP Rusak</button>
+                  <button onclick="sendQuickPrompt('Bagaimana cara daftar NIB UMKM online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🏪 NIB UMKM</button>
+                  <button onclick="sendQuickPrompt('Syarat pendaftaran Bansos PKH dan DTKS')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🤲 Bansos PKH</button>
+                  <button onclick="sendQuickPrompt('Berapa harga pangan dan sembako di Palopo hari ini?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">🌾 Harga Pangan</button>
+                  <button onclick="sendQuickPrompt('Bagaimana cara membuat laporan pengaduan?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">📢 Lapor Pengaduan</button>
+                  <button onclick="sendQuickPrompt('Bagaimana cara bayar pajak daerah online?')" class="text-[11px] bg-slate-100 hover:bg-sky-100 text-brand-navy px-2.5 py-1 rounded-lg border border-slate-200 font-medium">💳 Bayar Pajak (AKSARA)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHAT INPUT BAR (khusus di kolom kanan desktop) -->
+        <footer class="w-full shrink-0 z-30 pt-1 pb-safe chat-footer">
+          <form onsubmit="handleChatSubmit(event)" class="chat-container p-2.5 flex flex-col justify-between space-y-2 shadow-lg border border-slate-200/90">
+            <input type="text" id="user-input" autocomplete="off" placeholder="Tanyakan syarat dokumen, NIB, KTP, dll..." class="w-full bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none px-2 py-1">
+
+            <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+              <button type="button" onclick="openFeatureModal('LIFE_EVENT')" class="text-slate-500 hover:text-brand-navy text-lg px-2" title="Life Event Mode">
+                <i class="fa-solid fa-layer-group"></i>
+              </button>
+
+              <div class="flex items-center space-x-2">
+                <button type="button" id="accessibility-btn" onclick="toggleAccessibilityMode()" class="text-slate-500 hover:text-brand-blue text-lg px-1.5 transition-colors" title="Mode Aksesibilitas">
+                  <i class="fa-solid fa-universal-access"></i>
+                </button>
+
+                <button type="button" id="tts-btn" onclick="toggleSpeech()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Dengarkan Suara Respon">
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
+                  <i class="fa-solid fa-microphone"></i>
+                </button>
+
+                <button type="submit"
+                  style="width: 32px; height: 32px; background-color: #0f3c5f; color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; box-shadow: 0 2px 6px rgba(15,60,95,0.3); border: none; cursor: pointer; flex-shrink: 0;"
+                  onmouseover="this.style.backgroundColor='#1e293b'"
+                  onmouseout="this.style.backgroundColor='#0f3c5f'">
+                  <i class="fa-solid fa-arrow-up" style="font-size: 0.7rem;"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </footer>
       </div>
-    </section>
 
-  </div>
+    </div>
 
-  <!-- CHAT INPUT BAR -->
-  <footer class="w-full shrink-0 z-30 pt-1 pb-safe">
-    <form onsubmit="handleChatSubmit(event)" class="chat-container p-2.5 flex flex-col justify-between space-y-2 shadow-lg border border-slate-200/90">
-      <input type="text" id="user-input" autocomplete="off" placeholder="Tanyakan syarat dokumen, NIB, KTP, dll..." class="w-full bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none px-2 py-1">
-      
-      <div class="flex justify-between items-center pt-1 border-t border-slate-100">
-        <button type="button" onclick="openFeatureModal('LIFE_EVENT')" class="text-slate-500 hover:text-brand-navy text-lg px-2" title="Life Event Mode">
-          <i class="fa-solid fa-layer-group"></i>
-        </button>
+    <!-- MODAL DYNAMIC FITUR -->
+    <div id="feature-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[82vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 id="modal-title" class="font-extrabold text-brand-navy text-base">Detail Fitur</h3>
+          <button onclick="closeFeatureModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div id="modal-body" class="text-xs text-slate-600 space-y-3"></div>
+      </div>
+    </div>
 
+    <!-- MODAL CEK HAK BANTUAN -->
+    <div id="eligibility-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
+            <i class="fa-solid fa-hand-holding-hand text-rose-500 mr-2"></i> Cek Hak Bantuan Warga (Bansos & Beasiswa)
+          </h3>
+          <button onclick="closeEligibilityModal()" class="text-slate-400 hover:text-slate-700 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div id="quiz-step-container" class="space-y-4 text-xs text-slate-700">
+          <div>
+            <label class="font-bold block mb-1">1. Apakah Anda memiliki Kartu Keluarga (KK) Kota Palopo?</label>
+            <select id="q-kk" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+              <option value="ya">Ya, KK Kota Palopo</option>
+              <option value="tidak">Bukan / Pendatang</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold block mb-1">2. Berapa total estimasi penghasilan keluarga per bulan?</label>
+            <select id="q-income" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+              <option value="low">Di bawah Rp 1.500.000 / bulan</option>
+              <option value="mid">Rp 1.500.000 – Rp 3.000.000 / bulan</option>
+              <option value="high">Di atas Rp 3.000.000 / bulan</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold block mb-1">3. Apakah ada anggota keluarga yang sedang bersekolah/kuliah?</label>
+            <select id="q-student" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+              <option value="ya">Ya (SD / SMP / SMA / Perguruan Tinggi)</option>
+              <option value="tidak">Tidak ada</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold block mb-1">4. Apakah keluarga Anda sudah terdaftar di DTKS?</label>
+            <select id="q-dtks" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+              <option value="belum">Belum / Tidak Tahu</option>
+              <option value="sudah">Sudah Terdaftar</option>
+            </select>
+          </div>
+          <button onclick="calculateEligibility()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+            Analisis Kelayakan Bantuan Saya
+          </button>
+        </div>
+
+        <div id="quiz-result-container" class="hidden space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- MODAL CEK GIZI STUNTING -->
+    <div id="stunting-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
+            <i class="fa-solid fa-baby text-pink-500 mr-2"></i> Kalkulator Cek Gizi & Stunting Balita
+          </h3>
+          <button onclick="closeStuntingModal()" class="text-slate-400 hover:text-slate-700 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div id="stunting-form-container" class="space-y-3 text-xs text-slate-700">
+          <div>
+            <label class="font-bold block mb-1">Usia Balita (Bulan):</label>
+            <input type="number" id="st-age" placeholder="Contoh: 12" min="0" max="60" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+          </div>
+          <div>
+            <label class="font-bold block mb-1">Jenis Kelamin:</label>
+            <select id="st-gender" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
+              <option value="male">Laki-Laki</option>
+              <option value="female">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold block mb-1">Tinggi / Panjang Badan (cm):</label>
+            <input type="number" id="st-height" placeholder="Contoh: 75" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+          </div>
+          <div>
+            <label class="font-bold block mb-1">Berat Badan (kg):</label>
+            <input type="number" id="st-weight" placeholder="Contoh: 9.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
+          </div>
+          <button onclick="calculateStunting()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md mt-2">
+            Analisis Status Gizi Balita
+          </button>
+        </div>
+
+        <div id="stunting-result-container" class="hidden space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- POP-UP SURVEI IKM -->
+    <div id="ikm-popup" class="fixed bottom-20 right-4 z-40 hidden max-w-xs bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 transition-all duration-300 transform translate-y-4">
+      <div class="flex justify-between items-start mb-2">
         <div class="flex items-center space-x-2">
-          <!-- Tombol Mode Aksesibilitas -->
-          <button type="button" id="accessibility-btn" onclick="toggleAccessibilityMode()" class="text-slate-500 hover:text-brand-blue text-lg px-1.5 transition-colors" title="Mode Aksesibilitas (Teks Besar & Kontras Tinggi)">
-            <i class="fa-solid fa-universal-access"></i>
-          </button>
-                  
-          <!-- Tombol Suara (Text-to-Speech) -->
-          <button type="button" id="tts-btn" onclick="toggleSpeech()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Dengarkan Suara Respon">
-            <i class="fa-solid fa-volume-high"></i>
-          </button>
-
-          <!-- Tombol Mikrofon -->
-          <button type="button" id="mic-btn" onclick="triggerVoiceInput()" class="text-slate-500 hover:text-brand-blue text-lg px-2 transition-colors" title="Input Suara">
-            <i class="fa-solid fa-microphone"></i>
-          <button type="submit" 
-        style="width: 32px; height: 32px; background-color: #0f3c5f; color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; box-shadow: 0 2px 6px rgba(15,60,95,0.3); border: none; cursor: pointer; flex-shrink: 0;"
-        onmouseover="this.style.backgroundColor='#1e293b'" 
-        onmouseout="this.style.backgroundColor='#0f3c5f'">
-  <i class="fa-solid fa-arrow-up" style="font-size: 0.7rem;"></i>
-</button>
+          <span class="text-amber-500 text-base"><i class="fa-solid fa-star"></i></span>
+          <h4 class="font-bold text-brand-navy text-xs">Survei Kepuasan (IKM)</h4>
         </div>
-      </div>
-    </form>
-  </footer>
-
-  <!-- MODAL DYNAMIC FITUR -->
-  <div id="feature-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[82vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 id="modal-title" class="font-extrabold text-brand-navy text-base">Detail Fitur</h3>
-        <button onclick="closeFeatureModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <div id="modal-body" class="text-xs text-slate-600 space-y-3">
-        <!-- Konten Dimuat Dinamis -->
-      </div>
-    </div>
-  </div>
-  
-  <!-- MODAL SIMULATOR CEK HAK BANTUAN -->
-  <div id="eligibility-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
-          <i class="fa-solid fa-hand-holding-hand text-rose-500 mr-2"></i> Cek Hak Bantuan Warga (Bansos & Beasiswa)
-        </h3>
-        <button onclick="closeEligibilityModal()" class="text-slate-400 hover:text-slate-700 p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
+        <button onclick="closeIkmPopup()" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
-      <!-- Form Pertanyaan Kuis -->
-      <div id="quiz-step-container" class="space-y-4 text-xs text-slate-700">
-        <div>
-          <label class="font-bold block mb-1">1. Apakah Anda memiliki Kartu Keluarga (KK) Kota Palopo?</label>
-          <select id="q-kk" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
-            <option value="ya">Ya, KK Kota Palopo</option>
-            <option value="tidak">Bukan / Pendatang</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">2. Berapa total estimasi penghasilan keluarga per bulan?</label>
-          <select id="q-income" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
-            <option value="low">Di bawah Rp 1.500.000 / bulan</option>
-            <option value="mid">Rp 1.500.000 – Rp 3.000.000 / bulan</option>
-            <option value="high">Di atas Rp 3.000.000 / bulan</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">3. Apakah ada anggota keluarga yang sedang bersekolah/kuliah?</label>
-          <select id="q-student" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
-            <option value="ya">Ya (SD / SMP / SMA / Perguruan Tinggi)</option>
-            <option value="tidak">Tidak ada</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">4. Apakah keluarga Anda sudah terdaftar di DTKS?</label>
-          <select id="q-dtks" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
-            <option value="belum">Belum / Tidak Tahu</option>
-            <option value="sudah">Sudah Terdaftar</option>
-          </select>
-        </div>
-
-        <button onclick="calculateEligibility()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
-          Analisis Kelayakan Bantuan Saya
-        </button>
-      </div>
-
-      <!-- Container Hasil Analisis -->
-      <div id="quiz-result-container" class="hidden space-y-3"></div>
+      <p class="text-[11px] text-slate-600 mb-3 leading-snug">
+        Bantu kami meningkatkan kualitas pelayanan publik Kota Palopo dengan mengisi survei singkat ini.
+      </p>
+      <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="closeIkmPopup()"
+        style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; background-color: #0f3c5f; color: white; font-weight: 700; padding: 10px 16px; border-radius: 12px; font-size: 0.75rem; text-decoration: none; box-shadow: 0 2px 6px rgba(15,60,95,0.25); transition: background 0.2s;">
+        <span>Isi Survei IKM</span>
+        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+      </a>
     </div>
+
   </div>
 
-  <!-- MODAL KALKULATOR CEK GIZI STUNTING -->
-  <div id="stunting-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl custom-scroll">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-extrabold text-brand-navy text-sm flex items-center">
-          <i class="fa-solid fa-baby text-pink-500 mr-2"></i> Kalkulator Cek Gizi & Stunting Balita
-        </h3>
-        <button onclick="closeStuntingModal()" class="text-slate-400 hover:text-slate-700 p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <!-- Form Input Data Balita -->
-      <div id="stunting-form-container" class="space-y-3 text-xs text-slate-700">
-        <div>
-          <label class="font-bold block mb-1">Usia Balita (Bulan):</label>
-          <input type="number" id="st-age" placeholder="Contoh: 12" min="0" max="60" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">Jenis Kelamin:</label>
-          <select id="st-gender" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium">
-            <option value="male">Laki-Laki</option>
-            <option value="female">Perempuan</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">Tinggi / Panjang Badan (cm):</label>
-          <input type="number" id="st-height" placeholder="Contoh: 75" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
-        </div>
-
-        <div>
-          <label class="font-bold block mb-1">Berat Badan (kg):</label>
-          <input type="number" id="st-weight" placeholder="Contoh: 9.5" step="0.1" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:border-brand-blue">
-        </div>
-
-        <button onclick="calculateStunting()" class="w-full bg-brand-navy hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md mt-2">
-          Analisis Status Gizi Balita
-        </button>
-      </div>
-
-      <!-- Hasil Analisis Stunting -->
-      <div id="stunting-result-container" class="hidden space-y-3"></div>
-    </div>
-  </div>
-
-  <!-- POP-UP SURVEI IKM -->
-  <div id="ikm-popup" class="fixed bottom-20 right-4 z-40 hidden max-w-xs bg-white border border-slate-200 shadow-2xl rounded-2xl p-4 transition-all duration-300 transform translate-y-4">
-    <div class="flex justify-between items-start mb-2">
-      <div class="flex items-center space-x-2">
-        <span class="text-amber-500 text-base"><i class="fa-solid fa-star"></i></span>
-        <h4 class="font-bold text-brand-navy text-xs">Survei Kepuasan (IKM)</h4>
-      </div>
-      <button onclick="closeIkmPopup()" class="text-slate-400 hover:text-slate-600 text-xs p-1">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <p class="text-[11px] text-slate-600 mb-3 leading-snug">
-      Bantu kami meningkatkan kualitas pelayanan publik Kota Palopo dengan mengisi survei singkat ini.
-    </p>
-    <a href="https://bit.ly/surveiikmpalopo" target="_blank" onclick="closeIkmPopup()" 
-   style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; background-color: #0f3c5f; color: white; font-weight: 700; padding: 10px 16px; border-radius: 12px; font-size: 0.75rem; text-decoration: none; box-shadow: 0 2px 6px rgba(15,60,95,0.25); transition: background 0.2s;">
-  <span>Isi Survei IKM</span>
-  <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
-</a>
-  </div>
-  </div>
-  
   <!-- JavaScript Eksternal -->
   <script src="assets/js/data.js"></script>
   <script src="assets/js/app.js"></script>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW terdaftar'))
-      .catch(err => console.warn('Gagal daftar SW:', err));
-  }
-</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW terdaftar'))
+        .catch(err => console.warn('Gagal daftar SW:', err));
+    }
+  </script>
 </body>
 </html>
