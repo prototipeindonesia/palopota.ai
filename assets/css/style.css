@@ -166,10 +166,10 @@ body.high-contrast #user-input::placeholder {
 }
 
 /* ==========================================================================
-   DESKTOP FULLSCREEN MODE (Layar >= 1024px) - LAYOUT CLEAN & RAPI
+   DESKTOP FULLSCREEN MODE (Layar >= 1024px) - MARGIN & SPACING PRESISI
    ========================================================================== */
 
-/* 1. Aturan Khusus Mobile/HP (< 1024px) */
+/* 1. Aturan khusus HP/Mobile (< 1024px) */
 @media (max-width: 1023px) {
   body {
     max-width: 28rem !important;
@@ -178,14 +178,14 @@ body.high-contrast #user-input::placeholder {
   }
 }
 
-/* 2. Aturan Desktop Rapi Fullscreen (>= 1024px) */
+/* 2. Aturan Desktop Fullscreen Rapi (>= 1024px) */
 @media (min-width: 1024px) {
   html, body {
     width: 100vw !important;
     max-width: 100vw !important;
     height: 100vh !important;
     margin: 0 !important;
-    padding: 1rem 2rem !important;
+    padding: 1.5rem 3rem !important; /* Margin luar sekeliling layar */
     border-radius: 0 !important;
     border: none !important;
     box-shadow: none !important;
@@ -197,16 +197,16 @@ body.high-contrast #user-input::placeholder {
   header {
     width: 100% !important;
     max-width: 100% !important;
-    padding-bottom: 0.75rem !important;
-    margin-bottom: 0.5rem !important;
+    padding-bottom: 1rem !important;
+    margin-bottom: 1rem !important;
   }
 
   /* Layout 2 Kolom Seimbang */
   div.desktop-layout-wrapper {
     display: flex !important;
     flex-direction: row !important;
-    gap: 2rem !important;
-    height: calc(100vh - 85px) !important;
+    gap: 3rem !important; /* Jarak pisah antar kolom kiri dan kanan */
+    height: calc(100vh - 110px) !important;
     width: 100% !important;
   }
 
@@ -218,54 +218,63 @@ body.high-contrast #user-input::placeholder {
     justify-content: flex-start !important;
     height: 100% !important;
     overflow-y: auto !important;
-    padding-right: 1rem !important;
+    padding-right: 0.75rem !important;
   }
 
-  /* Banner Proporsional */
+  /* Judul Selamat Datang */
+  #home-screen h1 {
+    font-size: 2.25rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Proporsi Banner Carousel */
   #banner-container {
-    max-height: 180px !important;
+    max-height: 200px !important;
+    margin-bottom: 1.5rem !important;
   }
   #banner-slider img {
-    height: 180px !important;
+    height: 200px !important;
     object-fit: cover !important;
   }
 
-  /* Kartu Menu Grid lebih Tinggi & Rapi */
+  /* Grid Kartu Menu Lebih Simetris */
   .grid.grid-cols-2 {
     gap: 1.25rem !important;
   }
 
   .menu-card {
-    height: 120px !important;
+    height: 130px !important;
     padding: 1.25rem !important;
   }
 
   /* --- KOLOM KANAN: CHAT ASSISTANT --- */
   #chat-screen {
-    flex: 1.2 !important;
+    flex: 1.1 !important;
     display: flex !important;
     flex-direction: column !important;
     height: 100% !important;
     border-left: 1px solid #e2e8f0 !important;
-    padding-left: 2rem !important;
+    padding-left: 2.5rem !important; /* Spacing sisi kiri kolom chat */
   }
 
   /* Area Bubble Chat */
   #chat-stream {
     flex: 1 !important;
     overflow-y: auto !important;
-    padding-right: 0.5rem !important;
+    padding-right: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
-  /* Sembunyikan Tombol Kembali di Desktop */
+  /* Sembunyikan Tombol Kembali ke Beranda */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
 
-  /* Footer Chat Input hanya ada di bawah Kolom Chat Kanan */
+  /* Margin Footer Input Chat */
   footer {
     position: relative !important;
     width: 100% !important;
     padding-top: 0.5rem !important;
+    margin-top: auto !important;
   }
 }
