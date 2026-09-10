@@ -47,6 +47,10 @@ function showHomeScreen() {
   if (chatScreen) {
     chatScreen.classList.add('hidden');
     chatScreen.classList.remove('flex');
+  if (window.innerWidth < 1024) {
+    document.getElementById('home-screen').classList.remove('hidden');
+    document.getElementById('chat-screen').classList.add('hidden');
+    document.getElementById('chat-screen').classList.remove('flex');
   }
 }
 
@@ -56,6 +60,10 @@ function showChatScreen() {
   if (chatScreen) {
     chatScreen.classList.remove('hidden');
     chatScreen.classList.add('flex');
+  if (window.innerWidth < 1024) {
+    document.getElementById('home-screen').classList.add('hidden');
+    document.getElementById('chat-screen').classList.remove('hidden');
+    document.getElementById('chat-screen').classList.add('flex');
   }
 }
 
@@ -1195,6 +1203,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (isAccessibilityMode) {
     applyAccessibilityMode(true);
+
+  if (window.innerWidth >= 1024) {
+    document.getElementById('chat-screen').classList.remove('hidden');
+    document.getElementById('chat-screen').classList.add('flex');
   }
   
   bannerInterval = setInterval(nextBanner, 30000);
