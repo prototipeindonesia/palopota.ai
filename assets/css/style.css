@@ -157,18 +157,18 @@ body.high-contrast #user-input { color: #ffffff !important; }
 body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
 
 /* ==========================================================================
-   DESKTOP MODE (>= 1024px)
+   DESKTOP MODE (>= 1024px) — LAYOUT PROPORSIONAL
    ========================================================================== */
 @media (min-width: 1024px) {
 
-  /* ---- BODY ---- */
+  /* ---- BODY: full screen dengan margin rapi ---- */
   html, body {
     height: 100vh !important;
     width: 100vw !important;
     max-width: 100vw !important;
     overflow: hidden !important;
     margin: 0 !important;
-    padding: 1rem 2rem !important;
+    padding: 1rem 2rem 0.75rem 2rem !important;   /* atas/bawah lebih rapat */
     box-sizing: border-box !important;
     background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #ecfdf5 100%) !important;
   }
@@ -179,7 +179,7 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     flex-direction: column !important;
     height: 100% !important;
     width: 100% !important;
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;                        /* header ke konten lebih rapat */
     min-height: 0 !important;
   }
 
@@ -187,14 +187,14 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
   header {
     flex-shrink: 0 !important;
     margin: 0 !important;
-    padding-bottom: 0.5rem !important;
+    padding: 0 0 0.6rem 0 !important;
   }
 
-  /* ---- WRAPPER 2 KOLOM ---- */
+  /* ---- WRAPPER 2 KOLOM: SEIMBANG 1:1 ---- */
   .desktop-layout-wrapper {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 2rem !important;
+    grid-template-columns: 1fr 1fr !important;      /* seimbang */
+    gap: 2.5rem !important;                          /* jarak antar kolom nyaman */
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow: hidden !important;
@@ -210,7 +210,7 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     height: 100% !important;
     max-height: 100% !important;
     overflow-y: auto !important;
-    padding-right: 0.5rem !important;
+    padding-right: 0.75rem !important;
     min-height: 0 !important;
     margin: 0 !important;
     justify-content: flex-start !important;
@@ -220,16 +220,19 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
   #home-screen::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
   #home-screen::-webkit-scrollbar-track { background: transparent; }
 
+  /* Judul + subjudul: rapat ke banner */
   #home-screen > div:first-child {
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 0.9rem !important;
     flex-shrink: 0 !important;
   }
   #home-screen h1 {
-    font-size: 1.6rem !important;
-    margin-bottom: 0.2rem !important;
+    font-size: 1.55rem !important;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.15 !important;
   }
   #home-screen #sub-welcome {
     font-size: 0.9rem !important;
+    line-height: 1.35 !important;
   }
 
   /* ---- BANNER 800x280 ---- */
@@ -261,28 +264,28 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     border-radius: 14px !important;
   }
 
-  /* ---- GRID MENU ---- */
+  /* ---- GRID MENU 4 KARTU ---- */
   #home-screen .grid.grid-cols-2 {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 0.75rem !important;
+    gap: 0.85rem !important;
     flex-shrink: 0 !important;
   }
   #home-screen .menu-card {
-    height: 110px !important;
-    padding: 0.9rem !important;
+    height: 105px !important;
+    padding: 0.85rem 1rem !important;
     border-radius: 16px !important;
   }
   #home-screen .menu-card .text-2xl {
-    font-size: 1.4rem !important;
+    font-size: 1.35rem !important;
   }
   #home-screen .menu-card span {
-    font-size: 0.82rem !important;
-    line-height: 1.2 !important;
+    font-size: 0.8rem !important;
+    line-height: 1.25 !important;
   }
 
   /* =========================================
-     KOLOM KANAN: CHAT + FOOTER (dalam .chat-column)
+     KOLOM KANAN: CHAT + FOOTER
      ========================================= */
   .chat-column {
     display: flex !important;
@@ -295,7 +298,7 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     padding-left: 1.5rem !important;
   }
 
-  /* PAKSA tampilkan chat screen di desktop, apapun class-nya */
+  /* Chat screen */
   #chat-screen {
     display: flex !important;
     flex-direction: column !important;
@@ -304,30 +307,39 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     overflow: hidden !important;
     height: 100% !important;
   }
-
-  /* Pastikan class hidden tidak menyembunyikan di desktop */
   #chat-screen.hidden {
     display: flex !important;
   }
 
+  /* Sub-header chat */
   #chat-screen > div:first-child {
     flex-shrink: 0 !important;
     padding-bottom: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.4rem !important;
   }
 
+  /* Area chat: scroll */
   #chat-stream {
     flex: 1 1 auto !important;
     overflow-y: auto !important;
     min-height: 0 !important;
-    padding-right: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+    padding-right: 0.4rem !important;
+    margin-bottom: 0.4rem !important;
+    font-size: 0.8rem !important;
   }
   #chat-stream::-webkit-scrollbar { width: 6px; }
   #chat-stream::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
   #chat-stream::-webkit-scrollbar-track { background: transparent; }
 
-  /* Sembunyikan tombol "Beranda" di sub-header chat */
+  /* Bubble chat lebih ringkas */
+  #chat-stream .chat-body {
+    font-size: 0.78rem !important;
+    padding: 0.7rem 0.85rem !important;
+    max-width: 88% !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Sembunyikan tombol "Beranda" di chat (desktop) */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
@@ -345,6 +357,13 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
   footer.chat-footer form.chat-container {
     width: 100% !important;
     max-width: 100% !important;
+    padding: 0.6rem !important;
+    border-radius: 18px !important;
+  }
+  .chat-column footer #user-input,
+  footer.chat-footer #user-input {
+    font-size: 0.8rem !important;
+    padding: 0.35rem 0.6rem !important;
   }
 
   /* ---- MODAL Z-INDEX ---- */
