@@ -215,11 +215,11 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     margin: 0 !important;
     justify-content: flex-start !important;
   }
+
   #home-screen::-webkit-scrollbar { width: 6px; }
   #home-screen::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
   #home-screen::-webkit-scrollbar-track { background: transparent; }
 
-  /* Judul beranda */
   #home-screen > div:first-child {
     margin-bottom: 0.75rem !important;
     flex-shrink: 0 !important;
@@ -232,7 +232,7 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     font-size: 0.9rem !important;
   }
 
-  /* ---- BANNER: rasio 800x280 ---- */
+  /* ---- BANNER 800x280 ---- */
   #banner-container {
     width: 100% !important;
     aspect-ratio: 800 / 280 !important;
@@ -295,22 +295,27 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     padding-left: 1.5rem !important;
   }
 
+  /* PAKSA tampilkan chat screen di desktop, apapun class-nya */
   #chat-screen {
     display: flex !important;
     flex-direction: column !important;
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow: hidden !important;
+    height: 100% !important;
   }
 
-  /* Sub-header chat */
+  /* Pastikan class hidden tidak menyembunyikan di desktop */
+  #chat-screen.hidden {
+    display: flex !important;
+  }
+
   #chat-screen > div:first-child {
     flex-shrink: 0 !important;
     padding-bottom: 0.5rem !important;
     margin-bottom: 0.5rem !important;
   }
 
-  /* Area chat: scroll */
   #chat-stream {
     flex: 1 1 auto !important;
     overflow-y: auto !important;
@@ -322,12 +327,12 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
   #chat-stream::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
   #chat-stream::-webkit-scrollbar-track { background: transparent; }
 
-  /* Sembunyikan tombol "Beranda" di chat (tidak perlu di desktop) */
+  /* Sembunyikan tombol "Beranda" di sub-header chat */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
 
-  /* Footer chat: di dalam kolom kanan */
+  /* Footer input chat */
   .chat-column footer,
   footer.chat-footer {
     display: flex !important;
@@ -336,14 +341,13 @@ body.high-contrast #user-input::placeholder { color: #a1a1aa !important; }
     margin: 0 !important;
     flex-shrink: 0 !important;
   }
-
   .chat-column footer form.chat-container,
   footer.chat-footer form.chat-container {
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  /* Modal: pastikan tetap di atas */
+  /* ---- MODAL Z-INDEX ---- */
   #feature-modal,
   #eligibility-modal,
   #stunting-modal {
