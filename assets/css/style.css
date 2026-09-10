@@ -170,215 +170,143 @@ body.high-contrast #user-input::placeholder {
    ========================================================================== */
 
 /* 1. Aturan khusus HP/Mobile (< 1024px) */
-@media (max-width: 1023px) {
-  body {
-    max-width: 28rem !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-/* 2. Aturan Desktop Fullscreen Rapi (>= 1024px) */
 @media (min-width: 1024px) {
 
-  /* ---- RESET BODY ---- */
+  /* 1. Body: full screen, tanpa scroll */
   html, body {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
     overflow: hidden !important;
-    background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #ecfdf5 100%) !important;
-  }
-
-  body {
+    background: #f8fafc !important;
+    margin: 0 !important;
     padding: 1rem 2rem !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
   }
 
-  /* ---- HEADER ---- */
+  /* 2. Header: rapi di atas */
   header {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-bottom: 0.6rem !important;
-    margin-bottom: 0.75rem !important;
     flex-shrink: 0 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.5rem !important;
   }
 
-  header img.h-9 { height: 2rem !important; }
-  header img.h-7 { height: 1.6rem !important; }
-
-  /* ---- WRAPPER UTAMA (2 KOLOM) ---- */
-  body > div.flex-1.flex.flex-col.overflow-hidden.relative.my-1 {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 1.75rem !important;
+  /* 3. Wrapper utama (anak body setelah header): 2 kolom */
+  body > div.flex-1.flex.flex-col {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
     flex: 1 1 auto !important;
-    height: auto !important;
     min-height: 0 !important;
-    margin: 0 !important;
     overflow: hidden !important;
+    margin: 0 !important;
   }
 
-  /* ============================================
-     KOLOM KIRI: BERANDA & MENU
-     ============================================ */
+  /* ================================
+     4. KOLOM KIRI: BERANDA
+     ================================ */
   #home-screen {
-    flex: 1 1 48% !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important;
     height: 100% !important;
-    max-height: 100% !important;
     overflow-y: auto !important;
-    padding-right: 0.75rem !important;
-    padding-bottom: 0.5rem !important;
+    padding-right: 0.5rem !important;
     min-height: 0 !important;
   }
 
-  #home-screen::-webkit-scrollbar { width: 6px; }
-  #home-screen::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-  #home-screen::-webkit-scrollbar-track { background: transparent; }
-
-  /* Judul Selamat Datang */
-  #home-screen > div:first-child {
+  /* Judul */
+  #home-screen h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  #home-screen #sub-welcome {
+    font-size: 0.9rem !important;
     margin-bottom: 0.75rem !important;
   }
 
-  #home-screen h1 {
-    font-size: 1.6rem !important;
-    line-height: 1.2 !important;
-    margin-bottom: 0.25rem !important;
-  }
-
-  #home-screen #sub-welcome {
-    font-size: 0.95rem !important;
-  }
-
-  /* ---- BANNER CAROUSEL: rasio 800x280 ---- */
+  /* Banner: rasio 800x280, gambar tampil utuh */
   #banner-container {
     width: 100% !important;
-    max-width: 100% !important;
     aspect-ratio: 800 / 280 !important;
-    max-height: none !important;
     height: auto !important;
+    max-height: none !important;
     margin-bottom: 1rem !important;
-    border-radius: 16px !important;
+    border-radius: 14px !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
   }
-
-  #banner-slider {
-    width: 100% !important;
-    height: 100% !important;
-  }
-
+  #banner-slider,
   #banner-slider > div {
     width: 100% !important;
     height: 100% !important;
-    flex-shrink: 0 !important;
   }
-
   #banner-slider img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important;   /* gambar tidak terpotong */
-    background-color: #f1f5f9 !important;
+    object-fit: cover !important;
     display: block !important;
   }
 
-  /* ---- GRID MENU 4 KARTU ---- */
-  .grid.grid-cols-2 {
-    gap: 0.9rem !important;
+  /* Grid menu: 2 kolom, kartu proporsional */
+  #home-screen .grid.grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
   }
 
-  .menu-card {
-    height: 105px !important;
-    padding: 0.9rem 1rem !important;
-    border-radius: 16px !important;
+  #home-screen .menu-card {
+    height: 100px !important;
+    padding: 0.85rem !important;
+    border-radius: 14px !important;
+  }
+  #home-screen .menu-card .text-2xl {
+    font-size: 1.3rem !important;
+  }
+  #home-screen .menu-card span {
+    font-size: 0.78rem !important;
+    line-height: 1.2 !important;
   }
 
-  .menu-card .text-2xl {
-    font-size: 1.35rem !important;
-  }
-
-  .menu-card span {
-    font-size: 0.8rem !important;
-    line-height: 1.25 !important;
-  }
-
-  /* ============================================
-     KOLOM KANAN: CHAT ASSISTANT
-     ============================================ */
+  /* ================================
+     5. KOLOM KANAN: CHAT
+     ================================ */
   #chat-screen {
-    flex: 1 1 52% !important;
     display: flex !important;
     flex-direction: column !important;
     height: 100% !important;
-    max-height: 100% !important;
-    padding-left: 1.75rem !important;
-    border-left: 1px solid #e2e8f0 !important;
     min-height: 0 !important;
     overflow: hidden !important;
+    border-left: 1px solid #e2e8f0 !important;
+    padding-left: 1.5rem !important;
   }
 
+  /* Sub-header chat (label + bersihkan) */
   #chat-screen > div:first-child {
     flex-shrink: 0 !important;
     padding-bottom: 0.5rem !important;
     margin-bottom: 0.5rem !important;
   }
 
-  #chat-screen > div:first-child span {
-    font-size: 0.8rem !important;
-  }
-
-  /* Area Bubble Chat */
+  /* Area chat: scroll */
   #chat-stream {
     flex: 1 1 auto !important;
     overflow-y: auto !important;
+    min-height: 0 !important;
     padding-right: 0.5rem !important;
     margin-bottom: 0.5rem !important;
-    min-height: 0 !important;
-    max-height: 100% !important;
-    font-size: 0.8rem !important;
   }
 
-  #chat-stream::-webkit-scrollbar { width: 6px; }
-  #chat-stream::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-  #chat-stream::-webkit-scrollbar-track { background: transparent; }
-
-  /* Bubble chat */
-  #chat-stream .chat-body {
-    font-size: 0.78rem !important;
-    padding: 0.7rem !important;
-    max-width: 88% !important;
-  }
-
-  /* Sembunyikan tombol "Beranda" di sub-header chat */
+  /* Sembunyikan tombol "Beranda" di dalam chat (tidak perlu di desktop) */
   #chat-screen button[onclick="showHomeScreen()"] {
     display: none !important;
   }
 
-  /* ---- FOOTER INPUT CHAT ---- */
+  /* Footer input chat */
   footer {
-    position: relative !important;
+    flex-shrink: 0 !important;
     width: 100% !important;
     padding-top: 0.5rem !important;
-    margin-top: auto !important;
-    flex-shrink: 0 !important;
-  }
-
-  footer form.chat-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0.6rem !important;
-  }
-
-  footer #user-input {
-    font-size: 0.8rem !important;
-    padding: 0.4rem 0.6rem !important;
   }
 }
